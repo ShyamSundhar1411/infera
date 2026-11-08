@@ -37,7 +37,7 @@ Long vertical gaps in the dendrogram are a hint that a natural cluster boundary 
 <Formula label="Single">
 
 $$
-d(A, B) = min ‖a − b‖
+d(A, B) = \min_{a \in A,\, b \in B} \lVert a - b \rVert
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Complete">
 
 $$
-d(A, B) = max ‖a − b‖
+d(A, B) = \max_{a \in A,\, b \in B} \lVert a - b \rVert
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Average">
 
 $$
-d(A, B) = (1 / |A||B|) Σ ‖a − b‖
+d(A, B) = \frac{1}{\lvert A \rvert \lvert B \rvert} \sum_{a \in A} \sum_{b \in B} \lVert a - b \rVert
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Lance-Williams (Ward)">
 
 $$
-d(i∪j, k) = [(nᵢ+nₖ) dᵢₖ + (nⱼ+nₖ) dⱼₖ − nₖ dᵢⱼ] / (nᵢ+nⱼ+nₖ)
+d(i \cup j, k) = \frac{(n_i + n_k)\, d_{ik} + (n_j + n_k)\, d_{jk} - n_k\, d_{ij}}{n_i + n_j + n_k}
 $$
 
 </Formula>
@@ -69,7 +69,7 @@ $$
 <Formula label="Cut">
 
 $$
-k clusters = undo the last k − 1 merges
+k \text{ clusters} = \text{undo the last } k - 1 \text{ merges}
 $$
 
 </Formula>

@@ -15,7 +15,7 @@ Because every class uses the identical oval, the curved parts cancel when you co
 2. Measure how points spread around their own class mean, and pool that spread into one shared covariance.
 3. Optionally shrink the shared covariance towards a circle.
 4. Set each class prior to its share of the points.
-5. Classify with Bayes' rule: pick the class with the highest prior × likelihood.
+5. Classify with Bayes' rule: pick the class with the highest prior $\times$ likelihood.
 
 ## Reading the picture
 
@@ -37,7 +37,7 @@ The boundaries are always straight lines. They are not simply halfway between th
 <Formula label="Class model">
 
 $$
-p(x | k) = 𝒩(x; μₖ, Σ)
+p(x \mid k) = \mathcal{N}(x; \mu_k, \Sigma)
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Shared covariance">
 
 $$
-Σ = Σₖ Σᵢ∈k (xᵢ − μₖ)(xᵢ − μₖ)ᵀ / (n − K)
+\Sigma = \frac{1}{n - K} \sum_k \sum_{i \in k} (x_i - \mu_k)(x_i - \mu_k)^\top
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Shrinkage">
 
 $$
-Σ_α = (1 − α) Σ + α · (tr Σ / 2) · I
+\Sigma_\alpha = (1 - \alpha)\, \Sigma + \alpha \cdot \frac{\operatorname{tr} \Sigma}{2} \cdot I
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Discriminant">
 
 $$
-δₖ(x) = xᵀΣ⁻¹μₖ − ½ μₖᵀΣ⁻¹μₖ + log πₖ
+\delta_k(x) = x^\top \Sigma^{-1} \mu_k - \frac{1}{2} \mu_k^\top \Sigma^{-1} \mu_k + \log \pi_k
 $$
 
 </Formula>
@@ -69,7 +69,7 @@ $$
 <Formula label="Posterior">
 
 $$
-P(k | x) = softmax over k of δₖ(x)
+P(k \mid x) = \operatorname{softmax}_k\big(\delta_k(x)\big)
 $$
 
 </Formula>

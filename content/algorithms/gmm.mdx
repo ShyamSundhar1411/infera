@@ -36,7 +36,7 @@ Points take the colour of their most responsible component. The background is sh
 <Formula label="Mixture">
 
 $$
-p(x) = Σⱼ πⱼ 𝒩(x; μⱼ, Σⱼ)
+p(x) = \sum_j \pi_j \, \mathcal{N}(x; \mu_j, \Sigma_j)
 $$
 
 </Formula>
@@ -44,7 +44,7 @@ $$
 <Formula label="E-step">
 
 $$
-rᵢⱼ = πⱼ 𝒩(xᵢ; μⱼ, Σⱼ) / Σₗ πₗ 𝒩(xᵢ; μₗ, Σₗ)
+r_{ij} = \frac{\pi_j \, \mathcal{N}(x_i; \mu_j, \Sigma_j)}{\sum_l \pi_l \, \mathcal{N}(x_i; \mu_l, \Sigma_l)}
 $$
 
 </Formula>
@@ -52,7 +52,7 @@ $$
 <Formula label="M-step">
 
 $$
-Nⱼ = Σᵢ rᵢⱼ,   πⱼ = Nⱼ/n,   μⱼ = (1/Nⱼ) Σᵢ rᵢⱼ xᵢ
+N_j = \sum_i r_{ij}, \quad \pi_j = \frac{N_j}{n}, \quad \mu_j = \frac{1}{N_j} \sum_i r_{ij} x_i
 $$
 
 </Formula>
@@ -60,7 +60,7 @@ $$
 <Formula label="Covariance">
 
 $$
-Σⱼ = (1/Nⱼ) Σᵢ rᵢⱼ (xᵢ − μⱼ)(xᵢ − μⱼ)ᵀ
+\Sigma_j = \frac{1}{N_j} \sum_i r_{ij} (x_i - \mu_j)(x_i - \mu_j)^\top
 $$
 
 </Formula>
@@ -68,7 +68,7 @@ $$
 <Formula label="Objective">
 
 $$
-(1/n) Σᵢ log p(xᵢ), never decreases
+\frac{1}{n} \sum_i \log p(x_i), \quad \text{never decreases}
 $$
 
 </Formula>

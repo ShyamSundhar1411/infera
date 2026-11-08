@@ -36,7 +36,7 @@ Step through training to see the two phases alternate. Inertia in the stats is t
 <Formula label="Assign">
 
 $$
-cᵢ = argminⱼ ‖xᵢ − μⱼ‖²
+c_i = \arg\min_j \lVert x_i - \mu_j \rVert^2
 $$
 
 </Formula>
@@ -44,7 +44,7 @@ $$
 <Formula label="Update">
 
 $$
-μⱼ = (1/|Sⱼ|) Σᵢ∈Sⱼ xᵢ
+\mu_j = \frac{1}{\lvert S_j \rvert} \sum_{i \in S_j} x_i
 $$
 
 </Formula>
@@ -52,7 +52,7 @@ $$
 <Formula label="Inertia">
 
 $$
-J = Σᵢ ‖xᵢ − μ_{cᵢ}‖²
+J = \sum_i \lVert x_i - \mu_{c_i} \rVert^2
 $$
 
 </Formula>
@@ -60,7 +60,7 @@ $$
 <Formula label="k-means++">
 
 $$
-P(choose x) ∝ D(x)²,   D(x) = distance to nearest chosen centre
+P(\text{choose } x) \propto D(x)^2, \quad D(x) = \text{distance to nearest chosen centre}
 $$
 
 </Formula>

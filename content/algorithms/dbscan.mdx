@@ -7,13 +7,13 @@ summary: "DBSCAN finds clusters as regions where points are packed closely toget
 
 Picture a crowd at a festival seen from above. Groups of friends stand close together; a few people wander alone. If you can walk from person to person in small steps without crossing empty ground, those people belong to the same group.
 
-Two settings define "close": the radius ε and the minimum number of neighbours inside it. A point with enough neighbours is a core point. Clusters grow outwards from core points, and anything unreachable is noise.
+Two settings define "close": the radius $\varepsilon$ and the minimum number of neighbours inside it. A point with enough neighbours is a core point. Clusters grow outwards from core points, and anything unreachable is noise.
 
 ## How it works
 
-1. For each point, count the points within radius ε (including itself).
+1. For each point, count the points within radius $\varepsilon$ (including itself).
 2. Mark points with at least Min neighbours as core points.
-3. Start a cluster at an unvisited core point and add everything within ε of it.
+3. Start a cluster at an unvisited core point and add everything within $\varepsilon$ of it.
 4. Keep expanding through any core points you reach.
 5. Points reached but not core are border points; points never reached are noise.
 
@@ -21,14 +21,14 @@ Two settings define "close": the radius ε and the minimum number of neighbours 
 
 Each cluster gets its own colour, and noise points are shown in grey. The stats count clusters, core points and noise points.
 
-Turn on Show ε around core points to see the circle each core point uses. Overlapping circles chain into one cluster; a gap wider than ε splits clusters apart.
+Turn on Show $\varepsilon$ around core points to see the circle each core point uses. Overlapping circles chain into one cluster; a gap wider than $\varepsilon$ splits clusters apart.
 
 ## Try this
 
 1. On **Moons**, use the defaults. Both crescents are found perfectly, something k-means cannot do.
-2. Shrink Radius (ε) to 0.05. Clusters fragment and most points turn grey.
-3. Grow Radius (ε) to 0.3. The gap between the moons gets bridged and everything merges into one cluster.
-4. On **Circles**, turn on Show ε around core points and tune Radius (ε) until the ring and the centre separate.
+2. Shrink Radius ($\varepsilon$) to 0.05. Clusters fragment and most points turn grey.
+3. Grow Radius ($\varepsilon$) to 0.3. The gap between the moons gets bridged and everything merges into one cluster.
+4. On **Circles**, turn on Show $\varepsilon$ around core points and tune Radius ($\varepsilon$) until the ring and the centre separate.
 
 ## The maths
 
@@ -37,7 +37,7 @@ Turn on Show ε around core points to see the circle each core point uses. Overl
 <Formula label="Neighbourhood">
 
 $$
-N_ε(p) = { q : ‖p − q‖ ≤ ε }
+N_\varepsilon(p) = \{\, q : \lVert p - q \rVert \le \varepsilon \,\}
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Core point">
 
 $$
-|N_ε(p)| ≥ minPts
+\lvert N_\varepsilon(p) \rvert \ge \text{minPts}
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Reachable">
 
 $$
-q is reachable from p if a chain of core points links them, each step ≤ ε
+q \text{ is reachable from } p \text{ if a chain of core points links them, each step } \le \varepsilon
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Noise">
 
 $$
-points not reachable from any core point
+\text{points not reachable from any core point}
 $$
 
 </Formula>
@@ -85,7 +85,7 @@ $$
 ### Struggles with
 
 - Struggles when clusters have different densities.
-- Sensitive to ε, which depends on the data's scale.
+- Sensitive to $\varepsilon$, which depends on the data's scale.
 - Distance becomes less meaningful in high dimensions.
 
 </Card>

@@ -13,7 +13,7 @@ AdaBoost does this with point weights. Misclassified points get heavier, so the 
 
 1. Give every point the same weight.
 2. Fit a small tree that minimises the weighted error.
-3. Compute its weighted error ε and its voting power α (scaled by the learning rate).
+3. Compute its weighted error $\varepsilon$ and its voting power $\alpha$ (scaled by the learning rate).
 4. Increase the weights of misclassified points, decrease the rest, and renormalise.
 5. Repeat for the chosen number of learners; predict with a weighted vote.
 
@@ -37,7 +37,7 @@ The background shows the sign of the weighted vote, shaded by its strength. Beca
 <Formula label="Weighted error">
 
 $$
-ε_m = Σᵢ wᵢ · 1[h_m(xᵢ) ≠ yᵢ]
+\varepsilon_m = \sum_i w_i \cdot \mathbf{1}[h_m(x_i) \ne y_i]
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Learner weight">
 
 $$
-α_m = η · ½ ln((1 − ε_m) / ε_m)
+\alpha_m = \eta \cdot \frac{1}{2} \ln\left(\frac{1 - \varepsilon_m}{\varepsilon_m}\right)
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Reweight">
 
 $$
-wᵢ ← wᵢ · exp(α_m · 1[miss] − α_m · 1[hit]),  then normalise
+w_i \leftarrow w_i \cdot \exp\big(\alpha_m \mathbf{1}[\text{miss}] - \alpha_m \mathbf{1}[\text{hit}]\big), \quad \text{then normalise}
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Final vote">
 
 $$
-H(x) = sign(Σₘ α_m h_m(x)),   h_m(x) ∈ {−1, +1}
+H(x) = \operatorname{sign}\Big(\sum_m \alpha_m h_m(x)\Big), \quad h_m(x) \in \{-1, +1\}
 $$
 
 </Formula>

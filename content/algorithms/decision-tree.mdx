@@ -37,7 +37,7 @@ The stats report the depth actually used and the number of leaves. Training accu
 <Formula label="Gini impurity">
 
 $$
-G = 1 − Σₖ pₖ²
+G = 1 - \sum_k p_k^2
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Entropy">
 
 $$
-H = −Σₖ pₖ log₂ pₖ
+H = -\sum_k p_k \log_2 p_k
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Split score">
 
 $$
-(n_L · I(L) + n_R · I(R)) / n   (lower is better)
+\frac{n_L \cdot I(L) + n_R \cdot I(R)}{n} \quad \text{(lower is better)}
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Leaf prediction">
 
 $$
-P(k | leaf) = n_k / n_leaf
+P(k \mid \text{leaf}) = \frac{n_k}{n_{\text{leaf}}}
 $$
 
 </Formula>

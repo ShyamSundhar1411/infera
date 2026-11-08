@@ -36,7 +36,7 @@ Turn on Show residuals to see the vertical gaps between points and the curve. Tr
 <Formula label="Neighbours">
 
 $$
-N_k(x) = the k training points with smallest |x − xᵢ|
+N_k(x) = \text{the } k \text{ training points with smallest } \lvert x - x_i \rvert
 $$
 
 </Formula>
@@ -44,7 +44,7 @@ $$
 <Formula label="Equal weights">
 
 $$
-ŷ(x) = (1/k) Σᵢ∈N_k yᵢ
+\hat{y}(x) = \frac{1}{k} \sum_{i \in N_k} y_i
 $$
 
 </Formula>
@@ -52,7 +52,7 @@ $$
 <Formula label="Distance weights">
 
 $$
-ŷ(x) = Σ wᵢyᵢ / Σ wᵢ,   wᵢ = 1 / |x − xᵢ|
+\hat{y}(x) = \frac{\sum_i w_i y_i}{\sum_i w_i}, \quad w_i = \frac{1}{\lvert x - x_i \rvert}
 $$
 
 </Formula>
@@ -60,7 +60,7 @@ $$
 <Formula label="Training MSE">
 
 $$
-MSE = (1/n) Σᵢ (yᵢ − ŷ(xᵢ))²
+\text{MSE} = \frac{1}{n} \sum_i \big(y_i - \hat{y}(x_i)\big)^2
 $$
 
 </Formula>
