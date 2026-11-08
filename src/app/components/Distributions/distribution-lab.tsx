@@ -71,14 +71,14 @@ function Lab({ slug }: { slug: string }) {
 
         <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-4">
           <div className="bg-surface px-4 py-3">
-            <p className="text-[11px] uppercase tracking-[0.1em] text-muted">
+            <p className="font-mono text-[11px] text-muted">
               P({show(a, lab.discrete ? 0 : 2)} ≤ X ≤ {show(b, lab.discrete ? 0 : 2)})
             </p>
             <p className="mt-1 font-mono text-lg tabular-nums">{lab.intervalProbability.toFixed(4)}</p>
           </div>
           {stats.map((s) => (
             <div key={s.label} className="bg-surface px-4 py-3">
-              <p className="text-[11px] uppercase tracking-[0.1em] text-muted">{s.label}</p>
+              <p className="font-mono text-[11px] text-muted">{s.label}</p>
               <p className="mt-1 font-mono text-lg tabular-nums">{show(s.theory)}</p>
               <p className="font-mono text-[11px] text-muted">
                 {s.sample === undefined
