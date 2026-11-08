@@ -9,6 +9,7 @@ import { Panel } from "@/components/ui/panel";
 import { Segmented } from "@/components/ui/segmented";
 import { SliderField } from "@/components/ui/slider-field";
 import DistributionChart from "./distribution-chart";
+import { Tex } from "@/components/ui/tex";
 
 const show = (v: number, digits = 3) =>
   Number.isNaN(v) ? "undefined" : !Number.isFinite(v) ? "∞" : v.toFixed(digits);
@@ -33,9 +34,9 @@ function Lab({ slug }: { slug: string }) {
   const [a, b] = lab.interval;
 
   const stats = [
-    { label: "E[X]", theory: lab.mean, sample: lab.sampleStats?.mean },
-    { label: "Var(X)", theory: lab.variance, sample: lab.sampleStats?.variance },
-    { label: "σ", theory: lab.sd, sample: lab.sampleStats ? Math.sqrt(lab.sampleStats.variance) : undefined },
+    { label: String.raw`\mathbb{E}[X]`, theory: lab.mean, sample: lab.sampleStats?.mean },
+    { label: String.raw`\operatorname{Var}(X)`, theory: lab.variance, sample: lab.sampleStats?.variance },
+    { label: String.raw`\sigma`, theory: lab.sd, sample: lab.sampleStats ? Math.sqrt(lab.sampleStats.variance) : undefined },
   ];
 
   return (
@@ -71,14 +72,16 @@ function Lab({ slug }: { slug: string }) {
 
         <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-4">
           <div className="bg-surface px-4 py-3">
-            <p className="font-mono text-[11px] text-muted">
-              P({show(a, lab.discrete ? 0 : 2)} ≤ X ≤ {show(b, lab.discrete ? 0 : 2)})
+            <p className="text-[12px] text-muted">
+              <Tex>{String.raw`P(${show(a, lab.discrete ? 0 : 2)} \le X \le ${show(b, lab.discrete ? 0 : 2)})`}</Tex>
             </p>
             <p className="mt-1 font-mono text-lg tabular-nums">{lab.intervalProbability.toFixed(4)}</p>
           </div>
           {stats.map((s) => (
             <div key={s.label} className="bg-surface px-4 py-3">
-              <p className="font-mono text-[11px] text-muted">{s.label}</p>
+              <p className="text-[12px] text-muted">
+                <Tex>{s.label}</Tex>
+              </p>
               <p className="mt-1 font-mono text-lg tabular-nums">{show(s.theory)}</p>
               <p className="font-mono text-[11px] text-muted">
                 {s.sample === undefined

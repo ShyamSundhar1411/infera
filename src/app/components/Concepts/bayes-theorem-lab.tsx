@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Panel } from "@/components/ui/panel";
 import { SliderField } from "@/components/ui/slider-field";
 import { CLASS_COLORS, rgb } from "@/lib/constants";
+import { Tex } from "@/components/ui/tex";
 
 const N = 1000;
 const COLS = 50;
@@ -87,19 +88,18 @@ export default function BayesTheoremLab() {
               Of the {truePos + falsePos} people who tested positive, {truePos} are actually sick.
             </p>
           </div>
-          <div className="space-y-2 bg-surface p-5 font-mono text-[13px] leading-relaxed">
+          <div className="space-y-1 overflow-x-auto bg-surface p-5 text-[15px]">
             <p className="text-xs text-muted">With your numbers</p>
-            <p>P(D | +) = P(+ | D)·P(D) / P(+)</p>
-            <p>
-              = {p(sensitivity)} × {p(prevalence)} / ({p(sensitivity)} × {p(prevalence)} + {p(1 - specificity)} × {p(1 - prevalence)})
-            </p>
-            <p>= {p(posteriors[0])}</p>
+            <Tex display>{String.raw`P(D \mid +) = \frac{P(+ \mid D)\,P(D)}{P(+ \mid D)\,P(D) + P(+ \mid \neg D)\,P(\neg D)}`}</Tex>
+            <Tex display>{String.raw`= \frac{${p(sensitivity)} \times ${p(prevalence)}}{${p(sensitivity)} \times ${p(prevalence)} + ${p(1 - specificity)} \times ${p(1 - prevalence)}} = ${p(posteriors[0])}`}</Tex>
           </div>
         </div>
 
         {tests > 1 && (
           <div className="rounded-2xl border border-line bg-surface p-5">
-            <p className="mb-3 text-sm text-muted">Each positive result multiplies the odds by LR₊ = {lr.toFixed(1)}</p>
+            <p className="mb-3 text-sm text-muted">
+              Each positive result multiplies the odds by <Tex>{String.raw`\mathrm{LR}_+ = ${lr.toFixed(1)}`}</Tex>
+            </p>
             <div className="space-y-2">
               {[prevalence, ...posteriors].map((v, i) => (
                 <div key={i} className="flex items-center gap-3 text-sm">
