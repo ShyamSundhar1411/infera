@@ -2,6 +2,7 @@ import type { Engine } from "../types/domain/model.types";
 import { dbscan } from "./dbscan";
 import { gaussianMixture } from "./gmm";
 import { lda, naiveBayes, qda } from "./gaussian-models";
+import { hierarchical } from "./hierarchical";
 import { kMeans } from "./kmeans";
 import { knnClassifier, knnRegressor } from "./knn";
 import { linearRegression } from "./linear-regression";
@@ -38,5 +39,6 @@ export const ENGINES: Record<string, Engine> = {
   "k-means": kMeans,
   gmm: gaussianMixture,
   dbscan,
+  hierarchical,
   pca,
 };

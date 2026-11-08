@@ -28,6 +28,17 @@ export interface TreeNode {
   right?: TreeNode;
 }
 
+/**
+ * Agglomerative merge history in SciPy's format: leaves are 0..n-1 and the
+ * cluster created by merge i gets id n + i.
+ */
+export interface Dendrogram {
+  n: number;
+  merges: { a: number; b: number; height: number; size: number }[];
+  /** Height at which the tree is currently cut. */
+  cutHeight: number;
+}
+
 export interface PcaShape {
   mean: [number, number];
   components: [[number, number], [number, number]];
@@ -52,6 +63,7 @@ export interface Model {
   gaussians?: GaussianShape[];
   tree?: TreeNode;
   pca?: PcaShape;
+  dendrogram?: Dendrogram;
   /** Radius drawn around core points (DBSCAN). */
   coreRadius?: { radius: number; indices: number[] };
   /** Weight given to each point (AdaBoost); drawn as point size. */
