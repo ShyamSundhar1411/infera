@@ -99,7 +99,7 @@ export default function BayesianUpdatingLab() {
                 </text>
               </g>
             ))}
-            <text x={W - PAD.right} y={H - 12} textAnchor="end" className="fill-muted text-[10px]">
+            <text x={W - PAD.right - 4} y={PAD.top + 12} textAnchor="end" className="fill-muted text-[10px]">
               p (chance of heads)
             </text>
             <path d={ciPath} fill="rgba(108,117,240,0.18)" />

@@ -82,7 +82,7 @@ export default function CentralLimitLab() {
         </Panel>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {panels.map((p) => {
           const yMax = Math.max(...p.density, phi(0)) * 1.1;
           const sy = (y: number) => PAD.top + IH * (1 - Math.min(y, yMax) / yMax);

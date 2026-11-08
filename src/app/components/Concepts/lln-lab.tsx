@@ -110,7 +110,7 @@ export default function LawOfLargeNumbersLab() {
                 {t}
               </text>
             ))}
-            <text x={W - PAD.right} y={H - 12} textAnchor="end" className="fill-muted text-[10px]">
+            <text x={W - PAD.right - 4} y={PAD.top + 12} textAnchor="end" className="fill-muted text-[10px]">
               n (log scale)
             </text>
             {bandPath && <path d={bandPath} fill="rgba(108,117,240,0.12)" />}
