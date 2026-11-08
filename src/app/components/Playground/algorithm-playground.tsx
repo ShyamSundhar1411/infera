@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { getAlgorithm } from "@/lib/data/algorithms.data";
+import { evaluateFit } from "@/lib/ml/evaluate";
+import FitPanel from "./fit-panel";
 import { usePlayground } from "@/hooks/usePlayground";
 import { useTrainer } from "@/hooks/useTrainer";
 import { useMounted } from "@/hooks/useMounted";
@@ -39,7 +42,8 @@ function PlaygroundSkeleton() {
 function Playground({ slug }: { slug: string }) {
   const meta = getAlgorithm(slug)!;
   const playground = usePlayground(meta);
-  const training = useTrainer(slug, playground.points, playground.params);
+  const training = useTrainer(slug, playground.trainingPoints, playground.params);
+  const [tested, setTested] = useState(false);
   const { model } = training;
 
   return (
@@ -75,6 +79,16 @@ function Playground({ slug }: { slug: string }) {
       </div>
       <div className="min-w-0 space-y-4">
         <StatsStrip stats={training.stats} />
+        {playground.supervised && (
+          <FitPanel
+            meta={meta}
+            holdout={playground.holdout}
+            onHoldoutChange={playground.setHoldout}
+            tested={tested}
+            onTest={() => setTested(true)}
+            evaluation={tested ? evaluateFit(playground.points, model, meta.kind) : null}
+          />
+        )}
         <div className="grid gap-4 xl:grid-cols-2">
           <ModelPanel
             meta={meta}

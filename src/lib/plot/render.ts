@@ -231,6 +231,7 @@ const drawRegression = (ctx: CanvasRenderingContext2D, size: number, opts: DrawO
     ctx.setLineDash([3, 3]);
     ctx.beginPath();
     for (const p of points) {
+      if (p.test) continue;
       const x = toPx(p.x, size);
       ctx.moveTo(x, toPy(p.y, size));
       ctx.lineTo(x, toPy(predict(p.x), size));
@@ -356,7 +357,11 @@ const drawPoints = (ctx: CanvasRenderingContext2D, size: number, opts: DrawOptio
     }
   }
 
+  // Support vectors and boosting weights index the training points only.
+  let trainIndex = -1;
   points.forEach((p, i) => {
+    if (!p.test) trainIndex++;
+    const ti = p.test ? -1 : trainIndex;
     let fill: string;
     if (kind === "classification") fill = rgb(colorOf(p.label));
     else if (kind === "clustering" && model.assignments) {
@@ -365,20 +370,29 @@ const drawPoints = (ctx: CanvasRenderingContext2D, size: number, opts: DrawOptio
     } else fill = theme.ink;
 
     let r = base;
-    if (model.pointWeights && params.showWeights !== false) {
-      r = Math.max(2.5, Math.min(14, base * Math.sqrt(model.pointWeights[i] ?? 1)));
+    if (model.pointWeights && params.showWeights !== false && ti >= 0) {
+      r = Math.max(2.5, Math.min(14, base * Math.sqrt(model.pointWeights[ti] ?? 1)));
     }
     if (opts.hovered === i) r += 2;
     const x = toPx(p.x, size);
     const y = toPy(p.y, size);
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
+    if (p.test) {
+      // Held-out test points: hollow rings the model never trained on.
+      ctx.fillStyle = theme.bg;
+      ctx.fill();
+      ctx.lineWidth = 2.2;
+      ctx.strokeStyle = fill;
+      ctx.stroke();
+      return;
+    }
     ctx.fillStyle = fill;
     ctx.fill();
     ctx.lineWidth = opts.compact ? 1 : 1.5;
     ctx.strokeStyle = theme.pointStroke;
     ctx.stroke();
-    if (sv.has(i)) {
+    if (sv.has(ti)) {
       ctx.beginPath();
       ctx.arc(x, y, r + 3.5, 0, Math.PI * 2);
       ctx.strokeStyle = theme.ink;
