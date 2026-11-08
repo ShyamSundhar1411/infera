@@ -34,7 +34,9 @@ const VERDICTS: Record<FitVerdict, { title: string; color: string; text: string 
   },
 };
 
-const score = (e: Evaluation, v: number) => (e.metric === "Accuracy" ? `${(v * 100).toFixed(1)}%` : v.toFixed(3));
+// R² is unbounded below; past −1 the exact value only adds noise.
+const score = (e: Evaluation, v: number) =>
+  e.metric === "Accuracy" ? `${(v * 100).toFixed(1)}%` : v < -1 ? "below −1" : v.toFixed(3);
 
 export default function FitPanel({ meta, holdout, onHoldoutChange, tested, onTest, evaluation }: FitPanelProps) {
   const knob = meta.complexity && meta.params.find((p) => p.key === meta.complexity!.key);
