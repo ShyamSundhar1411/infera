@@ -403,7 +403,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
     datasets: CLUSTER_DATA,
     defaultDataset: "moons",
     params: [
-      { key: "eps", label: "Radius (ε)", type: "range", min: 0.02, max: 0.4, step: 0.01, default: 0.12, format: fixed(2) },
+      { key: "eps", label: "Radius (ε)", type: "range", min: 0.02, max: 0.4, step: 0.01, default: 0.15, format: fixed(2) },
       { key: "minPts", label: "Min neighbours", type: "range", min: 2, max: 15, step: 1, default: 4 },
       { key: "showRadius", label: "Show ε around core points", type: "toggle", default: false },
     ],
