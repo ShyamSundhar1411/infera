@@ -1,0 +1,34 @@
+import type { DistributionContent } from "@/lib/types/domain/distribution.types";
+
+export const content: DistributionContent = {
+  summary:
+    "The number of events in a fixed window of time or space, when events happen independently at a constant average rate λ.",
+  story: [
+    "Imagine events that arrive at random but at a steady average rate: emails landing in an inbox, clicks on a Geiger counter. Chop the window into a huge number of tiny slices, each of which almost never contains an event, and the total count is a Binomial with enormous n and tiny p. In the limit you get the Poisson, with P(X = k) = e^(−λ) λᵏ / k!.",
+    "Its defining quirk is that the mean and the variance are both equal to λ. Small λ gives a right-skewed pile of bars near zero; as λ grows the distribution becomes more symmetric and bell-shaped, with standard deviation √λ.",
+  ],
+  examples: [
+    "The number of calls reaching a call centre in a ten-minute window.",
+    "Typos per page in a long manuscript.",
+    "Radioactive decays detected per second.",
+    "Goals scored by a football team in a match.",
+  ],
+  parameters: [
+    {
+      symbol: "λ",
+      meaning:
+        "The average number of events per window. It is both the mean and the variance, so larger λ moves the distribution right and spreads it out.",
+    },
+  ],
+  relations: [
+    "It is the limit of the Binomial(n, p) as n → ∞ and p → 0 with np = λ fixed.",
+    "In a Poisson process with rate λ, the waiting times between events are independent Exponential(λ) variables.",
+    "The sum of independent Poisson variables is Poisson, with the rates added together.",
+    "For large λ it is well approximated by a Normal with mean λ and variance λ.",
+  ],
+  tryThis: [
+    "Press **Draw 1000** at λ = 4 and compare the sample mean and sample variance: both should land close to 4, the signature of a Poisson count.",
+    "Slide λ from 0.5 up to 20 and watch the shape change from a lopsided pile at zero to an almost symmetric bell centred on 20 with σ ≈ 4.47.",
+    "Set λ = 1 and shade the interval from 0 to 0: the shaded probability is e^(−1) ≈ 0.368, the chance that nothing happens at all in a window where one event is expected.",
+  ],
+};

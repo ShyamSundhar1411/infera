@@ -1,0 +1,33 @@
+import type { DistributionContent } from "@/lib/types/domain/distribution.types";
+
+export const content: DistributionContent = {
+  summary:
+    "A bell curve like the Normal but with heavier tails, which grow lighter as the degrees of freedom ν increase.",
+  story: [
+    "When you standardise a sample mean using the sample standard deviation S instead of the true σ, the extra uncertainty in S makes extreme values more likely. William Gosset, writing as Student, worked out that for Normal data (X̄ − μ)/(S/√n) follows a t distribution with ν = n − 1 degrees of freedom. Formally, t is Z/√(V/ν) with Z standard Normal and V an independent Chi-squared(ν).",
+    "Small ν means heavy tails: at ν = 1 the mean does not even exist, and the variance ν/(ν − 2) is finite only when ν > 2. As ν grows, S becomes a reliable estimate of σ and the t distribution closes in on the standard Normal; by ν = 30 the two are hard to tell apart by eye.",
+  ],
+  examples: [
+    "One-sample and two-sample t-tests on small samples.",
+    "Confidence intervals for a mean when σ is unknown.",
+    "Testing regression coefficients in linear models.",
+    "Robust modelling of noisy data with occasional outliers, such as financial returns.",
+  ],
+  parameters: [
+    {
+      symbol: "ν",
+      meaning:
+        "The degrees of freedom. Small ν gives heavy tails and frequent extreme values; large ν makes the curve almost exactly standard Normal.",
+    },
+  ],
+  relations: [
+    "t with ν degrees of freedom tends to the standard Normal as ν → ∞.",
+    "It is built as Z/√(V/ν), where Z is standard Normal and V is an independent Chi-squared with ν degrees of freedom.",
+    "With ν = 1 it is the Cauchy distribution, which has no mean and no variance.",
+  ],
+  tryThis: [
+    "Shade from −1.96 to 1.96 at ν = 30 and you get about 0.94, a little under the Normal's 0.95. Now set ν = 1: the same interval holds only about 0.70, because so much probability has moved into the tails.",
+    "Set ν = 1, switch to **Sample means** and increase n. The histogram of averages refuses to narrow: the mean of n Cauchy draws is itself Cauchy, so the Central Limit Theorem does not apply when the variance is not finite.",
+    "Set ν = 3 and press **Draw 1000** several times, clearing in between. The theoretical variance is 3, but the sample variance jumps around wildly as rare, huge draws come and go. Repeat at ν = 30 and see how much more stable it is.",
+  ],
+};
