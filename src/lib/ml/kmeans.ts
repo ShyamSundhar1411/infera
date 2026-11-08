@@ -1,11 +1,12 @@
 import type { Point } from "../types/domain/point.types";
 import type { Engine, Trainer } from "../types/domain/model.types";
 import { formatNumber } from "../utils";
-import { sqDist } from "./math";
+import { softmax, sqDist } from "./math";
 import { createRandom, type Random } from "./random";
 import { waitingTrainer } from "./trainer";
 
 const MAX_ITERATIONS = 100;
+const SHARPNESS = 400;
 
 /** Pick starting centroids: uniformly, or spread out with k-means++. */
 export const initCentroids = (
@@ -81,11 +82,9 @@ export const kMeans: Engine = {
       model: () => ({
         centroids,
         assignments,
-        proba: (x, y) => {
-          const out = new Array(k).fill(0);
-          out[nearestCentroid(centroids, x, y)] = 1;
-          return out;
-        },
+        // A very sharp softmax over distances: same Voronoi cells as a hard
+        // assignment, but smooth enough for clean boundary lines.
+        proba: (x, y) => softmax(centroids.map((c) => -SHARPNESS * sqDist(x, y, c[0], c[1]))),
       }),
       stats: () => {
         const inertia = points.reduce(
