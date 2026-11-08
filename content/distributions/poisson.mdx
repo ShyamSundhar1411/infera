@@ -5,9 +5,9 @@ summary: "The number of events in a fixed window of time or space, when events h
 
 ## The story
 
-Imagine events that arrive at random but at a steady average rate: emails landing in an inbox, clicks on a Geiger counter. Chop the window into a huge number of tiny slices, each of which almost never contains an event, and the total count is a Binomial with enormous n and tiny p. In the limit you get the Poisson, with P(X = k) = e^(−λ) λᵏ / k!.
+Imagine events that arrive at random but at a steady average rate: emails landing in an inbox, clicks on a Geiger counter. Chop the window into a huge number of tiny slices, each of which almost never contains an event, and the total count is a Binomial with enormous $n$ and tiny $p$. In the limit you get the Poisson, with $P(X = k) = e^{-\lambda} \lambda^k / k!$.
 
-Its defining quirk is that the mean and the variance are both equal to λ. Small λ gives a right-skewed pile of bars near zero; as λ grows the distribution becomes more symmetric and bell-shaped, with standard deviation √λ.
+Its defining quirk is that the mean and the variance are both equal to $\lambda$. Small $\lambda$ gives a right-skewed pile of bars near zero; as $\lambda$ grows the distribution becomes more symmetric and bell-shaped, with standard deviation $\sqrt{\lambda}$.
 
 ## Formulas
 
@@ -16,7 +16,7 @@ Its defining quirk is that the mean and the variance are both equal to λ. Small
 <Formula label="Support">
 
 $$
-k ∈ {0, 1, 2, …}
+k \in \{0, 1, 2, \ldots\}
 $$
 
 </Formula>
@@ -24,7 +24,7 @@ $$
 <Formula label="PMF">
 
 $$
-P(X = k) = λᵏ e^(−λ) / k!
+P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}
 $$
 
 </Formula>
@@ -32,7 +32,7 @@ $$
 <Formula label="CDF">
 
 $$
-F(k) = e^(−λ) Σᵢ₌₀ᵏ λⁱ / i!
+F(k) = e^{-\lambda} \sum_{i=0}^{k} \frac{\lambda^i}{i!}
 $$
 
 </Formula>
@@ -40,7 +40,7 @@ $$
 <Formula label="Expectation">
 
 $$
-E[X] = λ
+\mathbb{E}[X] = \lambda
 $$
 
 </Formula>
@@ -48,7 +48,7 @@ $$
 <Formula label="Variance">
 
 $$
-Var(X) = λ
+\operatorname{Var}(X) = \lambda
 $$
 
 </Formula>
@@ -56,7 +56,7 @@ $$
 <Formula label="Mode">
 
 $$
-⌊λ⌋
+\lfloor \lambda \rfloor
 $$
 
 </Formula>
@@ -67,7 +67,7 @@ $$
 
 | Parameter | What it controls |
 | --- | --- |
-| λ | The average number of events per window. It is both the mean and the variance, so larger λ moves the distribution right and spreads it out. |
+| $\lambda$ | The average number of events per window. It is both the mean and the variance, so larger $\lambda$ moves the distribution right and spreads it out. |
 
 ## Where it shows up
 
@@ -78,13 +78,13 @@ $$
 
 ## Try this
 
-1. Press **Draw 1000** at λ = 4 and compare the sample mean and sample variance: both should land close to 4, the signature of a Poisson count.
-2. Slide λ from 0.5 up to 20 and watch the shape change from a lopsided pile at zero to an almost symmetric bell centred on 20 with σ ≈ 4.47.
-3. Set λ = 1 and shade the interval from 0 to 0: the shaded probability is e^(−1) ≈ 0.368, the chance that nothing happens at all in a window where one event is expected.
+1. Press **Draw 1000** at $\lambda = 4$ and compare the sample mean and sample variance: both should land close to 4, the signature of a Poisson count.
+2. Slide $\lambda$ from 0.5 up to 20 and watch the shape change from a lopsided pile at zero to an almost symmetric bell centred on 20 with $\sigma \approx 4.47$.
+3. Set $\lambda = 1$ and shade the interval from 0 to 0: the shaded probability is $e^{-1} \approx 0.368$, the chance that nothing happens at all in a window where one event is expected.
 
 ## Related distributions
 
-- It is the limit of the Binomial(n, p) as n → ∞ and p → 0 with np = λ fixed.
-- In a Poisson process with rate λ, the waiting times between events are independent Exponential(λ) variables.
+- It is the limit of the $\text{Binomial}(n, p)$ as $n \to \infty$ and $p \to 0$ with $np = \lambda$ fixed.
+- In a Poisson process with rate $\lambda$, the waiting times between events are independent $\text{Exponential}(\lambda)$ variables.
 - The sum of independent Poisson variables is Poisson, with the rates added together.
-- For large λ it is well approximated by a Normal with mean λ and variance λ.
+- For large $\lambda$ it is well approximated by a Normal with mean $\lambda$ and variance $\lambda$.

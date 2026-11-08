@@ -5,9 +5,9 @@ summary: "A flexible family of positive, right-skewed distributions. With whole-
 
 ## The story
 
-One Exponential wait is the time until the next event; add up k independent Exponential waits, each with mean θ, and you get the time until the k-th event. That sum is Gamma(k, θ). The definition extends smoothly to non-integer k, which makes the Gamma a general-purpose model for positive, skewed quantities.
+One Exponential wait is the time until the next event; add up $k$ independent Exponential waits, each with mean $\theta$, and you get the time until the $k$-th event. That sum is $\text{Gamma}(k, \theta)$. The definition extends smoothly to non-integer $k$, which makes the Gamma a general-purpose model for positive, skewed quantities.
 
-The mean is kθ and the variance is kθ². The shape k controls the form: below 1 the density shoots up towards infinity at zero, at exactly 1 it is the Exponential, and above 1 it rises to a peak at (k − 1)θ before tailing off. As k grows, the skew fades and the curve looks more and more Normal. The scale θ simply stretches the horizontal axis.
+The mean is $k\theta$ and the variance is $k\theta^2$. The shape $k$ controls the form: below 1 the density shoots up towards infinity at zero, at exactly 1 it is the Exponential, and above 1 it rises to a peak at $(k - 1)\theta$ before tailing off. As $k$ grows, the skew fades and the curve looks more and more Normal. The scale $\theta$ simply stretches the horizontal axis.
 
 ## Formulas
 
@@ -24,7 +24,7 @@ $$
 <Formula label="PDF">
 
 $$
-f(x) = x^(k−1) e^(−x/θ) / (Γ(k) θᵏ)
+f(x) = \frac{x^{k-1} e^{-x/\theta}}{\Gamma(k)\, \theta^k}
 $$
 
 </Formula>
@@ -32,7 +32,7 @@ $$
 <Formula label="CDF">
 
 $$
-F(x) = γ(k, x/θ) / Γ(k)
+F(x) = \frac{\gamma(k,\, x/\theta)}{\Gamma(k)}
 $$
 
 </Formula>
@@ -40,7 +40,7 @@ $$
 <Formula label="Expectation">
 
 $$
-E[X] = kθ
+\mathbb{E}[X] = k\theta
 $$
 
 </Formula>
@@ -48,7 +48,7 @@ $$
 <Formula label="Variance">
 
 $$
-Var(X) = kθ²
+\operatorname{Var}(X) = k\theta^2
 $$
 
 </Formula>
@@ -56,7 +56,7 @@ $$
 <Formula label="Mode">
 
 $$
-(k − 1)θ for k ≥ 1
+(k - 1)\theta \quad \text{for } k \ge 1
 $$
 
 </Formula>
@@ -67,8 +67,8 @@ $$
 
 | Parameter | What it controls |
 | --- | --- |
-| k | The shape: roughly, how many Exponential waits are being added up. Larger k means a less skewed, more bell-like curve. |
-| θ | The scale: the mean of each underlying Exponential wait. Doubling θ doubles the mean and quadruples the variance. |
+| $k$ | The shape: roughly, how many Exponential waits are being added up. Larger $k$ means a less skewed, more bell-like curve. |
+| $\theta$ | The scale: the mean of each underlying Exponential wait. Doubling $\theta$ doubles the mean and quadruples the variance. |
 
 ## Where it shows up
 
@@ -79,13 +79,13 @@ $$
 
 ## Try this
 
-1. Fix θ = 1 and sweep k from 0.5 to 10. Watch the curve go from a spike at zero, through the Exponential at k = 1, to an almost symmetric hump with its mode at k − 1.
-2. Set k = 1.5 and θ = 2, then open the Chi-squared page with k = 3. The two curves are the same, because Chi-squared(3) is Gamma(3/2, 2).
-3. Choose k = 2, θ = 1.5, press **Draw 1000** and check the sample mean against kθ = 3 and the sample variance against kθ² = 4.5.
+1. Fix $\theta = 1$ and sweep $k$ from 0.5 to 10. Watch the curve go from a spike at zero, through the Exponential at $k = 1$, to an almost symmetric hump with its mode at $k - 1$.
+2. Set $k = 1.5$ and $\theta = 2$, then open the Chi-squared page with $k = 3$. The two curves are the same, because Chi-squared(3) is $\text{Gamma}(3/2, 2)$.
+3. Choose $k = 2$, $\theta = 1.5$, press **Draw 1000** and check the sample mean against $k\theta = 3$ and the sample variance against $k\theta^2 = 4.5$.
 
 ## Related distributions
 
-- The Exponential with rate λ is Gamma with k = 1 and θ = 1/λ.
-- Chi-squared with k degrees of freedom is Gamma(k/2, 2).
-- Independent Gammas with the same θ add: Gamma(k₁, θ) + Gamma(k₂, θ) is Gamma(k₁ + k₂, θ).
-- For large k it is approximately Normal with mean kθ and variance kθ².
+- The Exponential with rate $\lambda$ is Gamma with $k = 1$ and $\theta = 1/\lambda$.
+- Chi-squared with $k$ degrees of freedom is $\text{Gamma}(k/2, 2)$.
+- Independent Gammas with the same $\theta$ add: $\text{Gamma}(k_1, \theta) + \text{Gamma}(k_2, \theta)$ is $\text{Gamma}(k_1 + k_2, \theta)$.
+- For large $k$ it is approximately Normal with mean $k\theta$ and variance $k\theta^2$.

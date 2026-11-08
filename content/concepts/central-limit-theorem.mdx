@@ -10,25 +10,25 @@ order: 4
 
 ## The idea
 
-Take any distribution: flat, skewed, U-shaped, even a coin flip. Draw n values and average them. Do that thousands of times and histogram the averages. As n grows, the histogram turns into a bell curve every time.
+Take any distribution: flat, skewed, U-shaped, even a coin flip. Draw $n$ values and average them. Do that thousands of times and histogram the averages. As $n$ grows, the histogram turns into a bell curve every time.
 
 This is why the normal distribution is everywhere. Heights, measurement errors and test scores are sums of many small, independent effects, and sums behave like averages.
 
 ## Reading the picture
 
-Each panel starts from a different source distribution, drawn small at the top. The histogram shows standardised averages, z = (X̄ₙ − μ) / (σ/√n), and the dashed curve is the standard normal N(0, 1). Standardising removes the shrinking spread, so you can watch the shape alone converge.
+Each panel starts from a different source distribution, drawn small at the top. The histogram shows standardised averages, $z = (\bar{X}_n - \mu)/(\sigma/\sqrt{n})$, and the dashed curve is the standard normal $N(0, 1)$. Standardising removes the shrinking spread, so you can watch the shape alone converge.
 
-Skewed sources like the exponential and the 20% coin take longer to look normal than symmetric ones like the uniform. Symmetric sources often look convincing by n = 5.
+Skewed sources like the exponential and the 20% coin take longer to look normal than symmetric ones like the uniform. Symmetric sources often look convincing by $n = 5$.
 
 ## How it relates to the law of large numbers
 
-The law of large numbers says the average converges to μ. The central limit theorem says how it is spread around μ on the way: normally, with width σ/√n. One gives the destination, the other the shape of the fluctuations.
+The law of large numbers says the average converges to $\mu$. The central limit theorem says how it is spread around $\mu$ on the way: normally, with width $\sigma/\sqrt{n}$. One gives the destination, the other the shape of the fluctuations.
 
 ## Try this
 
-1. Start at n = 1. Each histogram is just the source distribution, standardised. Then slide n up slowly and watch them all morph into the same bell.
-2. Compare **Uniform** and **Exponential** at n = 5. The uniform already looks normal; the exponential is still leaning right.
-3. Look at the **Coin (p = 0.2)** panel at small n. Averages of coin flips can only take a few values, so the histogram is spiky until n gets large.
+1. Start at $n = 1$. Each histogram is just the source distribution, standardised. Then slide $n$ up slowly and watch them all morph into the same bell.
+2. Compare **Uniform** and **Exponential** at $n = 5$. The uniform already looks normal; the exponential is still leaning right.
+3. Look at the **Coin ($p = 0.2$)** panel at small $n$. Averages of coin flips can only take a few values, so the histogram is spiky until $n$ gets large.
 
 ## The maths
 
@@ -37,7 +37,7 @@ The law of large numbers says the average converges to μ. The central limit the
 <Formula label="Standardised mean">
 
 $$
-Zₙ = (X̄ₙ − μ) / (σ / √n)
+Z_n = \frac{\bar{X}_n - \mu}{\sigma / \sqrt{n}}
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="The theorem">
 
 $$
-Zₙ → N(0, 1) in distribution as n → ∞
+Z_n \to N(0, 1) \quad \text{in distribution as } n \to \infty
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Approximate form">
 
 $$
-X̄ₙ ≈ N(μ, σ² / n) for large n
+\bar{X}_n \approx N\!\left(\mu, \frac{\sigma^2}{n}\right) \quad \text{for large } n
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Sums">
 
 $$
-X₁ + … + Xₙ ≈ N(nμ, nσ²)
+X_1 + \cdots + X_n \approx N(n\mu, n\sigma^2)
 $$
 
 </Formula>

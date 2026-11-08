@@ -12,15 +12,15 @@ order: 3
 
 Roll a die once and you might get a 6. Average ten rolls and you will probably be somewhere between 2.5 and 4.5. Average ten thousand and you will be within a whisker of 3.5. Individual outcomes stay random, but their average becomes predictable.
 
-Each line on the chart is one person rolling and keeping a running average. Early on the lines swing wildly. As n grows they all squeeze together onto the true mean.
+Each line on the chart is one person rolling and keeping a running average. Early on the lines swing wildly. As $n$ grows they all squeeze together onto the true mean.
 
 ## How fast?
 
-The spread of the average shrinks like σ/√n. To halve the error you need four times as many draws; to get one more decimal place you need a hundred times as many. The shaded band shows μ ± 2σ/√n, where about 95% of the averages should sit at each n.
+The spread of the average shrinks like $\sigma/\sqrt{n}$. To halve the error you need four times as many draws; to get one more decimal place you need a hundred times as many. The shaded band shows $\mu \pm 2\sigma/\sqrt{n}$, where about 95% of the averages should sit at each $n$.
 
 ## When it fails
 
-The law needs the expected value to exist. The Cauchy distribution (Student's t with ν = 1) has tails so heavy that its mean is undefined. Its running averages never settle: every so often a single huge draw yanks the average somewhere new.
+The law needs the expected value to exist. The Cauchy distribution (Student's $t$ with $\nu = 1$) has tails so heavy that its mean is undefined. Its running averages never settle: every so often a single huge draw yanks the average somewhere new.
 
 ## Try this
 
@@ -35,7 +35,7 @@ The law needs the expected value to exist. The Cauchy distribution (Student's t 
 <Formula label="Sample mean">
 
 $$
-X̄ₙ = (X₁ + X₂ + … + Xₙ) / n
+\bar{X}_n = \frac{X_1 + X_2 + \cdots + X_n}{n}
 $$
 
 </Formula>
@@ -43,7 +43,7 @@ $$
 <Formula label="Weak law">
 
 $$
-P(|X̄ₙ − μ| > ε) → 0 as n → ∞, for every ε > 0
+P\left(\lvert \bar{X}_n - \mu \rvert > \varepsilon\right) \to 0 \quad \text{as } n \to \infty, \text{ for every } \varepsilon > 0
 $$
 
 </Formula>
@@ -51,7 +51,7 @@ $$
 <Formula label="Strong law">
 
 $$
-P(X̄ₙ → μ) = 1
+P\left(\bar{X}_n \to \mu\right) = 1
 $$
 
 </Formula>
@@ -59,7 +59,7 @@ $$
 <Formula label="Spread of the average">
 
 $$
-Var(X̄ₙ) = σ² / n,   SD(X̄ₙ) = σ / √n
+\operatorname{Var}(\bar{X}_n) = \frac{\sigma^2}{n}, \qquad \operatorname{SD}(\bar{X}_n) = \frac{\sigma}{\sqrt{n}}
 $$
 
 </Formula>
@@ -67,7 +67,7 @@ $$
 <Formula label="Chebyshev bound">
 
 $$
-P(|X̄ₙ − μ| ≥ ε) ≤ σ² / (n ε²)
+P\left(\lvert \bar{X}_n - \mu \rvert \ge \varepsilon\right) \le \frac{\sigma^2}{n \varepsilon^2}
 $$
 
 </Formula>

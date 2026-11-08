@@ -5,9 +5,9 @@ summary: "A distribution over values between 0 and 1, which makes it the natural
 
 ## The story
 
-Suppose you want to express what you believe about a coin's bias, a click-through rate or a conversion rate: some number between 0 and 1 that you do not know exactly. The Beta(α, β) family can be flat, U-shaped, humped in the middle or piled up against either end, all controlled by two parameters. Its mean is α/(α + β).
+Suppose you want to express what you believe about a coin's bias, a click-through rate or a conversion rate: some number between 0 and 1 that you do not know exactly. The $\text{Beta}(\alpha, \beta)$ family can be flat, U-shaped, humped in the middle or piled up against either end, all controlled by two parameters. Its mean is $\alpha/(\alpha + \beta)$.
 
-A useful way to read the parameters is as pseudo-counts: α behaves like a number of successes and β like a number of failures. Start with a Beta(α, β) belief about p, observe s successes and f failures, and your updated belief is exactly Beta(α + s, β + f). The larger α + β, the more concentrated the curve, just as more data makes you more certain.
+A useful way to read the parameters is as pseudo-counts: $\alpha$ behaves like a number of successes and $\beta$ like a number of failures. Start with a $\text{Beta}(\alpha, \beta)$ belief about $p$, observe $s$ successes and $f$ failures, and your updated belief is exactly $\text{Beta}(\alpha + s, \beta + f)$. The larger $\alpha + \beta$, the more concentrated the curve, just as more data makes you more certain.
 
 ## Formulas
 
@@ -16,7 +16,7 @@ A useful way to read the parameters is as pseudo-counts: α behaves like a numbe
 <Formula label="Support">
 
 $$
-x ∈ (0, 1)
+x \in (0, 1)
 $$
 
 </Formula>
@@ -24,7 +24,7 @@ $$
 <Formula label="PDF">
 
 $$
-f(x) = x^(α−1) (1 − x)^(β−1) / B(α, β)
+f(x) = \frac{x^{\alpha-1} (1 - x)^{\beta-1}}{\mathrm{B}(\alpha, \beta)}
 $$
 
 </Formula>
@@ -32,7 +32,7 @@ $$
 <Formula label="CDF">
 
 $$
-F(x) = Iₓ(α, β)
+F(x) = I_x(\alpha, \beta)
 $$
 
 </Formula>
@@ -40,7 +40,7 @@ $$
 <Formula label="Expectation">
 
 $$
-E[X] = α / (α + β)
+\mathbb{E}[X] = \frac{\alpha}{\alpha + \beta}
 $$
 
 </Formula>
@@ -48,7 +48,7 @@ $$
 <Formula label="Variance">
 
 $$
-Var(X) = αβ / ((α + β)² (α + β + 1))
+\operatorname{Var}(X) = \frac{\alpha\beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}
 $$
 
 </Formula>
@@ -56,7 +56,7 @@ $$
 <Formula label="Mode">
 
 $$
-(α − 1) / (α + β − 2) for α, β > 1
+\frac{\alpha - 1}{\alpha + \beta - 2} \quad \text{for } \alpha, \beta > 1
 $$
 
 </Formula>
@@ -67,8 +67,8 @@ $$
 
 | Parameter | What it controls |
 | --- | --- |
-| α | Pulls probability towards 1; think of it as prior successes. Raising α shifts the mean α/(α + β) upwards. |
-| β | Pulls probability towards 0; think of it as prior failures. Raising both α and β together narrows the curve without moving its centre much. |
+| $\alpha$ | Pulls probability towards 1; think of it as prior successes. Raising $\alpha$ shifts the mean $\alpha/(\alpha + \beta)$ upwards. |
+| $\beta$ | Pulls probability towards 0; think of it as prior failures. Raising both $\alpha$ and $\beta$ together narrows the curve without moving its centre much. |
 
 ## Where it shows up
 
@@ -79,13 +79,13 @@ $$
 
 ## Try this
 
-1. Set α = β = 1 to see a flat line, then lower both to 0.5. The curve becomes U-shaped: values near 0 and 1 are now more likely than values in the middle.
-2. Play Bayesian updating: start at α = 1, β = 1, then imagine 7 successes and 3 failures by setting α = 8, β = 4. The mean moves to 8/12 ≈ 0.667 and the curve narrows. Shade from 0.5 to 1 to see how confident you now are that p exceeds a half.
-3. Compare α = β = 2 with α = β = 10. Both are centred on 0.5, but the standard deviation falls from about 0.224 to about 0.109. Press **Draw 1000** on each to see the difference in the histogram.
+1. Set $\alpha = \beta = 1$ to see a flat line, then lower both to 0.5. The curve becomes U-shaped: values near 0 and 1 are now more likely than values in the middle.
+2. Play Bayesian updating: start at $\alpha = 1$, $\beta = 1$, then imagine 7 successes and 3 failures by setting $\alpha = 8$, $\beta = 4$. The mean moves to $8/12 \approx 0.667$ and the curve narrows. Shade from 0.5 to 1 to see how confident you now are that $p$ exceeds a half.
+3. Compare $\alpha = \beta = 2$ with $\alpha = \beta = 10$. Both are centred on 0.5, but the standard deviation falls from about 0.224 to about 0.109. Press **Draw 1000** on each to see the difference in the histogram.
 
 ## Related distributions
 
-- Beta(1, 1) is the Uniform on [0, 1].
-- It is the conjugate prior for the p of a Bernoulli or Binomial: a Beta prior plus Binomial data gives a Beta posterior.
-- The j-th smallest of n independent Uniform(0, 1) draws follows Beta(j, n − j + 1).
-- If X is Gamma(α, θ) and Y is Gamma(β, θ), independent, then X/(X + Y) is Beta(α, β).
+- Beta(1, 1) is the Uniform on $[0, 1]$.
+- It is the conjugate prior for the $p$ of a Bernoulli or Binomial: a Beta prior plus Binomial data gives a Beta posterior.
+- The $j$-th smallest of $n$ independent Uniform(0, 1) draws follows $\text{Beta}(j, n - j + 1)$.
+- If $X$ is $\text{Gamma}(\alpha, \theta)$ and $Y$ is $\text{Gamma}(\beta, \theta)$, independent, then $X/(X + Y)$ is $\text{Beta}(\alpha, \beta)$.

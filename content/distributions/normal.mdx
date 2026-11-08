@@ -7,7 +7,7 @@ summary: "The symmetric bell curve, fully described by its centre μ and its spr
 
 Add together lots of small, independent nudges, and the total tends to follow a bell curve whatever the nudges looked like individually. That is the Central Limit Theorem, and it is why the Normal turns up in measurement errors, heights and test scores, and underlies so much of classical statistics.
 
-The curve is centred on μ, which is its mean, median and mode all at once, and σ sets its width. A handy rule: about 68% of the probability lies within 1σ of the mean, about 95% within 2σ (1.96σ, to be precise), and about 99.7% within 3σ.
+The curve is centred on $\mu$, which is its mean, median and mode all at once, and $\sigma$ sets its width. A handy rule: about 68% of the probability lies within $1\sigma$ of the mean, about 95% within $2\sigma$ ($1.96\sigma$, to be precise), and about 99.7% within $3\sigma$.
 
 ## Formulas
 
@@ -16,7 +16,7 @@ The curve is centred on μ, which is its mean, median and mode all at once, and 
 <Formula label="Support">
 
 $$
-x ∈ ℝ
+x \in \mathbb{R}
 $$
 
 </Formula>
@@ -24,7 +24,7 @@ $$
 <Formula label="PDF">
 
 $$
-f(x) = 1 / (σ√(2π)) · e^(−(x − μ)² / 2σ²)
+f(x) = \frac{1}{\sigma\sqrt{2\pi}}\, e^{-\frac{(x-\mu)^2}{2\sigma^2}}
 $$
 
 </Formula>
@@ -32,7 +32,7 @@ $$
 <Formula label="CDF">
 
 $$
-F(x) = ½ [1 + erf((x − μ) / (σ√2))]
+F(x) = \tfrac{1}{2}\left[1 + \operatorname{erf}\!\left(\frac{x-\mu}{\sigma\sqrt{2}}\right)\right]
 $$
 
 </Formula>
@@ -40,7 +40,7 @@ $$
 <Formula label="Expectation">
 
 $$
-E[X] = μ
+\mathbb{E}[X] = \mu
 $$
 
 </Formula>
@@ -48,7 +48,7 @@ $$
 <Formula label="Variance">
 
 $$
-Var(X) = σ²
+\operatorname{Var}(X) = \sigma^2
 $$
 
 </Formula>
@@ -56,7 +56,7 @@ $$
 <Formula label="Mode">
 
 $$
-μ
+\mu
 $$
 
 </Formula>
@@ -67,8 +67,8 @@ $$
 
 | Parameter | What it controls |
 | --- | --- |
-| μ | The mean, and the centre of symmetry. Changing it slides the bell left or right without changing its shape. |
-| σ | The standard deviation. Larger σ makes the bell wider and lower; the variance is σ². |
+| $\mu$ | The mean, and the centre of symmetry. Changing it slides the bell left or right without changing its shape. |
+| $\sigma$ | The standard deviation. Larger $\sigma$ makes the bell wider and lower; the variance is $\sigma^2$. |
 
 ## Where it shows up
 
@@ -79,13 +79,13 @@ $$
 
 ## Try this
 
-1. Shade the interval from μ − σ to μ + σ and read off about 0.683. Change μ and σ and re-shade: the answer never changes, because every Normal is just a shifted and stretched copy of the standard one.
-2. Set μ = 0, σ = 1 and shade from −1.96 to 1.96. The probability is 0.95, the source of the 1.96 in every 95% confidence interval.
-3. Switch to **Sample means** and move n from 1 to 25. The histogram stays Normal but narrows by a factor of √n: at n = 25 its spread is σ/5.
+1. Shade the interval from $\mu - \sigma$ to $\mu + \sigma$ and read off about 0.683. Change $\mu$ and $\sigma$ and re-shade: the answer never changes, because every Normal is just a shifted and stretched copy of the standard one.
+2. Set $\mu = 0$, $\sigma = 1$ and shade from $-1.96$ to $1.96$. The probability is 0.95, the source of the 1.96 in every 95% confidence interval.
+3. Switch to **Sample means** and move $n$ from 1 to 25. The histogram stays Normal but narrows by a factor of $\sqrt{n}$: at $n = 25$ its spread is $\sigma/5$.
 
 ## Related distributions
 
-- If Z is standard Normal, then Z² is Chi-squared with 1 degree of freedom, and a sum of k squared standard Normals is Chi-squared with k.
-- The Student t tends to the Normal as ν → ∞.
-- If X is Normal(μ, σ²), then eˣ is Log-normal with parameters μ and σ.
-- The Binomial and the Poisson are both well approximated by a Normal when n or λ is large.
+- If $Z$ is standard Normal, then $Z^2$ is Chi-squared with 1 degree of freedom, and a sum of $k$ squared standard Normals is Chi-squared with $k$.
+- The Student t tends to the Normal as $\nu \to \infty$.
+- If $X$ is $\text{Normal}(\mu, \sigma^2)$, then $e^X$ is Log-normal with parameters $\mu$ and $\sigma$.
+- The Binomial and the Poisson are both well approximated by a Normal when $n$ or $\lambda$ is large.

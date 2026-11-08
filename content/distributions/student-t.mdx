@@ -5,9 +5,9 @@ summary: "A bell curve like the Normal but with heavier tails, which grow lighte
 
 ## The story
 
-When you standardise a sample mean using the sample standard deviation S instead of the true σ, the extra uncertainty in S makes extreme values more likely. William Gosset, writing as Student, worked out that for Normal data (X̄ − μ)/(S/√n) follows a t distribution with ν = n − 1 degrees of freedom. Formally, t is Z/√(V/ν) with Z standard Normal and V an independent Chi-squared(ν).
+When you standardise a sample mean using the sample standard deviation $S$ instead of the true $\sigma$, the extra uncertainty in $S$ makes extreme values more likely. William Gosset, writing as Student, worked out that for Normal data $(\bar{X} - \mu)/(S/\sqrt{n})$ follows a $t$ distribution with $\nu = n - 1$ degrees of freedom. Formally, $t$ is $Z/\sqrt{V/\nu}$ with $Z$ standard Normal and $V$ an independent $\text{Chi-squared}(\nu)$.
 
-Small ν means heavy tails: at ν = 1 the mean does not even exist, and the variance ν/(ν − 2) is finite only when ν \> 2. As ν grows, S becomes a reliable estimate of σ and the t distribution closes in on the standard Normal; by ν = 30 the two are hard to tell apart by eye.
+Small $\nu$ means heavy tails: at $\nu = 1$ the mean does not even exist, and the variance $\nu/(\nu - 2)$ is finite only when $\nu > 2$. As $\nu$ grows, $S$ becomes a reliable estimate of $\sigma$ and the $t$ distribution closes in on the standard Normal; by $\nu = 30$ the two are hard to tell apart by eye.
 
 ## Formulas
 
@@ -16,7 +16,7 @@ Small ν means heavy tails: at ν = 1 the mean does not even exist, and the vari
 <Formula label="Support">
 
 $$
-x ∈ ℝ
+x \in \mathbb{R}
 $$
 
 </Formula>
@@ -24,7 +24,7 @@ $$
 <Formula label="PDF">
 
 $$
-f(x) = Γ((ν+1)/2) / (√(νπ) Γ(ν/2)) · (1 + x²/ν)^(−(ν+1)/2)
+f(x) = \frac{\Gamma\!\left(\frac{\nu+1}{2}\right)}{\sqrt{\nu\pi}\, \Gamma\!\left(\frac{\nu}{2}\right)} \left(1 + \frac{x^2}{\nu}\right)^{-\frac{\nu+1}{2}}
 $$
 
 </Formula>
@@ -32,7 +32,7 @@ $$
 <Formula label="CDF">
 
 $$
-F(x) = 1 − ½ I_(ν/(ν+x²))(ν/2, ½) for x ≥ 0
+F(x) = 1 - \tfrac{1}{2} I_{\nu/(\nu+x^2)}\!\left(\tfrac{\nu}{2}, \tfrac{1}{2}\right) \quad \text{for } x \ge 0
 $$
 
 </Formula>
@@ -40,7 +40,7 @@ $$
 <Formula label="Expectation">
 
 $$
-E[X] = 0 for ν > 1, undefined otherwise
+\mathbb{E}[X] = \begin{cases} 0 & \text{for } \nu > 1 \\ \text{undefined} & \text{otherwise} \end{cases}
 $$
 
 </Formula>
@@ -48,7 +48,7 @@ $$
 <Formula label="Variance">
 
 $$
-Var(X) = ν / (ν − 2) for ν > 2, ∞ for 1 < ν ≤ 2
+\operatorname{Var}(X) = \begin{cases} \dfrac{\nu}{\nu - 2} & \text{for } \nu > 2 \\ \infty & \text{for } 1 < \nu \le 2 \end{cases}
 $$
 
 </Formula>
@@ -67,23 +67,23 @@ $$
 
 | Parameter | What it controls |
 | --- | --- |
-| ν | The degrees of freedom. Small ν gives heavy tails and frequent extreme values; large ν makes the curve almost exactly standard Normal. |
+| $\nu$ | The degrees of freedom. Small $\nu$ gives heavy tails and frequent extreme values; large $\nu$ makes the curve almost exactly standard Normal. |
 
 ## Where it shows up
 
 - One-sample and two-sample t-tests on small samples.
-- Confidence intervals for a mean when σ is unknown.
+- Confidence intervals for a mean when $\sigma$ is unknown.
 - Testing regression coefficients in linear models.
 - Robust modelling of noisy data with occasional outliers, such as financial returns.
 
 ## Try this
 
-1. Shade from −1.96 to 1.96 at ν = 30 and you get about 0.94, a little under the Normal's 0.95. Now set ν = 1: the same interval holds only about 0.70, because so much probability has moved into the tails.
-2. Set ν = 1, switch to **Sample means** and increase n. The histogram of averages refuses to narrow: the mean of n Cauchy draws is itself Cauchy, so the Central Limit Theorem does not apply when the variance is not finite.
-3. Set ν = 3 and press **Draw 1000** several times, clearing in between. The theoretical variance is 3, but the sample variance jumps around wildly as rare, huge draws come and go. Repeat at ν = 30 and see how much more stable it is.
+1. Shade from $-1.96$ to $1.96$ at $\nu = 30$ and you get about 0.94, a little under the Normal's 0.95. Now set $\nu = 1$: the same interval holds only about 0.70, because so much probability has moved into the tails.
+2. Set $\nu = 1$, switch to **Sample means** and increase $n$. The histogram of averages refuses to narrow: the mean of $n$ Cauchy draws is itself Cauchy, so the Central Limit Theorem does not apply when the variance is not finite.
+3. Set $\nu = 3$ and press **Draw 1000** several times, clearing in between. The theoretical variance is 3, but the sample variance jumps around wildly as rare, huge draws come and go. Repeat at $\nu = 30$ and see how much more stable it is.
 
 ## Related distributions
 
-- t with ν degrees of freedom tends to the standard Normal as ν → ∞.
-- It is built as Z/√(V/ν), where Z is standard Normal and V is an independent Chi-squared with ν degrees of freedom.
-- With ν = 1 it is the Cauchy distribution, which has no mean and no variance.
+- $t$ with $\nu$ degrees of freedom tends to the standard Normal as $\nu \to \infty$.
+- It is built as $Z/\sqrt{V/\nu}$, where $Z$ is standard Normal and $V$ is an independent Chi-squared with $\nu$ degrees of freedom.
+- With $\nu = 1$ it is the Cauchy distribution, which has no mean and no variance.

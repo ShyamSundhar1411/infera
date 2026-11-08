@@ -24,11 +24,11 @@ The trick is that healthy people vastly outnumber sick ones. Even a small false-
 
 ## Reading the picture
 
-The grid is 1,000 people. Coral squares are sick, the rest are healthy. Solid squares tested positive. Look only at the solid squares: the fraction that are coral is exactly P(sick | positive).
+The grid is 1,000 people. Coral squares are sick, the rest are healthy. Solid squares tested positive. Look only at the solid squares: the fraction that are coral is exactly $P(\text{sick} \mid \text{positive})$.
 
 ## Try this
 
-1. Leave the defaults and read P(sick | positive). Then raise **Prevalence** to 20% and watch the same test become far more convincing.
+1. Leave the defaults and read $P(\text{sick} \mid \text{positive})$. Then raise **Prevalence** to 20% and watch the same test become far more convincing.
 2. Push **Specificity** to 99.9%. False positives nearly vanish, and a positive result becomes strong evidence even for a rare disease.
 3. Set **Positive tests in a row** to 2. Each extra positive multiplies the odds by the likelihood ratio, so belief climbs fast.
 4. Make the disease very rare (0.1%). Even an excellent test gives mostly false alarms. This is why screening programmes confirm with a second test.
@@ -40,7 +40,7 @@ The grid is 1,000 people. Coral squares are sick, the rest are healthy. Solid sq
 <Formula label="Bayes' theorem">
 
 $$
-P(A | B) = P(B | A) · P(A) / P(B)
+P(A \mid B) = \frac{P(B \mid A)\, P(A)}{P(B)}
 $$
 
 </Formula>
@@ -48,7 +48,7 @@ $$
 <Formula label="Total probability">
 
 $$
-P(B) = P(B | A) P(A) + P(B | ¬A) P(¬A)
+P(B) = P(B \mid A)\, P(A) + P(B \mid \neg A)\, P(\neg A)
 $$
 
 </Formula>
@@ -56,7 +56,7 @@ $$
 <Formula label="Medical test">
 
 $$
-P(D | +) = sens · prev / (sens · prev + (1 − spec)(1 − prev))
+P(D \mid +) = \frac{\text{sens} \cdot \text{prev}}{\text{sens} \cdot \text{prev} + (1 - \text{spec})(1 - \text{prev})}
 $$
 
 </Formula>
@@ -64,7 +64,7 @@ $$
 <Formula label="Odds form">
 
 $$
-posterior odds = prior odds × likelihood ratio
+\text{posterior odds} = \text{prior odds} \times \text{likelihood ratio}
 $$
 
 </Formula>
@@ -72,7 +72,7 @@ $$
 <Formula label="Likelihood ratio">
 
 $$
-LR₊ = sensitivity / (1 − specificity)
+\mathrm{LR}_{+} = \frac{\text{sensitivity}}{1 - \text{specificity}}
 $$
 
 </Formula>
