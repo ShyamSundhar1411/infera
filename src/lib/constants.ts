@@ -1,8 +1,8 @@
-export const SITE_NAME = "ML & Stats Explainer";
+export const SITE_NAME = "Infera";
 export const SITE_TAGLINE = "Machine learning and statistics you can play with.";
 export const SITE_DESCRIPTION =
   "Interactive explainers for machine learning algorithms and probability distributions. Add points, drag them around, change parameters and watch everything redraw live.";
-export const REPO_URL = "https://github.com/ShyamSundhar1411/ml-stats-explainer";
+export const REPO_URL = "https://github.com/ShyamSundhar1411/infera";
 
 /** Class and cluster colours as RGB, shared by the canvas and the UI. */
 export const CLASS_COLORS: [number, number, number][] = [
