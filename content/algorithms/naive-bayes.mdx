@@ -9,6 +9,21 @@ Suppose you guess someone's sport from their height and weight, but you judge ea
 
 In pictures, it means every class gets an ellipse that is lined up with the axes. It can be wide or tall, but never tilted, because tilt would mean the two features move together.
 
+## A card game version
+
+Forget points on a plane for a moment. A dealer has shuffled two decks together: an ordinary deck and a trick deck that has too many red cards and too many faces and aces. Each card can be described by two features, its colour and whether it is a number, a face or an ace. You are shown a card's face and must say which deck it came from.
+
+Naive Bayes plays this game by counting. From a pile of labelled training cards it learns how often each deck appears (the prior), how often each deck's cards are red, and how often they are faces or aces. To judge a new card it multiplies the prior by one likelihood per feature and picks the deck with the bigger product. Treating colour and rank as unrelated is the naive part; here it happens to be true, which is why the learned answers approach the exact ones.
+
+<Lab id="naive-bayes-cards" />
+
+### Try this
+
+1. Deal a few mystery cards and read the products. A red queen points strongly to the trick deck; a black 7 points to the ordinary one.
+2. Drop **Training cards** to 4 or 5 and turn smoothing off. Sooner or later one deck has never shown a card's colour or kind in training, its product becomes exactly 0, and one unlucky count overrules everything else. Turn smoothing back on.
+3. Set **How rigged is the trick deck** to 0%. The two decks are identical, and accuracy can do no better than always guessing the more common deck.
+4. Raise the training set to 80 and press **Play 100 hands** a few times: the learned guesses settle near the exact probabilities.
+
 ## How it learns
 
 1. For each class, compute the mean of $x$ and the mean of $y$.

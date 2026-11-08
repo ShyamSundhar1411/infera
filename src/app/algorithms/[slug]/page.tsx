@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import AlgorithmPlayground from "../../components/Playground/algorithm-playground";
+import LabEmbed from "../../components/Concepts/lab-embed";
 import MdxArticle from "../../components/Mdx/mdx-article";
 import { readMdx } from "@/lib/mdx/load";
 import type { ExplainerFrontmatter } from "@/lib/types/domain/algorithm.types";
@@ -54,7 +55,7 @@ export default async function AlgorithmPage({ params }: PageProps) {
 
       {doc && (
         <div className="mt-20">
-          <MdxArticle source={doc.body} />
+          <MdxArticle source={doc.body} components={{ Lab: LabEmbed }} />
         </div>
       )}
 

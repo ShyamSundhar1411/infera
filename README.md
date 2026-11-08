@@ -32,6 +32,13 @@ Each has its PMF/PDF, CDF, expectation, variance, formulas, a sampler and a samp
 - Law of large numbers: running averages converging on E[X], and the Cauchy distribution refusing to
 - Central limit theorem: standardised averages of four very different distributions turning into N(0, 1)
 
+**Hands-on scenarios**, embedded in the pages they explain:
+
+- Two bags of red and blue balls picked by a weighted coin (Bayes' theorem)
+- A standard deck and a trick deck shuffled together, sorted by a card-counting classifier (naive Bayes)
+- A biased coin flipped n times (binomial and Bernoulli), or until the first head (geometric)
+- A fair or loaded die (discrete uniform, law of large numbers)
+
 ## Running locally
 
 ```bash
@@ -82,7 +89,7 @@ $$
 </Formulas>
 ```
 
-Concept files also need `name`, `tagline` and `order` in the frontmatter, and can embed a live lab anywhere with `<Lab id="bayes-theorem" />`. Other components available in MDX: `<Formulas>`, `<Formula label>`, `<Callout title>`, `<ProsCons>` and `<Card>`.
+Concept files also need `name`, `tagline` and `order` in the frontmatter, and can embed a live lab anywhere with `<Lab id="bayes-theorem" />`. `<Lab>` works in algorithm and distribution files too; the ids are listed in `src/app/components/Concepts/concept-lab.tsx`. Other components available in MDX: `<Formulas>`, `<Formula label>`, `<Callout title>`, `<ProsCons>` and `<Card>`.
 
 Run `yarn check:content` after editing. It compiles every file with strict KaTeX and flags maths written as plain Unicode instead of LaTeX.
 

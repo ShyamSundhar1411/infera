@@ -33,6 +33,21 @@ The grid is 1,000 people. Coral squares are sick, the rest are healthy. Solid sq
 3. Set **Positive tests in a row** to 2. Each extra positive multiplies the odds by the likelihood ratio, so belief climbs fast.
 4. Make the disease very rare (0.1%). Even an excellent test gives mostly false alarms. This is why screening programmes confirm with a second test.
 
+## Two bags of balls
+
+The same reasoning works without any medicine. A weighted coin secretly picks one of two bags. Bag A has 3 red balls out of 10, bag B has 8. You pull a ball out, look at its colour and put it back. Which bag are you holding?
+
+Before any ball, all you have is the coin: that is the prior. A red ball is more likely to come from bag B, so it shifts belief towards B by the ratio $0.8 / 0.3$. A blue ball pushes the other way by $0.7 / 0.2$. Every draw is one more application of Bayes' theorem, with the last posterior as the new prior.
+
+<Lab id="ball-bag" />
+
+### Try this
+
+1. Draw five or six balls and watch the belief bar lurch with each colour, then reveal the bag.
+2. Make the coin very biased towards bag A ($P(A) = 0.9$) and draw a single red ball. The evidence points to B, but the prior is strong enough to keep A in front.
+3. Give both bags the same number of red balls. Now the balls carry no information and the bar never moves away from the coin's bias.
+4. Press **Play 1,000 rounds**. Counting which bag the red balls really came from lands on the same number the formula gives.
+
 ## The maths
 
 <Formulas>
