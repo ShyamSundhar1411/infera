@@ -69,7 +69,7 @@ function Lab({ slug }: { slug: string }) {
           />
         </div>
 
-        <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-4">
           <div className="bg-surface px-4 py-3">
             <p className="font-mono text-[11px] text-muted">
               P({show(a, lab.discrete ? 0 : 2)} ≤ X ≤ {show(b, lab.discrete ? 0 : 2)})

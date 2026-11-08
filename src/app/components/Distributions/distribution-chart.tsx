@@ -167,7 +167,7 @@ export default function DistributionChart(props: ChartProps) {
       ))}
       {xTicks.map((t) => (
         <text key={`x${t}`} x={sx(t)} y={H - PAD.bottom + 18} textAnchor="middle" className="fill-muted font-mono text-[10px]">
-          {fmt(t)}
+          {discrete ? t : fmt(t)}
         </text>
       ))}
 

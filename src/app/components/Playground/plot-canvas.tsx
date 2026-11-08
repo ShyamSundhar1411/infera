@@ -116,7 +116,7 @@ export default function PlotCanvas({
       <canvas
         ref={canvasRef}
         style={{ width: size, height: size }}
-        className={tool === "erase" ? "cursor-not-allowed" : hovered !== null ? "cursor-grab" : "cursor-crosshair"}
+        className={"touch-none " + (tool === "erase" ? "cursor-not-allowed" : hovered !== null ? "cursor-grab" : "cursor-crosshair")}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
