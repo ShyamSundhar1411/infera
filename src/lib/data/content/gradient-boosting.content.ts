@@ -1,0 +1,55 @@
+import type { AlgorithmContent } from "@/lib/types/domain/algorithm.types";
+
+export const content: AlgorithmContent = {
+  summary:
+    "Gradient boosting builds a prediction by adding many small trees one after another. Each new tree is trained on the mistakes the current model is still making.",
+  sections: [
+    {
+      title: "The idea",
+      paragraphs: [
+        "Picture a team of painters restoring a mural. The first one blocks in the rough colours. Each painter after that only touches up the spots that still look wrong, and only lightly. After enough passes the mural is sharp, even though no single painter did much.",
+        "Each tree here is deliberately weak, just a few splits deep. The learning rate shrinks every correction, so the model creeps towards the data rather than lunging at it.",
+      ],
+    },
+    {
+      title: "How it learns",
+      steps: [
+        "Start by predicting the mean of all y values everywhere.",
+        "Compute residuals: how far each point sits above or below the current prediction.",
+        "Fit a small regression tree on x to those residuals.",
+        "Add the tree's output, scaled by the learning rate, to the prediction.",
+        "Repeat until the chosen number of trees has been added.",
+      ],
+    },
+    {
+      title: "Reading the picture",
+      paragraphs: [
+        "Press play and watch the curve begin as a flat line at the mean, then gain detail with every tree. Early trees capture the big shape; later ones refine small bumps.",
+        "Turn on Show residuals to see exactly what the next tree is about to be trained on. As training goes on these segments shrink, and the Training MSE in the stats falls with them.",
+      ],
+    },
+  ],
+  tryThis: [
+    "On **Wave**, step through training one tree at a time. Notice the first few trees do most of the work.",
+    "Set Learning rate to 1 and then to 0.05 with the same Number of trees. A high rate fits fast but jumpy; a low rate is smoother but may not finish the job.",
+    "Raise Tree depth to 4 and Number of trees to 150 on a noisy **Wave**. Watch the curve start chasing individual points: boosting can overfit too.",
+    "Load **Outliers** and keep Show residuals on. The outliers keep their long residuals and keep tugging at later trees.",
+  ],
+  maths: [
+    { label: "Start", formula: "F₀(x) = ȳ" },
+    { label: "Residuals", formula: "rᵢ = yᵢ − F_{m−1}(xᵢ)" },
+    { label: "Fit a tree", formula: "h_m = regression tree fitted to (xᵢ, rᵢ)" },
+    { label: "Update", formula: "F_m(x) = F_{m−1}(x) + η · h_m(x)" },
+    { label: "Final model", formula: "F(x) = ȳ + η Σₘ h_m(x)" },
+  ],
+  strengths: [
+    "Very accurate on structured, tabular data.",
+    "Builds complex shapes from simple pieces.",
+    "Learning rate and tree count give fine control.",
+  ],
+  weaknesses: [
+    "Trees are added in sequence, so training is slow to parallelise.",
+    "Several interacting knobs to tune.",
+    "Will happily fit noise if run too long.",
+  ],
+};
