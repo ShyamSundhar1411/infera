@@ -49,6 +49,45 @@ The site is a fully static export (`output: "export"`), so it runs anywhere.
 - **Vercel:** import the repo with the default settings. Nothing else is needed.
 - **GitHub Pages:** `.github/workflows/deploy.yml` builds and deploys on every push to `main`. In the repo settings, set Pages to deploy from GitHub Actions. The workflow reads the base path from Pages, so it works both on a custom domain and on `<user>.github.io/infera`.
 
+## Writing content
+
+Every explainer is an MDX file in `content/`:
+
+```
+content/
+  algorithms/<slug>.mdx      text under each algorithm playground
+  distributions/<slug>.mdx   text under each distribution lab
+  concepts/<slug>.mdx        whole concept pages (a new file = a new page)
+```
+
+Each file starts with frontmatter and then plain Markdown. Maths is LaTeX, rendered by KaTeX: `$\sigma/\sqrt{n}$` inline, `$$ … $$` for display.
+
+```mdx
+---
+summary: "One or two sentences shown under the page title."
+---
+
+## The idea
+
+The spread of the average shrinks like $\sigma/\sqrt{n}$.
+
+<Formulas>
+<Formula label="Sample mean">
+
+$$
+\bar{X}_n = \frac{1}{n}\sum_{i=1}^{n} X_i
+$$
+
+</Formula>
+</Formulas>
+```
+
+Concept files also need `name`, `tagline` and `order` in the frontmatter, and can embed a live lab anywhere with `<Lab id="bayes-theorem" />`. Other components available in MDX: `<Formulas>`, `<Formula label>`, `<Callout title>`, `<ProsCons>` and `<Card>`.
+
+Run `yarn check:content` after editing. It compiles every file with strict KaTeX and flags maths written as plain Unicode instead of LaTeX.
+
+The playground can hold out 30% of points as a test set (shown hollow). **Test model** compares training and test scores against a nearest-neighbour baseline and calls the fit good, underfitting or overfitting.
+
 ## Project structure
 
 ```
@@ -64,8 +103,9 @@ src/
     ml/                   every model, plus the engine registry
     stats/                densities, exact CDFs, samplers, special functions
     plot/                 canvas renderer and marching-squares contours
-    data/                 algorithm and distribution catalogues, datasets, explanations
+    data/                 algorithm and distribution catalogues, datasets
+    mdx/                  MDX loader (KaTeX, GFM)
     types/domain/         shared types
 ```
 
-Adding an algorithm means writing an `Engine` in `src/lib/ml`, registering it in `engines.ts`, adding its entry and parameters to `algorithms.data.ts`, and writing its explanation in `src/lib/data/content`.
+Adding an algorithm means writing an `Engine` in `src/lib/ml`, registering it in `engines.ts`, adding its entry and parameters to `algorithms.data.ts`, and writing its explanation in `content/algorithms/<slug>.mdx`.
