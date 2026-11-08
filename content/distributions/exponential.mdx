@@ -9,6 +9,12 @@ If events arrive as a Poisson process with rate $\lambda$ per unit time, the gap
 
 Its signature property is memorylessness: $P(X > s + t \mid X > s) = P(X > t)$. If a bulb with an Exponential lifetime has already lasted 1000 hours, its remaining life has the same distribution as a brand-new bulb's. It is the only continuous distribution with this property.
 
+## Waiting for the next arrival
+
+Arrivals come in at random at a steady rate of $\lambda$ per minute. Time the gap between one arrival and the next and the gaps follow an $\text{Exponential}(\lambda)$ distribution, averaging $1/\lambda$ minutes. Short waits are the most common, but every so often there is a long lull. Counting arrivals per minute instead gives the Poisson, in the first chart.
+
+<Lab id="arrivals" />
+
 ## Formulas
 
 <Formulas>

@@ -1,0 +1,98 @@
+---
+name: "Markov Chain Monte Carlo"
+tagline: "Sample from a distribution you can only describe up to a constant, by taking a clever random walk."
+summary: "Markov chain Monte Carlo draws samples from a complicated distribution by wandering around it. Each step proposes a move and accepts it with a probability that only needs the ratio of densities, so the normalising constant never has to be computed."
+order: 6
+---
+
+
+<Lab id="mcmc" />
+
+## The idea
+
+Plain Monte Carlo needs a way to draw independent samples. For a die or a normal distribution that is easy. For the posterior of a Bayesian model with dozens of parameters it is not. You can usually write down the posterior only up to a constant, $p(\theta \mid \text{data}) \propto p(\text{data} \mid \theta)\, p(\theta)$, and the constant is an integral over every parameter at once, which is exactly the hard part.
+
+MCMC side-steps the constant. Instead of drawing independent samples, it builds a random walk that spends time in each region in proportion to its probability. Run the walk long enough, write down where it has been, and those positions behave like samples from the target.
+
+## How it works
+
+The simplest version, random-walk Metropolis–Hastings:
+
+1. Start anywhere: $\theta_0$.
+2. Propose a nearby point: $\theta' = \theta_t + \varepsilon$, with $\varepsilon$ a small normal jump whose size is the step size.
+3. Compare heights: $r = p(\theta') / p(\theta_t)$. The unknown constant cancels in this ratio.
+4. If $r \ge 1$, the proposal is uphill: always move. Otherwise move with probability $r$.
+5. If the move is rejected, stay put and record the current point again. Repeating it is what gives high-density spots their extra weight.
+6. Repeat thousands of times, throw away the early burn-in, and treat the rest as samples.
+
+## Reading the picture
+
+The shaded background is the target density. The dark dot is the chain's current position. Teal lines are recent accepted moves; a red cross flashes when a proposal is rejected. Every iteration leaves an amber dot, and grey dots are burn-in that will be discarded. On the right, the trace plot shows $x$ over time and the histogram compares the samples' $x$ values with the true marginal density.
+
+## Why it works
+
+A Markov chain forgets where it started. If its transitions satisfy detailed balance, the flow of probability from $a$ to $b$ equals the flow from $b$ to $a$ when the chain is distributed as the target, so the target is a stationary distribution: once the chain is there, it stays there. The Metropolis acceptance rule is chosen precisely to make that balance hold. Then a version of the law of large numbers for Markov chains says averages along the path converge to averages under the target.
+
+The catch is that the samples are correlated. Each point is close to the previous one, so 10,000 MCMC samples carry less information than 10,000 independent ones. How quickly the chain explores the whole distribution is called mixing.
+
+## Burn-in, step size and mixing
+
+- **Burn-in.** The chain starts in a corner, far from the mass. Its first few hundred positions reflect the starting point, not the target, so they are thrown away.
+- **Step size too small.** Nearly every proposal is accepted, but the chain shuffles around like a drunk in a phone box. The trace looks like a slow wave and the histogram takes ages to fill in.
+- **Step size too large.** Most proposals land somewhere improbable and are rejected. The chain sits still for long stretches and the trace looks like a staircase.
+- **In between.** For random-walk proposals, an acceptance rate of roughly 20% to 50% usually mixes best.
+- **Multiple peaks.** A chain with small steps can get stuck in one peak for a very long time, because crossing the empty valley requires many unlikely moves in a row. It will report one peak and never tell you the other exists.
+
+## Try this
+
+1. On **Two peaks** with step size 0.5, press **Run**. The chain finds one peak and stays there; the histogram shows a single hump while the true marginal has two.
+2. Raise the step size to about 2.5. The acceptance rate drops, but the chain can now leap the valley, and the histogram fills in both humps.
+3. Drop the step size to 0.05 on **Banana**. Acceptance is close to 100% and yet the chain barely moves: high acceptance is not the same as good mixing.
+4. Set the step size to 5 on **Correlated**. Almost everything is rejected, because a big jump in a random direction nearly always leaves the thin ridge.
+5. Turn off **Discard burn-in**, press **Reset**, then **Step once** a few times and watch the walk from the corner. Those early points have nothing to do with the target.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Target known up to a constant">
+
+$$
+\pi(\theta) = \frac{\tilde{\pi}(\theta)}{Z}, \quad Z = \int \tilde{\pi}(\theta)\, d\theta \text{ unknown}
+$$
+
+</Formula>
+
+<Formula label="Random-walk proposal">
+
+$$
+\theta' = \theta_t + \varepsilon, \quad \varepsilon \sim \mathcal{N}(0, s^2 I)
+$$
+
+</Formula>
+
+<Formula label="Acceptance probability">
+
+$$
+\alpha(\theta_t \to \theta') = \min\!\left(1, \frac{\tilde{\pi}(\theta')}{\tilde{\pi}(\theta_t)}\right)
+$$
+
+</Formula>
+
+<Formula label="Detailed balance">
+
+$$
+\pi(a)\, P(a \to b) = \pi(b)\, P(b \to a)
+$$
+
+</Formula>
+
+<Formula label="Ergodic average">
+
+$$
+\frac{1}{n} \sum_{t=1}^{n} g(\theta_t) \to \mathbb{E}_{\pi}[g(\theta)]
+$$
+
+</Formula>
+
+</Formulas>

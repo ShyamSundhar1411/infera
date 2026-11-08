@@ -25,12 +25,15 @@ All models are written from scratch in TypeScript and run in the browser. No ML 
 
 Each has its PMF/PDF, CDF, expectation, variance, formulas, a sampler and a sample-means (CLT) mode.
 
-**Concepts (4)**
+**Concepts (7)**
 
 - Bayes' theorem: a medical-test simulator on a grid of 1,000 people, with the formula filled in live
 - Bayesian updating: flip a hidden coin and watch a Beta posterior and its credible interval sharpen
 - Law of large numbers: running averages converging on E[X], and the Cauchy distribution refusing to
-- Central limit theorem: standardised averages of four very different distributions turning into N(0, 1)
+- Central limit theorem: standardised averages of four very different distributions turning into N(0, 1), plus a Galton board
+- Monty Hall: find the ace among face-down cards, with a host who does or does not know where it is
+- Monte Carlo: estimate pi and an integral by throwing random darts, with the error funnel shrinking like 1/sqrt(n)
+- MCMC: a Metropolis-Hastings random walk over three 2-D targets, with trace plot, acceptance rate and burn-in
 
 **Hands-on scenarios**, embedded in the pages they explain:
 
@@ -38,6 +41,8 @@ Each has its PMF/PDF, CDF, expectation, variance, formulas, a sampler and a samp
 - A standard deck and a trick deck shuffled together, sorted by a card-counting classifier (naive Bayes)
 - A biased coin flipped n times (binomial and Bernoulli), or until the first head (geometric)
 - A fair or loaded die (discrete uniform, law of large numbers)
+- A Galton board of pegs and bins (central limit theorem, normal)
+- A live stream of random arrivals, counted per minute and timed between (Poisson, exponential)
 
 ## Running locally
 

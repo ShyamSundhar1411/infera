@@ -1,0 +1,90 @@
+---
+name: "Monte Carlo"
+tagline: "Throw random darts and count where they land to answer questions you cannot solve on paper."
+summary: "Monte Carlo methods estimate a number by simulating random draws and averaging the results. The law of large numbers says the average converges, and the central limit theorem says how fast: the error shrinks like one over the square root of the number of draws."
+order: 5
+---
+
+
+<Lab id="monte-carlo" />
+
+## The idea
+
+Suppose you want the area of an odd shape. Draw a box of known area around it and throw darts at the box completely at random. If 30% of the darts land inside the shape, the shape takes up about 30% of the box. Multiply by the box's area and you have your answer.
+
+That is the whole trick. Any quantity you can write as an average, such as an area, an integral, a probability or an expected payoff, can be estimated by drawing random samples and averaging. You never need a formula for the answer, only a way to simulate.
+
+The name comes from the casino in Monaco. The method was developed in the 1940s by physicists working on neutron diffusion, a problem with too many dimensions to integrate by hand.
+
+## How it works
+
+1. Write the quantity you want as an expected value: $I = \mathbb{E}[g(X)]$ for some random $X$ you can sample.
+2. Draw $n$ independent samples $X_1, \ldots, X_n$.
+3. Average $g(X_i)$ over the samples. That average is your estimate.
+4. Estimate its accuracy from the same samples: the standard error is the sample standard deviation divided by $\sqrt{n}$.
+5. Need more precision? Draw more samples. Four times as many halves the error.
+
+For darts, $X$ is a random point in the box and $g(X)$ is 1 if it lands under the curve and 0 if not, so the average is just the hit rate.
+
+## Reading the picture
+
+Teal darts landed under the curve and coral darts above it. On the right, the blue line is the running estimate as darts pile up, plotted against the number of darts on a log scale. The dashed line is the true answer and the shaded funnel is the truth $\pm 2$ standard errors. About 95% of the time the estimate should sit inside the funnel, and the funnel narrows like $1/\sqrt{n}$.
+
+## Why it converges, and how fast
+
+The estimate is an average of independent draws, so the law of large numbers guarantees it homes in on the true value. The central limit theorem goes further: for large $n$ the estimate is roughly normal around the truth, with spread $\sigma/\sqrt{n}$. That is where the funnel comes from.
+
+The $1/\sqrt{n}$ rate is both the weakness and the strength of Monte Carlo. Each extra correct decimal place costs a hundred times more samples. But the rate does not depend on the number of dimensions. A grid-based integral in 100 dimensions is hopeless; a Monte Carlo estimate converges just as fast as it does in one.
+
+## Try this
+
+1. Throw 1 dart at a time for a while. With a handful of darts the estimate of $\pi$ can only be a few crude values, such as 4, 2.67 or 3.2.
+2. Throw 10,000 at once, several times. The line wobbles into the funnel and stays there, but the last decimal places keep changing.
+3. Turn on **Keep throwing** and watch the standard error. Going from 1,000 to 100,000 darts only gains you about one extra correct digit.
+4. Switch to **Area under a curve**. The same method integrates $\sin x$ from 0 to $\pi$, whose exact answer is 2, without any calculus.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Monte Carlo estimate">
+
+$$
+\hat{I}_n = \frac{1}{n} \sum_{i=1}^{n} g(X_i) \approx \mathbb{E}[g(X)]
+$$
+
+</Formula>
+
+<Formula label="Hit-or-miss area">
+
+$$
+\text{area} \approx \text{box area} \times \frac{\text{hits}}{n}
+$$
+
+</Formula>
+
+<Formula label="Estimating pi">
+
+$$
+\frac{\pi}{4} = P(U_1^2 + U_2^2 \le 1), \quad U_1, U_2 \sim \text{Uniform}(0, 1)
+$$
+
+</Formula>
+
+<Formula label="Standard error">
+
+$$
+\operatorname{SE}(\hat{I}_n) = \frac{\sigma}{\sqrt{n}}, \quad \sigma^2 = \operatorname{Var}(g(X))
+$$
+
+</Formula>
+
+<Formula label="Approximate 95% interval">
+
+$$
+\hat{I}_n \pm 2\,\frac{\hat{\sigma}}{\sqrt{n}}
+$$
+
+</Formula>
+
+</Formulas>

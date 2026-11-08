@@ -9,6 +9,12 @@ Imagine events that arrive at random but at a steady average rate: emails landin
 
 Its defining quirk is that the mean and the variance are both equal to $\lambda$. Small $\lambda$ gives a right-skewed pile of bars near zero; as $\lambda$ grows the distribution becomes more symmetric and bell-shaped, with standard deviation $\sqrt{\lambda}$.
 
+## Watch arrivals happen
+
+Here arrivals come in at random, independently of one another, at an average rate of $\lambda$ per minute. Count how many land in each minute and those counts follow a $\text{Poisson}(\lambda)$ distribution. The second chart shows the waits between arrivals, which are Exponential: the two distributions describe the same stream.
+
+<Lab id="arrivals" />
+
 ## Formulas
 
 <Formulas>

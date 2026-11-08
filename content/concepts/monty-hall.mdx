@@ -1,0 +1,81 @@
+---
+name: "Monty Hall Problem"
+tagline: "Three cards, one ace, and a host who knows too much. Should you switch?"
+summary: "You pick one of three face-down cards hoping for the ace. The host, who knows where it is, turns over a losing card and offers you a swap. Switching wins two times out of three, and Bayes' theorem explains why."
+order: 1.5
+---
+
+
+<Lab id="monty-hall" />
+
+## The idea
+
+Three cards lie face down and one of them is the ace. You point at one. The host, who knows where the ace is, turns over one of the other two to show you a loser. Then you are offered a choice: keep your card, or switch to the last one.
+
+Almost everyone feels it is now 50-50. It is not. Your first pick was right with probability $1/3$, and nothing the host did changes that, because the host can always find a loser to show you. The other $2/3$ did not vanish: it all moved onto the one card the host chose to leave closed.
+
+## Why the host's knowledge matters
+
+The host's move is evidence, and how much it tells you depends on how it was produced. If your card is the ace, the host picks either of the other two at random. If your card is a loser, the host is forced to leave the ace closed. A card the host deliberately avoided is twice as likely to be the ace as the card you picked blind.
+
+If the host does not know and just flips a card at random, the picture changes. Sometimes the ace gets turned over and the round is spoiled. In the rounds where the ace survives by luck, the flip carries no information about the remaining two cards, and switching wins only half the time.
+
+## How to think about it
+
+1. Before anything happens, each card has probability $1/n$ of being the ace.
+2. Your card keeps its $1/n$: the host can always turn over losers whatever you picked.
+3. The losers the host turns over drop to probability zero.
+4. Everything else, $(n - 1)/n$, now sits on the one card the host left closed.
+5. Switch.
+
+## Try this
+
+1. Play a dozen hands by hand, switching every time. Then press **Stick 1,000 times** and **Switch 1,000 times** and compare with the theory marks.
+2. Raise **Cards** to 10. You pick one, the host turns over eight losers and leaves one card closed. Sticking now means betting your first blind guess was right.
+3. Turn off **The host knows where the ace is** and play many rounds. Some rounds are thrown away, and among the rest sticking and switching both win about half the time.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Prior">
+
+$$
+P(\text{ace} = i) = \tfrac{1}{3}, \quad i = 1, 2, 3
+$$
+
+</Formula>
+
+<Formula label="Host opens card 3, you picked card 1">
+
+$$
+P(\text{opens } 3 \mid \text{ace} = 1) = \tfrac{1}{2}, \quad P(\text{opens } 3 \mid \text{ace} = 2) = 1
+$$
+
+</Formula>
+
+<Formula label="Bayes' theorem">
+
+$$
+P(\text{ace} = 2 \mid \text{opens } 3) = \frac{1 \cdot \tfrac{1}{3}}{\tfrac{1}{2} \cdot \tfrac{1}{3} + 1 \cdot \tfrac{1}{3}} = \frac{2}{3}
+$$
+
+</Formula>
+
+<Formula label="With n cards">
+
+$$
+P(\text{win} \mid \text{stick}) = \frac{1}{n}, \quad P(\text{win} \mid \text{switch}) = \frac{n - 1}{n}
+$$
+
+</Formula>
+
+<Formula label="Host who does not know">
+
+$$
+P(\text{win} \mid \text{switch},\ \text{ace not shown}) = \frac{1}{2}
+$$
+
+</Formula>
+
+</Formulas>
