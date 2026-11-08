@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ParamValues } from "@/lib/types/domain/algorithm.types";
 import type { Trainer } from "@/lib/types/domain/model.types";
 import type { Point } from "@/lib/types/domain/point.types";
@@ -15,19 +15,22 @@ export function useTrainer(slug: string, points: Point[], params: ParamValues) {
   const [runId, setRunId] = useState(0);
   const [tick, setTick] = useState(0);
   const [playing, setPlaying] = useState(true);
-  const previous = useRef<{ trainer: Trainer; runId: number } | null>(null);
+  const create = (warm?: Trainer) => engine.create(points, { ...params, __seed: runId }, warm);
+  const [current, setCurrent] = useState(() => ({ trainer: create(), engine, points, params, runId }));
 
-  const trainer = useMemo(() => {
-    // Warm start from the last trainer unless the user asked for a reset.
-    const prev = previous.current;
-    const warm = prev && prev.runId === runId ? prev.trainer : undefined;
-    return engine.create(points, { ...params, __seed: runId }, warm);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, points, params, runId]);
-
-  useEffect(() => {
-    previous.current = { trainer, runId };
-  }, [trainer, runId]);
+  // Rebuild when inputs change, warm starting unless the user asked for a reset.
+  let state = current;
+  if (
+    current.engine !== engine ||
+    current.points !== points ||
+    current.params !== params ||
+    current.runId !== runId
+  ) {
+    const warm = current.runId === runId && current.engine === engine ? current.trainer : undefined;
+    state = { trainer: create(warm), engine, points, params, runId };
+    setCurrent(state);
+  }
+  const { trainer } = state;
 
   useEffect(() => {
     if (!playing) return;
@@ -45,13 +48,12 @@ export function useTrainer(slug: string, points: Point[], params: ParamValues) {
     return () => cancelAnimationFrame(frame);
   }, [trainer, playing, engine]);
 
-  const snapshot = useMemo(
-    () => ({ model: trainer.model(), stats: trainer.stats(), done: trainer.done(), tick }),
-    [trainer, tick],
-  );
-
   return {
-    ...snapshot,
+    // Read fresh on every render: the trainer mutates as it steps.
+    model: trainer.model(),
+    stats: trainer.stats(),
+    done: trainer.done(),
+    tick,
     playing,
     togglePlaying: () => setPlaying((p) => !p),
     step: () => {
