@@ -1,0 +1,76 @@
+---
+name: "Bayesian Updating"
+tagline: "Learn a coin's bias one flip at a time, with a belief that sharpens as evidence piles up."
+summary: "Bayesian inference treats an unknown quantity as a distribution of belief. Each new observation reshapes that distribution through Bayes' theorem, so uncertainty shrinks as data arrives."
+order: 2
+---
+
+
+<Lab id="bayesian-updating" />
+
+## The idea
+
+Someone hands you a coin that might be biased. Before flipping, you have a belief about its probability of heads, p. That belief is a whole distribution, not a single number: the prior.
+
+Each flip is evidence. Heads makes high values of p more plausible, tails makes low values more plausible. Multiply the prior by the likelihood of what you saw, renormalise, and you get the posterior. Keep going and the posterior narrows around the truth.
+
+## Why the Beta distribution
+
+If the prior is Beta(α, β) and you see h heads and t tails, the posterior is exactly Beta(α + h, β + t). The Beta is the conjugate prior for coin flips: updating is just adding counts. You can read α and β as imaginary heads and tails you saw before the experiment started.
+
+## Bayesian vs frequentist
+
+The frequentist estimate is simply h / n. With lots of data both approaches agree. With little data the prior matters: after one head, the frequency says p = 1, while a sensible prior says 'probably above a half, but who knows'. The credible interval states directly where p probably lies, given the data and the prior.
+
+## Try this
+
+1. Flip 10 times with the flat prior Beta(1, 1). Then flip 100 more and watch the credible interval shrink roughly like 1/√n.
+2. Set a stubborn prior, α = β = 20, and a hidden bias of 0.8. The posterior starts near 0.5 and has to be dragged towards the truth by the data.
+3. Reset and flip once. Compare the posterior mean with the frequency estimate h/n, which jumps to 0 or 1 straight away.
+4. Try α = β = 0.5. This prior expects the coin to be extreme (always heads or always tails) and reacts strongly to the first few flips.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Bayes for parameters">
+
+$$
+posterior ∝ likelihood × prior
+$$
+
+</Formula>
+
+<Formula label="Likelihood of h heads in n flips">
+
+$$
+L(p) ∝ pʰ (1 − p)ⁿ⁻ʰ
+$$
+
+</Formula>
+
+<Formula label="Conjugate update">
+
+$$
+Beta(α, β) → Beta(α + h, β + t)
+$$
+
+</Formula>
+
+<Formula label="Posterior mean">
+
+$$
+E[p | data] = (α + h) / (α + β + n)
+$$
+
+</Formula>
+
+<Formula label="Maximum likelihood">
+
+$$
+p̂ = h / n
+$$
+
+</Formula>
+
+</Formulas>

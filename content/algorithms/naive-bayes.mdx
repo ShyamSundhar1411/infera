@@ -1,0 +1,92 @@
+---
+summary: "Gaussian Naive Bayes models each feature of each class with its own bell curve and treats the features as independent. Bayes' rule then turns those curves into class probabilities."
+---
+
+
+## The idea
+
+Suppose you guess someone's sport from their height and weight, but you judge each measurement separately: how typical is this height for a rower, how typical is this weight? Multiply the two answers and you have a score. That shortcut is the "naive" part.
+
+In pictures, it means every class gets an ellipse that is lined up with the axes. It can be wide or tall, but never tilted, because tilt would mean the two features move together.
+
+## How it learns
+
+1. For each class, compute the mean of x and the mean of y.
+2. Compute the variance of x and of y separately, ignoring any correlation.
+3. Add a little variance smoothing so no bell curve becomes a spike.
+4. Set each class prior to its share of the points.
+5. Score a new point by multiplying the prior with each feature's likelihood, then normalise.
+
+## Reading the picture
+
+With Show class Gaussians on, each class shows axis-aligned ellipses: stretched horizontally or vertically, never diagonally. The background shows the most likely class, shaded by confidence.
+
+Because each class has its own variances, the boundaries can curve, just like QDA. The difference is that a diagonal streak of points still gets an upright ellipse.
+
+## Try this
+
+1. On **Blobs**, drag a class into a diagonal line. Its ellipse refuses to tilt; compare with QDA on the same points.
+2. Load **Circles**. Even with the independence assumption, different variances let it draw a closed boundary around the inner class.
+3. Try **XOR**. Each class has two lobes that a single axis-aligned Gaussian cannot capture, so the fit suffers.
+4. Push Variance smoothing to its maximum. Every ellipse swells and the boundaries straighten.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Bayes' rule">
+
+$$
+P(k | x) ∝ πₖ · p(x | k)
+$$
+
+</Formula>
+
+<Formula label="Naive assumption">
+
+$$
+p(x | k) = p(x₁ | k) · p(x₂ | k)
+$$
+
+</Formula>
+
+<Formula label="Per-feature Gaussian">
+
+$$
+p(xⱼ | k) = 𝒩(xⱼ; μₖⱼ, σ²ₖⱼ + ε)
+$$
+
+</Formula>
+
+<Formula label="Log score">
+
+$$
+log πₖ − Σⱼ [ ½ log σ²ₖⱼ + (xⱼ − μₖⱼ)² / (2σ²ₖⱼ) ]
+$$
+
+</Formula>
+
+</Formulas>
+
+## Strengths and weaknesses
+
+<ProsCons>
+<Card>
+
+### Good at
+
+- Extremely fast and needs very little data.
+- Scales gracefully to many features.
+- A strong baseline, especially for text.
+
+</Card>
+<Card>
+
+### Struggles with
+
+- Ignores correlations between features.
+- Probabilities are often overconfident.
+- One Gaussian per class misses multi-lobed shapes.
+
+</Card>
+</ProsCons>

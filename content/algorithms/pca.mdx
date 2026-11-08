@@ -1,0 +1,100 @@
+---
+summary: "Principal component analysis finds the directions along which the data varies most. Keeping only the top direction lets you describe each point with a single number while losing as little as possible."
+---
+
+
+## The idea
+
+Imagine photographing a long, thin pencil. From the side you see its full length; from the end you see a dot. PCA finds the side-on view: the angle that shows the most spread.
+
+That best direction is the first principal component, PC1. The second, PC2, is at right angles to it and captures whatever spread is left. Dropping PC2 squashes every point onto a line, the simplest possible summary.
+
+## How it works
+
+1. Centre the data by subtracting the mean point.
+2. Compute the 2 × 2 covariance matrix of x and y.
+3. Find its eigenvectors (the directions) and eigenvalues (the variance along each).
+4. Sort them: the largest eigenvalue gives PC1, the other gives PC2.
+5. Project each point onto PC1 to get its one-number summary.
+
+## Reading the picture
+
+Two arrows start at the mean: PC1 along the longest spread and PC2 at right angles to it. Their lengths reflect how much variance each direction holds.
+
+With Project onto PC1 on, each point is joined to its shadow on the PC1 line. Those short segments are the information PCA throws away; the stats show what share of the variance PC1 keeps.
+
+## Try this
+
+1. On **Ellipse**, drag points to rotate the cloud and watch PC1 turn with it. The PC1 angle in the stats follows along.
+2. Make the cloud rounder by dragging points outwards along PC2. PC1 explains less and less as the shape approaches a circle.
+3. Try **Blobs**. PC1 runs through the clusters, showing PCA ignores labels and only cares about spread.
+4. Drag one point far away from the rest. A single outlier can swing PC1 towards it.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Covariance">
+
+$$
+Σ = (1/(n − 1)) Σᵢ (xᵢ − μ)(xᵢ − μ)ᵀ
+$$
+
+</Formula>
+
+<Formula label="Components">
+
+$$
+Σ vⱼ = λⱼ vⱼ,   λ₁ ≥ λ₂
+$$
+
+</Formula>
+
+<Formula label="Explained variance">
+
+$$
+λ₁ / (λ₁ + λ₂)
+$$
+
+</Formula>
+
+<Formula label="Projection">
+
+$$
+zᵢ = v₁ᵀ (xᵢ − μ)
+$$
+
+</Formula>
+
+<Formula label="Reconstruction">
+
+$$
+x̂ᵢ = μ + zᵢ v₁
+$$
+
+</Formula>
+
+</Formulas>
+
+## Strengths and weaknesses
+
+<ProsCons>
+<Card>
+
+### Good at
+
+- Fast, exact and has no hyperparameters.
+- Compresses data while keeping the most variance.
+- Useful for visualising and de-noising.
+
+</Card>
+<Card>
+
+### Struggles with
+
+- Only finds straight-line directions.
+- Sensitive to outliers and to feature scaling.
+- Most spread is not always most useful.
+
+</Card>
+</ProsCons>

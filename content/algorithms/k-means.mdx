@@ -1,0 +1,91 @@
+---
+summary: "K-means splits unlabelled points into k groups by placing k centres and assigning each point to its nearest one. It alternates between assigning points and moving centres until nothing changes."
+---
+
+
+## The idea
+
+Imagine opening k coffee shops in a town. Each resident walks to the nearest shop. Then each shop moves to the middle of its own customers. Some residents now have a closer shop, so they switch, and the shops move again.
+
+Eventually nobody switches and the shops stop moving. That settled state is the clustering. It is a good one, but not always the best possible one: it depends on where the shops started.
+
+## How it learns
+
+1. Choose k starting centres, either random points or spread out with k-means++.
+2. Assign every point to its nearest centre.
+3. Move each centre to the mean of the points assigned to it.
+4. Repeat until no point changes cluster.
+
+## Reading the picture
+
+Each point is coloured by its cluster, and the large markers are the centres. The background shows which centre owns each region of the plane, forming straight-edged cells halfway between neighbouring centres.
+
+Step through training to see the two phases alternate. Inertia in the stats is the total squared distance from points to their centres; it can only go down.
+
+## Try this
+
+1. On **Blobs**, set Starting centres to Random points and Clusters (k) to 3. Reset a few times: sometimes two centres end up sharing one blob.
+2. Switch to k-means++ and reset again. Spreading the starts out makes bad outcomes much rarer.
+3. Load **Moons**. K-means cuts the moons with a straight line because it only understands round, compact groups.
+4. On **Blobs**, slide Clusters (k) from 1 to 6 and note the Inertia each time. Look for the elbow where adding clusters stops helping much.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Assign">
+
+$$
+cᵢ = argminⱼ ‖xᵢ − μⱼ‖²
+$$
+
+</Formula>
+
+<Formula label="Update">
+
+$$
+μⱼ = (1/|Sⱼ|) Σᵢ∈Sⱼ xᵢ
+$$
+
+</Formula>
+
+<Formula label="Inertia">
+
+$$
+J = Σᵢ ‖xᵢ − μ_{cᵢ}‖²
+$$
+
+</Formula>
+
+<Formula label="k-means++">
+
+$$
+P(choose x) ∝ D(x)²,   D(x) = distance to nearest chosen centre
+$$
+
+</Formula>
+
+</Formulas>
+
+## Strengths and weaknesses
+
+<ProsCons>
+<Card>
+
+### Good at
+
+- Simple, fast and scales to large datasets.
+- Easy to explain and to visualise.
+- Always converges, usually in a few steps.
+
+</Card>
+<Card>
+
+### Struggles with
+
+- You must choose k in advance.
+- Assumes round clusters of similar size.
+- Results depend on the starting centres.
+
+</Card>
+</ProsCons>

@@ -1,0 +1,100 @@
+---
+summary: "A neural network stacks layers of simple units that each compute a weighted sum and a bend. Trained with backpropagation, the layers learn their own features, so the network can draw almost any boundary."
+---
+
+
+## The idea
+
+Each neuron is a tiny logistic-regression-like unit: it draws a soft line and reports which side you are on. The next layer combines those lines into corners and bands, and the layer after that combines those into blobs and spirals.
+
+Nobody tells the network which lines to draw. It starts with random weights and keeps adjusting them in whatever direction reduces its error, a bit like sculpting by many small chisel taps.
+
+## How it learns
+
+1. Initialise the weights randomly.
+2. Forward pass: push every point through the layers to get class probabilities from a softmax.
+3. Measure the cross-entropy loss against the true labels.
+4. Backward pass: use the chain rule to find how much each weight contributed to the loss.
+5. Update every weight with Adam, which adapts the step size per weight. Repeat.
+
+## Reading the picture
+
+The background shows the predicted class at every point, shaded by confidence. Press play and watch it evolve from a vague tilt into a shape that wraps around the data.
+
+The stats track epoch, loss, accuracy and the number of parameters. A falling loss with a frozen boundary means the network is just becoming more confident about what it already knows.
+
+## Try this
+
+1. On **Moons** with the defaults, press play. The boundary curves around both moons within a few hundred epochs.
+2. Load **Spiral**, set Hidden layers to 3 and Neurons per layer to 16. Spirals need depth; compare with 1 layer of 4 neurons.
+3. Switch Activation to ReLU. Boundaries become piecewise straight, with visible corners, instead of smooth tanh curves.
+4. Set Weight decay (λ) high on a noisy **Moons**. The boundary stays smoother and refuses to chase individual points.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Layer">
+
+$$
+h⁽ˡ⁾ = g(W⁽ˡ⁾ h⁽ˡ⁻¹⁾ + b⁽ˡ⁾)
+$$
+
+</Formula>
+
+<Formula label="Activations">
+
+$$
+tanh(z),   ReLU(z) = max(0, z),   σ(z) = 1 / (1 + e⁻ᶻ)
+$$
+
+</Formula>
+
+<Formula label="Output">
+
+$$
+P(y = k | x) = softmax(W⁽ᴸ⁾ h⁽ᴸ⁻¹⁾ + b⁽ᴸ⁾)ₖ
+$$
+
+</Formula>
+
+<Formula label="Loss">
+
+$$
+L = −(1/n) Σᵢ log P(yᵢ | xᵢ) + (λ/2) Σ ‖W‖²
+$$
+
+</Formula>
+
+<Formula label="Adam">
+
+$$
+m ← β₁m + (1−β₁)g,  v ← β₂v + (1−β₂)g²,  θ ← θ − η m̂ / (√v̂ + ε)
+$$
+
+</Formula>
+
+</Formulas>
+
+## Strengths and weaknesses
+
+<ProsCons>
+<Card>
+
+### Good at
+
+- Can learn almost any boundary given enough units.
+- Learns its own features instead of needing hand-made ones.
+- Scales to images, audio and text.
+
+</Card>
+<Card>
+
+### Struggles with
+
+- Many hyperparameters and random starts to manage.
+- Hard to interpret what each weight means.
+- Overfits small datasets without regularisation.
+
+</Card>
+</ProsCons>

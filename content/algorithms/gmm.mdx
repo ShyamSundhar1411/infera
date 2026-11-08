@@ -1,0 +1,99 @@
+---
+summary: "A Gaussian mixture model explains the data as a blend of k bell-shaped clouds, each with its own centre, size and tilt. Points belong to clusters softly, with a probability for each."
+---
+
+
+## The idea
+
+K-means draws hard borders and assumes round clusters. A mixture model is more diplomatic: a point halfway between two clouds can be 50% one and 50% the other, and each cloud can stretch and rotate to fit its points.
+
+Think of overlapping spotlights on a stage. Each point is lit by every spotlight to some degree, and the brightest one claims it. The model keeps adjusting the spotlights until they explain the points as well as possible.
+
+## How it learns
+
+1. Start with k round Gaussians placed by k-means++.
+2. E-step: for every point, compute how responsible each Gaussian is for it.
+3. M-step: refit each Gaussian's weight, mean and covariance to the points, weighted by those responsibilities.
+4. Repeat until the average log-likelihood stops improving.
+
+## Reading the picture
+
+With Show ellipses on, each component draws ellipses that show its shape and orientation. Watch them start as small circles and stretch to fit the data as training runs.
+
+Points take the colour of their most responsible component. The background is shaded by responsibility, so pale bands show where components overlap and the model is genuinely unsure.
+
+## Try this
+
+1. On **Stretched**, press play and watch round starting circles turn into long tilted ellipses. K-means would cut these clusters wrongly.
+2. Step one iteration at a time. Each step reassigns responsibilities, then refits every ellipse to its share of the points.
+3. Set Components (k) to 1, then 6. With too many components, some ellipses split a real cluster or shrink onto a handful of points.
+4. Try **Moons**. Each moon is not one Gaussian, so the model needs extra components to approximate the curve.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Mixture">
+
+$$
+p(x) = Σⱼ πⱼ 𝒩(x; μⱼ, Σⱼ)
+$$
+
+</Formula>
+
+<Formula label="E-step">
+
+$$
+rᵢⱼ = πⱼ 𝒩(xᵢ; μⱼ, Σⱼ) / Σₗ πₗ 𝒩(xᵢ; μₗ, Σₗ)
+$$
+
+</Formula>
+
+<Formula label="M-step">
+
+$$
+Nⱼ = Σᵢ rᵢⱼ,   πⱼ = Nⱼ/n,   μⱼ = (1/Nⱼ) Σᵢ rᵢⱼ xᵢ
+$$
+
+</Formula>
+
+<Formula label="Covariance">
+
+$$
+Σⱼ = (1/Nⱼ) Σᵢ rᵢⱼ (xᵢ − μⱼ)(xᵢ − μⱼ)ᵀ
+$$
+
+</Formula>
+
+<Formula label="Objective">
+
+$$
+(1/n) Σᵢ log p(xᵢ), never decreases
+$$
+
+</Formula>
+
+</Formulas>
+
+## Strengths and weaknesses
+
+<ProsCons>
+<Card>
+
+### Good at
+
+- Soft assignments express uncertainty.
+- Handles stretched, tilted and overlapping clusters.
+- Gives a full density model of the data.
+
+</Card>
+<Card>
+
+### Struggles with
+
+- You must choose k in advance.
+- Can get stuck in poor local optima.
+- Components can collapse onto a few points.
+
+</Card>
+</ProsCons>

@@ -1,0 +1,92 @@
+---
+summary: "A decision tree classifies by asking a sequence of yes/no questions like \"is x below 0.2?\". Each answer narrows things down until a leaf gives the prediction."
+---
+
+
+## The idea
+
+It works like a flowchart a doctor might follow: is the temperature high? Is there a rash? Each question splits the patients into two groups that are more alike than before.
+
+On the canvas every question is a vertical or horizontal cut. Stack enough cuts and you can carve out almost any shape, as long as you are happy to build it from rectangles.
+
+## How it learns
+
+1. Start with all points in one box.
+2. Try every cut on x and on y, halfway between neighbouring points.
+3. Score each cut by how pure the two sides are, using Gini impurity or entropy.
+4. Keep the best cut and repeat inside each half.
+5. Stop when Max depth is reached, a box is pure, or a cut would leave fewer than Min points per leaf.
+
+## Reading the picture
+
+The background is a patchwork of axis-aligned rectangles, one per leaf. Each is coloured by its majority class, and the shading reflects how mixed that leaf is: a leaf with 9 A points and 1 B point is less confident than a pure one.
+
+The stats report the depth actually used and the number of leaves. Training accuracy climbs towards 100% as the tree deepens, but that is often memorisation, not learning.
+
+## Try this
+
+1. On **Moons**, set Max depth to 1. One straight cut. Increase it a level at a time and watch the staircase boundary form.
+2. Push Max depth to 12 and look for thin slivers wrapped around single noisy points. Raise Min points per leaf to 5 to prune them away.
+3. Load **Circles**. A round boundary has to be approximated with many little steps.
+4. Toggle Split criterion between Gini impurity and Entropy. The boundaries are usually almost identical.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Gini impurity">
+
+$$
+G = 1 − Σₖ pₖ²
+$$
+
+</Formula>
+
+<Formula label="Entropy">
+
+$$
+H = −Σₖ pₖ log₂ pₖ
+$$
+
+</Formula>
+
+<Formula label="Split score">
+
+$$
+(n_L · I(L) + n_R · I(R)) / n   (lower is better)
+$$
+
+</Formula>
+
+<Formula label="Leaf prediction">
+
+$$
+P(k | leaf) = n_k / n_leaf
+$$
+
+</Formula>
+
+</Formulas>
+
+## Strengths and weaknesses
+
+<ProsCons>
+<Card>
+
+### Good at
+
+- Readable: you can follow the rules by hand.
+- No feature scaling needed; handles mixed data types.
+- Captures interactions and non-linear boundaries.
+
+</Card>
+<Card>
+
+### Struggles with
+
+- Overfits easily when grown deep.
+- Unstable: a small data change can rebuild the tree.
+- Boundaries are blocky and axis-aligned.
+
+</Card>
+</ProsCons>

@@ -1,0 +1,89 @@
+---
+summary: "The number of independent trials needed to get the first success, counting the successful trial itself, so X takes the values 1, 2, 3, …"
+---
+
+
+## The story
+
+Keep flipping a coin that lands heads with probability p, and stop at the first head. To need exactly k flips you must fail k − 1 times and then succeed, so P(X = k) = (1 − p)ᵏ⁻¹ p. The bars always decrease: a first-try success is the single most likely outcome, however small p is.
+
+On average you wait 1/p trials, with variance (1 − p)/p². The Geometric is also memoryless: if you have already failed five times, the number of further trials you need has exactly the same distribution as when you started. The coin has no memory of your bad luck.
+
+## Formulas
+
+<Formulas>
+
+<Formula label="Support">
+
+$$
+k ∈ {1, 2, 3, …}
+$$
+
+</Formula>
+
+<Formula label="PMF">
+
+$$
+P(X = k) = (1 − p)ᵏ⁻¹ p
+$$
+
+</Formula>
+
+<Formula label="CDF">
+
+$$
+F(k) = 1 − (1 − p)ᵏ
+$$
+
+</Formula>
+
+<Formula label="Expectation">
+
+$$
+E[X] = 1 / p
+$$
+
+</Formula>
+
+<Formula label="Variance">
+
+$$
+Var(X) = (1 − p) / p²
+$$
+
+</Formula>
+
+<Formula label="Mode">
+
+$$
+1
+$$
+
+</Formula>
+
+</Formulas>
+
+## Parameters
+
+| Parameter | What it controls |
+| --- | --- |
+| p | The probability of success on each trial. Smaller p means longer waits: the mean is 1/p and the tail P(X \> k) = (1 − p)ᵏ decays more slowly. |
+
+## Where it shows up
+
+- The number of rolls of a die until the first six (p = 1/6, mean 6).
+- How many sales calls it takes to land the first sale.
+- The number of attempts until a flaky network request finally succeeds.
+- How many lottery draws until you first win anything.
+
+## Try this
+
+1. Set p = 0.2 and shade the interval from 1 to 5. The shaded probability is 1 − 0.8⁵ ≈ 0.672: about two times in three you succeed within five tries, even though the mean wait is 5.
+2. Drag p down to 0.05 and watch the mean marker slide out to 20 while the tallest bar stays at k = 1. Mean and mode can be very far apart in a skewed distribution.
+3. With p = 0.1, press **Draw 1000** and compare the sample variance with the theoretical (1 − p)/p² = 90. Then switch to **Sample means** with n = 30 and see the long right tail tamed into a near-Normal shape.
+
+## Related distributions
+
+- It counts independent Bernoulli(p) trials up to and including the first success.
+- It is the discrete cousin of the Exponential: both are memoryless waiting times, and for small p the scaled wait pX is approximately Exponential with rate 1.
+- Some textbooks count only the failures before the first success, giving values 0, 1, 2, …; that version is simply X − 1, with mean (1 − p)/p.

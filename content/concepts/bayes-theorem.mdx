@@ -1,0 +1,80 @@
+---
+name: "Bayes' Theorem"
+tagline: "Why a positive test for a rare disease usually means you are fine."
+summary: "Bayes' theorem tells you how to update a belief when new evidence arrives. It weighs how likely the evidence is under each explanation against how likely each explanation was to begin with."
+order: 1
+---
+
+
+<Lab id="bayes-theorem" />
+
+## The idea
+
+Imagine a disease that 1 in 100 people have, and a test that catches 99% of real cases but also flags 5% of healthy people. You test positive. Are you probably sick? Most people say yes. The real answer is about 17%.
+
+The trick is that healthy people vastly outnumber sick ones. Even a small false-positive rate applied to a huge healthy group produces more positives than the true cases do. Bayes' theorem makes that bookkeeping exact.
+
+## How to think about it
+
+1. Start with the prior: how common is the condition before you look at any evidence?
+2. Ask how likely the evidence is if the condition is true (the sensitivity) and if it is false (the false-positive rate).
+3. Count everyone who would see this evidence: true positives plus false positives.
+4. The posterior is the share of that group who really have the condition.
+5. Got more evidence? Today's posterior becomes tomorrow's prior.
+
+## Reading the picture
+
+The grid is 1,000 people. Coral squares are sick, the rest are healthy. Solid squares tested positive. Look only at the solid squares: the fraction that are coral is exactly P(sick | positive).
+
+## Try this
+
+1. Leave the defaults and read P(sick | positive). Then raise **Prevalence** to 20% and watch the same test become far more convincing.
+2. Push **Specificity** to 99.9%. False positives nearly vanish, and a positive result becomes strong evidence even for a rare disease.
+3. Set **Positive tests in a row** to 2. Each extra positive multiplies the odds by the likelihood ratio, so belief climbs fast.
+4. Make the disease very rare (0.1%). Even an excellent test gives mostly false alarms. This is why screening programmes confirm with a second test.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Bayes' theorem">
+
+$$
+P(A | B) = P(B | A) · P(A) / P(B)
+$$
+
+</Formula>
+
+<Formula label="Total probability">
+
+$$
+P(B) = P(B | A) P(A) + P(B | ¬A) P(¬A)
+$$
+
+</Formula>
+
+<Formula label="Medical test">
+
+$$
+P(D | +) = sens · prev / (sens · prev + (1 − spec)(1 − prev))
+$$
+
+</Formula>
+
+<Formula label="Odds form">
+
+$$
+posterior odds = prior odds × likelihood ratio
+$$
+
+</Formula>
+
+<Formula label="Likelihood ratio">
+
+$$
+LR₊ = sensitivity / (1 − specificity)
+$$
+
+</Formula>
+
+</Formulas>

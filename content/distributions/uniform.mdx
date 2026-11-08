@@ -1,0 +1,83 @@
+---
+summary: "A continuous value equally likely to fall anywhere between a and b, so its density is a flat rectangle of height 1/(b − a)."
+---
+
+
+## The story
+
+Pick a point at random on a ruler between a and b, with no preference for any part. The chance of landing in any sub-interval depends only on its length: P(c ≤ X ≤ d) = (d − c)/(b − a). The CDF is therefore a straight ramp rising from 0 at a to 1 at b.
+
+Its mean is the midpoint (a + b)/2 and its variance is (b − a)²/12. The Uniform(0, 1) is also the raw material of simulation: computers generate uniform random numbers and transform them into everything else, for instance by feeding them through an inverse CDF.
+
+## Formulas
+
+<Formulas>
+
+<Formula label="Support">
+
+$$
+x ∈ [a, b]
+$$
+
+</Formula>
+
+<Formula label="PDF">
+
+$$
+f(x) = 1 / (b − a)
+$$
+
+</Formula>
+
+<Formula label="CDF">
+
+$$
+F(x) = (x − a) / (b − a)
+$$
+
+</Formula>
+
+<Formula label="Expectation">
+
+$$
+E[X] = (a + b) / 2
+$$
+
+</Formula>
+
+<Formula label="Variance">
+
+$$
+Var(X) = (b − a)² / 12
+$$
+
+</Formula>
+
+</Formulas>
+
+## Parameters
+
+| Parameter | What it controls |
+| --- | --- |
+| a | The lower end of the interval. Keep it below b. |
+| b | The upper end of the interval. Wider intervals give a lower, flatter rectangle, since the total area must stay 1. |
+
+## Where it shows up
+
+- The output of a random number generator such as Math.random(), on [0, 1).
+- The rounding error when a measurement is rounded to the nearest unit, roughly uniform on [−0.5, 0.5].
+- The arrival time of a bus that comes once every ten minutes, if you turn up at a random moment.
+- The angle at which a spun bottle comes to rest, uniform on [0°, 360°).
+
+## Try this
+
+1. Set a = 0 and b = 1, then toggle to the CDF view: it is a straight line, so P(X ≤ x) is simply x. Shade from 0.2 to 0.5 and confirm the probability is 0.3.
+2. With a = 0 and b = 1, switch to **Sample means** with n = 2. The averages form a triangle, not a rectangle. Try n = 3 and then n = 12 and watch the Central Limit Theorem take over.
+3. Press **Draw 1000** on Uniform(0, 1) and compare the sample variance with 1/12 ≈ 0.0833. Then widen b to 4 and check that the variance grows to 16/12 ≈ 1.33, because it scales with the square of the width.
+
+## Related distributions
+
+- It is the continuous counterpart of the Discrete Uniform.
+- Uniform(0, 1) is the Beta with α = β = 1.
+- If U is Uniform(0, 1), then −ln(U)/λ is Exponential with rate λ; this is the inverse-CDF trick in action.
+- The mean of n independent Uniforms tends to a Normal as n grows; even n = 12 already looks convincingly bell-shaped.

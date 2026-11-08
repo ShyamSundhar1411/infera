@@ -1,0 +1,75 @@
+---
+name: "Law of Large Numbers"
+tagline: "Averages settle down. Watch running means home in on the expected value."
+summary: "The law of large numbers says that the average of many independent draws gets closer and closer to the expected value. It is why casinos always win in the long run and why polls work."
+order: 3
+---
+
+
+<Lab id="law-of-large-numbers" />
+
+## The idea
+
+Roll a die once and you might get a 6. Average ten rolls and you will probably be somewhere between 2.5 and 4.5. Average ten thousand and you will be within a whisker of 3.5. Individual outcomes stay random, but their average becomes predictable.
+
+Each line on the chart is one person rolling and keeping a running average. Early on the lines swing wildly. As n grows they all squeeze together onto the true mean.
+
+## How fast?
+
+The spread of the average shrinks like σ/√n. To halve the error you need four times as many draws; to get one more decimal place you need a hundred times as many. The shaded band shows μ ± 2σ/√n, where about 95% of the averages should sit at each n.
+
+## When it fails
+
+The law needs the expected value to exist. The Cauchy distribution (Student's t with ν = 1) has tails so heavy that its mean is undefined. Its running averages never settle: every so often a single huge draw yanks the average somewhere new.
+
+## Try this
+
+1. Run the **Fair die** with 10 paths. Notice how wild the first 20 rolls are and how tight things look by 1,000.
+2. Switch to **Exponential**. The paths overshoot upwards more than downwards early on because the distribution is skewed, but they still converge.
+3. Pick **Cauchy** and run it several times. The paths jump and never settle, because there is no mean for them to converge to.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Sample mean">
+
+$$
+X̄ₙ = (X₁ + X₂ + … + Xₙ) / n
+$$
+
+</Formula>
+
+<Formula label="Weak law">
+
+$$
+P(|X̄ₙ − μ| > ε) → 0 as n → ∞, for every ε > 0
+$$
+
+</Formula>
+
+<Formula label="Strong law">
+
+$$
+P(X̄ₙ → μ) = 1
+$$
+
+</Formula>
+
+<Formula label="Spread of the average">
+
+$$
+Var(X̄ₙ) = σ² / n,   SD(X̄ₙ) = σ / √n
+$$
+
+</Formula>
+
+<Formula label="Chebyshev bound">
+
+$$
+P(|X̄ₙ − μ| ≥ ε) ≤ σ² / (n ε²)
+$$
+
+</Formula>
+
+</Formulas>

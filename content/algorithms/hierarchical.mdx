@@ -1,0 +1,100 @@
+---
+summary: "Hierarchical clustering starts with every point on its own and repeatedly merges the two closest groups. The full merge history forms a tree called a dendrogram, which you can cut at any height to get clusters."
+---
+
+
+## The idea
+
+Think of a family tree in reverse. Siblings join first, then cousins, then whole branches of the family, until everyone is one big clan. Nothing is decided up front; you build the whole tree and choose afterwards how coarsely to group.
+
+The linkage rule decides what "closest groups" means. Measure from the nearest pair of points, the furthest pair, the average pair, or by how much merging would increase the spread (Ward), and you get very different trees.
+
+## How it works
+
+1. Put every point in its own cluster and compute all pairwise distances.
+2. Find the two closest clusters and merge them, recording the merge height.
+3. Update the distances from the new cluster to every other one using the Lance-Williams formula.
+4. Repeat until a single cluster remains.
+5. Cut the dendrogram at the height that leaves the chosen number of clusters.
+
+## Reading the picture
+
+Points are coloured by the cluster they fall into after the cut. Alongside the canvas, the dendrogram shows every merge: the height of each join is how far apart the two groups were, and the horizontal cut line marks where the tree is sliced.
+
+Long vertical gaps in the dendrogram are a hint that a natural cluster boundary exists there. The stats show the cut height and the total number of merges.
+
+## Try this
+
+1. On **Blobs** with Ward linkage, slide Clusters (cut) from 1 to 8 and watch the cut line move down the dendrogram.
+2. Switch to **Moons** and set Linkage to Single. It chains along each crescent and separates them where Ward cannot.
+3. Still on **Moons**, add one point in the gap between the crescents. Single linkage may now merge them: one bridge is enough.
+4. Compare Complete and Average on **Stretched**. Complete prefers compact groups and may chop a long cluster in two.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Single">
+
+$$
+d(A, B) = min ‖a − b‖
+$$
+
+</Formula>
+
+<Formula label="Complete">
+
+$$
+d(A, B) = max ‖a − b‖
+$$
+
+</Formula>
+
+<Formula label="Average">
+
+$$
+d(A, B) = (1 / |A||B|) Σ ‖a − b‖
+$$
+
+</Formula>
+
+<Formula label="Lance-Williams (Ward)">
+
+$$
+d(i∪j, k) = [(nᵢ+nₖ) dᵢₖ + (nⱼ+nₖ) dⱼₖ − nₖ dᵢⱼ] / (nᵢ+nⱼ+nₖ)
+$$
+
+</Formula>
+
+<Formula label="Cut">
+
+$$
+k clusters = undo the last k − 1 merges
+$$
+
+</Formula>
+
+</Formulas>
+
+## Strengths and weaknesses
+
+<ProsCons>
+<Card>
+
+### Good at
+
+- No need to fix k before clustering.
+- The dendrogram shows structure at every scale.
+- Linkage choice adapts it to different cluster shapes.
+
+</Card>
+<Card>
+
+### Struggles with
+
+- Slow: at least quadratic in the number of points.
+- Merges are greedy and never undone.
+- Single linkage chains; Ward assumes compact blobs.
+
+</Card>
+</ProsCons>

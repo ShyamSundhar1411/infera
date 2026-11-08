@@ -1,0 +1,100 @@
+---
+summary: "K-nearest neighbours classifies a point by finding the k closest training points and letting them vote. There is no training step: the stored data is the model."
+---
+
+
+## The idea
+
+Moving to a new town and wondering which football team to support? Ask your nearest neighbours and go with the majority. KNN does exactly that for every spot on the canvas.
+
+The choice of k sets the personality. With k = 1 the model trusts the single closest point and copies every quirk. With a large k it consults a crowd and only sees the broad picture.
+
+## How it works
+
+1. Store all labelled points.
+2. For a query point, measure its distance to every stored point using the chosen metric.
+3. Keep the k closest.
+4. Count their votes per class, optionally weighting closer neighbours more.
+5. Predict the class with the most votes; the vote shares act as probabilities.
+
+## Reading the picture
+
+Every pixel of the background is classified by its own neighbour vote. Strong colour means a unanimous vote; pale colour means a split decision. Small k gives jagged boundaries and little islands; large k gives smooth ones.
+
+Leave-one-out accuracy in the stats judges each point by its neighbours with the point itself removed. It is a fairer score than training accuracy, which would be perfect at k = 1.
+
+## Try this
+
+1. On **Moons**, set Neighbours (k) to 1 and look for tiny islands around noisy points. Then raise k to 15 and watch them dissolve.
+2. Change Distance from Euclidean to Manhattan, then Chebyshev. The boundary turns more angular, because the "circle" of equal distance becomes a diamond and then a square.
+3. With k = 15, set Vote weighting to By distance. Points right next to a training point now follow it, even inside enemy territory.
+4. Push k to 30 on **Spiral**. The arms blur together and Leave-one-out accuracy drops.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Euclidean">
+
+$$
+d = √(Δx² + Δy²)
+$$
+
+</Formula>
+
+<Formula label="Manhattan">
+
+$$
+d = |Δx| + |Δy|
+$$
+
+</Formula>
+
+<Formula label="Chebyshev">
+
+$$
+d = max(|Δx|, |Δy|)
+$$
+
+</Formula>
+
+<Formula label="Vote">
+
+$$
+P(k | x) = Σᵢ∈N wᵢ · 1[yᵢ = k] / Σᵢ∈N wᵢ
+$$
+
+</Formula>
+
+<Formula label="Weights">
+
+$$
+wᵢ = 1 (equal)   or   wᵢ = 1 / dᵢ (by distance)
+$$
+
+</Formula>
+
+</Formulas>
+
+## Strengths and weaknesses
+
+<ProsCons>
+<Card>
+
+### Good at
+
+- No training and no assumptions about boundary shape.
+- Naturally handles any number of classes.
+- Easy to explain: look at the neighbours.
+
+</Card>
+<Card>
+
+### Struggles with
+
+- Prediction is slow: every query scans all the data.
+- Sensitive to feature scaling and the choice of metric.
+- Degrades badly in high dimensions.
+
+</Card>
+</ProsCons>
