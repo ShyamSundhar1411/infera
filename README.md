@@ -25,6 +25,13 @@ All models are written from scratch in TypeScript and run in the browser. No ML 
 
 Each has its PMF/PDF, CDF, expectation, variance, formulas, a sampler and a sample-means (CLT) mode.
 
+**Concepts (4)**
+
+- Bayes' theorem: a medical-test simulator on a grid of 1,000 people, with the formula filled in live
+- Bayesian updating: flip a hidden coin and watch a Beta posterior and its credible interval sharpen
+- Law of large numbers: running averages converging on E[X], and the Cauchy distribution refusing to
+- Central limit theorem: standardised averages of four very different distributions turning into N(0, 1)
+
 ## Running locally
 
 ```bash
@@ -49,7 +56,8 @@ src/
   app/                    routes and page components
     algorithms/[slug]/    one page per algorithm
     distributions/[slug]/ one page per distribution
-    components/           Playground, Distributions, Catalog, Explainer, Landing, Layout
+    concepts/[slug]/      one page per concept
+    components/           Playground, Distributions, Concepts, Catalog, Explainer, Landing, Layout
   components/ui/          shared primitives (slider, segmented control, toggle, panel)
   hooks/                  playground state, training loop, distribution lab
   lib/
