@@ -6,6 +6,7 @@ import ThemeToggle from "./theme-toggle";
 const NAV = [
   { href: "/algorithms/", label: "Algorithms" },
   { href: "/distributions/", label: "Distributions" },
+  { href: "/concepts/", label: "Concepts" },
 ];
 
 export default function SiteHeader() {

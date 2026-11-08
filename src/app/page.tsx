@@ -4,6 +4,8 @@ import Hero from "./components/Landing/hero";
 import HowItWorks from "./components/Landing/how-it-works";
 import AlgorithmCatalog from "./components/Catalog/algorithm-catalog";
 import DistributionCard from "./components/Distributions/distribution-card";
+import ConceptCard from "./components/Concepts/concept-card";
+import { getConcepts } from "@/lib/data/concepts.data";
 import { getAlgorithms } from "@/lib/data/algorithms.data";
 import { getDistributions } from "@/lib/data/distributions.data";
 
@@ -17,6 +19,15 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <SectionHeading title="Algorithms" href="/algorithms/" />
         <AlgorithmCatalog />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+        <SectionHeading title="Concepts" href="/concepts/" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {getConcepts().map((c) => (
+            <ConceptCard key={c.slug} concept={c} />
+          ))}
+        </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
