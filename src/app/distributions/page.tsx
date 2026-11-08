@@ -46,7 +46,7 @@ export default function DistributionsPage() {
             <p className="max-w-md text-sm text-muted sm:text-right">{group.blurb}</p>
           </div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {getDistributionsByType(group.type).map(({ content: _content, ...meta }) => (
+            {getDistributionsByType(group.type).map((meta) => (
               <DistributionCard key={meta.slug} distribution={meta} />
             ))}
           </div>

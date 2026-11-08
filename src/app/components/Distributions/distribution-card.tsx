@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { DistributionMeta } from "@/lib/types/domain/distribution.types";
 import MiniCurve from "./mini-curve";
+import { Tex } from "@/components/ui/tex";
 
 export default function DistributionCard({ distribution }: { distribution: DistributionMeta }) {
   return (
@@ -17,7 +18,9 @@ export default function DistributionCard({ distribution }: { distribution: Distr
           <h3 className="font-medium">{distribution.name}</h3>
           <ArrowUpRight className="size-4 shrink-0 text-muted transition group-hover:text-ink" />
         </div>
-        <p className="font-mono text-xs text-muted">{distribution.notation}</p>
+        <p className="text-xs text-muted">
+          <Tex>{distribution.notation}</Tex>
+        </p>
         <p className="text-[13px] leading-relaxed text-muted">{distribution.tagline}</p>
       </div>
     </Link>

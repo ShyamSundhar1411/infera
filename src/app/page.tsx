@@ -33,7 +33,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <SectionHeading title="Distributions" href="/distributions/" />
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {distributions.slice(0, 8).map(({ content: _content, ...meta }) => (
+          {distributions.slice(0, 8).map((meta) => (
             <DistributionCard key={meta.slug} distribution={meta} />
           ))}
         </div>

@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import AlgorithmPlayground from "../../components/Playground/algorithm-playground";
-import AlgorithmExplainer from "../../components/Explainer/algorithm-explainer";
+import MdxArticle from "../../components/Mdx/mdx-article";
+import { readMdx } from "@/lib/mdx/load";
+import type { ExplainerFrontmatter } from "@/lib/types/domain/algorithm.types";
 import { getAlgorithm, getAlgorithms } from "@/lib/data/algorithms.data";
 import { getCategories } from "@/lib/data/categories.data";
 
@@ -14,14 +16,17 @@ interface PageProps {
 export const generateStaticParams = () => getAlgorithms().map((a) => ({ slug: a.slug }));
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const algorithm = getAlgorithm((await params).slug);
-  return algorithm ? { title: algorithm.name, description: algorithm.content.summary } : {};
+  const { slug } = await params;
+  const algorithm = getAlgorithm(slug);
+  const doc = readMdx<ExplainerFrontmatter>("algorithms", slug);
+  return algorithm ? { title: algorithm.name, description: doc?.frontmatter.summary } : {};
 }
 
 export default async function AlgorithmPage({ params }: PageProps) {
   const { slug } = await params;
   const algorithm = getAlgorithm(slug);
   if (!algorithm) notFound();
+  const doc = readMdx<ExplainerFrontmatter>("algorithms", slug);
 
   const all = getAlgorithms();
   const index = all.findIndex((a) => a.slug === slug);
@@ -42,14 +47,16 @@ export default async function AlgorithmPage({ params }: PageProps) {
       </nav>
       <header className="mb-8 max-w-3xl">
         <h1 className="font-display text-4xl tracking-tight sm:text-5xl">{algorithm.name}</h1>
-        <p className="mt-3 text-lg leading-relaxed text-muted">{algorithm.content.summary}</p>
+        <p className="mt-3 text-lg leading-relaxed text-muted">{doc?.frontmatter.summary ?? algorithm.tagline}</p>
       </header>
 
       <AlgorithmPlayground slug={slug} />
 
-      <div className="mt-20">
-        <AlgorithmExplainer content={algorithm.content} />
-      </div>
+      {doc && (
+        <div className="mt-20">
+          <MdxArticle source={doc.body} />
+        </div>
+      )}
 
       <nav className="mt-20 grid gap-4 border-t border-line pt-8 sm:grid-cols-2">
         {prev ? (

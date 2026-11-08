@@ -15,7 +15,7 @@ export default function AlgorithmCatalog() {
               <p className="max-w-md text-sm text-muted sm:text-right">{category.blurb}</p>
             </div>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {items.map(({ content: _content, ...meta }) => (
+              {items.map((meta) => (
                 <AlgorithmCard key={meta.slug} algorithm={meta} />
               ))}
             </div>

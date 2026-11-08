@@ -12,7 +12,7 @@ export default async function MdxArticle({
 }) {
   const Content = await compileMdx(source);
   return (
-    <article className="max-w-3xl [&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden">
+    <article className="[&>*]:max-w-3xl [&>.wide]:max-w-none [&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden">
       <Content components={{ ...mdxComponents, ...components }} />
     </article>
   );

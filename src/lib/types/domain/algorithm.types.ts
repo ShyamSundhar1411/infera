@@ -54,27 +54,6 @@ export interface ToggleParam extends BaseParam {
 
 export type ParamDef = RangeParam | SelectParam | ToggleParam;
 
-export interface ContentSection {
-  title: string;
-  paragraphs?: string[];
-  steps?: string[];
-}
-
-export interface MathLine {
-  label: string;
-  formula: string;
-}
-
-export interface AlgorithmContent {
-  /** Short plain-English description shown under the title. */
-  summary: string;
-  sections: ContentSection[];
-  tryThis: string[];
-  maths: MathLine[];
-  strengths: string[];
-  weaknesses: string[];
-}
-
 export interface AlgorithmMeta {
   slug: string;
   name: string;
@@ -91,6 +70,9 @@ export interface AlgorithmMeta {
   params: ParamDef[];
 }
 
-export interface Algorithm extends AlgorithmMeta {
-  content: AlgorithmContent;
+export type Algorithm = AlgorithmMeta;
+
+/** Frontmatter shared by every MDX explainer. */
+export interface ExplainerFrontmatter {
+  summary: string;
 }

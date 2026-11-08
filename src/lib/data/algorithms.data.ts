@@ -4,7 +4,6 @@ import type {
   CategoryId,
   ParamDef,
 } from "../types/domain/algorithm.types";
-import { CONTENT } from "./content";
 
 const REGRESSION_DATA = ["line", "curve", "sine", "cubic", "outliers"];
 const CLASSIFICATION_DATA = ["blobs", "separable", "moons", "circles", "xor", "spiral"];
@@ -452,8 +451,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
 ];
 
-export const getAlgorithms = (): Algorithm[] =>
-  ALGORITHMS.map((meta) => ({ ...meta, content: CONTENT[meta.slug] }));
+export const getAlgorithms = (): Algorithm[] => ALGORITHMS;
 
 export const getAlgorithm = (slug: string): Algorithm | undefined =>
   getAlgorithms().find((a) => a.slug === slug);
