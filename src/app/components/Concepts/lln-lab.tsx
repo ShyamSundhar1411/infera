@@ -50,9 +50,10 @@ export default function LawOfLargeNumbersLab() {
     let frame = 0;
     const loop = () => {
       const r = rand.current;
-      let done = true;
       setMeans((prev) => {
         const paths = prev.length ? prev : Array.from({ length: pathCount }, () => [] as number[]);
+        // Returning the same array once every path is full lets React skip the render.
+        if (paths.every((path) => path.length >= MAX_N)) return prev;
         return paths.map((old) => {
           const path = old.slice();
           for (let k = 0; k < PER_FRAME && path.length < MAX_N; k++) {
@@ -60,18 +61,17 @@ export default function LawOfLargeNumbersLab() {
             const last = n ? path[n - 1] : 0;
             path.push(last + (math.sample(spec.params, r) - last) / (n + 1));
           }
-          if (path.length < MAX_N) done = false;
           return path;
         });
       });
-      if (done) setRunning(false);
-      else frame = requestAnimationFrame(loop);
+      frame = requestAnimationFrame(loop);
     };
     frame = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frame);
   }, [running, pathCount, math, spec.params]);
 
   const n = means[0]?.length ?? 0;
+  const active = running && n < MAX_N;
   const [yLo, yHi] = spec.y;
   const sx = (i: number) => PAD.left + (Math.log10(i) / Math.log10(MAX_N)) * IW;
   const sy = (v: number) => PAD.top + IH * (1 - (Math.max(yLo, Math.min(yHi, v)) - yLo) / (yHi - yLo));
@@ -180,9 +180,9 @@ export default function LawOfLargeNumbersLab() {
               }}
               hint="Each path is an independent run of the same experiment."
             />
-            <Button className="w-full" variant={running ? "outline" : "accent"} onClick={() => setRunning((r) => !r)} disabled={n >= MAX_N}>
-              {running ? <Pause className="size-4" /> : <Play className="size-4" />}
-              {running ? "Pause" : n ? "Continue" : "Run"}
+            <Button className="w-full" variant={active ? "outline" : "accent"} onClick={() => setRunning(!active)} disabled={n >= MAX_N}>
+              {active ? <Pause className="size-4" /> : <Play className="size-4" />}
+              {active ? "Pause" : n >= MAX_N ? "Finished" : n ? "Continue" : "Run"}
             </Button>
             <Button className="w-full" variant="ghost" onClick={reset}>
               <RotateCcw className="size-4" /> Start over
