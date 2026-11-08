@@ -9,6 +9,12 @@ Keep flipping a coin that lands heads with probability $p$, and stop at the firs
 
 On average you wait $1/p$ trials, with variance $(1 - p)/p^2$. The Geometric is also memoryless: if you have already failed five times, the number of further trials you need has exactly the same distribution as when you started. The coin has no memory of your bad luck.
 
+## Flip until heads
+
+Each experiment flips a coin until the first head and counts the flips. The coin can be biased: lower the chance of heads and the waits get longer, but the tallest bar always stays at 1.
+
+<Lab id="first-heads" />
+
 ## Formulas
 
 <Formulas>

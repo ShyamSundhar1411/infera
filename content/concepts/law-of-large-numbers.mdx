@@ -18,6 +18,12 @@ Each line on the chart is one person rolling and keeping a running average. Earl
 
 The spread of the average shrinks like $\sigma/\sqrt{n}$. To halve the error you need four times as many draws; to get one more decimal place you need a hundred times as many. The shaded band shows $\mu \pm 2\sigma/\sqrt{n}$, where about 95% of the averages should sit at each $n$.
 
+## Roll it yourself
+
+Here is a single die rolled one throw at a time. The face counts start out lumpy, and the running average jumps around before settling on the expected value. Load the die and it settles somewhere else, on the new expected value, which shows the law has nothing to do with fairness, only with independence and a finite mean.
+
+<Lab id="dice" />
+
 ## When it fails
 
 The law needs the expected value to exist. The Cauchy distribution (Student's $t$ with $\nu = 1$) has tails so heavy that its mean is undefined. Its running averages never settle: every so often a single huge draw yanks the average somewhere new.

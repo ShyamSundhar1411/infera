@@ -9,6 +9,12 @@ When you have no reason to favour any outcome over another, you give them all th
 
 The mean sits exactly in the middle at $(a + b)/2$, and the variance is $(m^2 - 1)/12$, which grows with the width of the range. For a standard die ($a = 1$, $b = 6$) that gives a mean of 3.5, a value the die can never actually show, and a variance of $35/12 \approx 2.92$.
 
+## Roll a die
+
+A fair six-sided die is $\text{DiscreteUniform}(1, 6)$. Roll it and every face's share drifts towards $1/6$. Add weight to the six and it is no longer uniform: the six turns up more often and the average moves above 3.5.
+
+<Lab id="dice" />
+
 ## Formulas
 
 <Formulas>
