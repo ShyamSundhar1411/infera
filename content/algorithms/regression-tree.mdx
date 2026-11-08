@@ -5,17 +5,17 @@ summary: "A regression tree chops the x-axis into intervals and predicts the ave
 
 ## The idea
 
-Think of playing twenty questions with a number line. "Is x below 0.3?" Yes. "Is it below −0.2?" No. After a few questions you have narrowed x down to a slice, and you predict the typical y in that slice.
+Think of playing twenty questions with a number line. "Is $x$ below $0.3$?" Yes. "Is it below $-0.2$?" No. After a few questions you have narrowed $x$ down to a slice, and you predict the typical $y$ in that slice.
 
 Each question is chosen greedily: the tree picks whichever cut makes the two halves as internally consistent as possible, then asks again inside each half.
 
 ## How it learns
 
-1. Start with all points in one group, predicting their mean y.
-2. Try every cut point on x and score it by the total squared error of the two halves.
+1. Start with all points in one group, predicting their mean $y$.
+2. Try every cut point on $x$ and score it by the total squared error of the two halves.
 3. Keep the best cut and repeat inside each half.
 4. Stop when Max depth is reached or a split would leave fewer than Min points per leaf on a side.
-5. Each final group (a leaf) predicts the mean y of its points.
+5. Each final group (a leaf) predicts the mean $y$ of its points.
 
 ## Reading the picture
 
@@ -37,7 +37,7 @@ Turn on Show residuals to see how far each point sits from its step. Deeper tree
 <Formula label="Leaf prediction">
 
 $$
-ŷ = (1/|R|) Σᵢ∈R yᵢ
+\hat{y} = \frac{1}{\lvert R\rvert}\sum_{i \in R} y_i
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Split cost">
 
 $$
-SSE(L) + SSE(R),   SSE(S) = Σᵢ∈S (yᵢ − ȳ_S)²
+\operatorname{SSE}(L) + \operatorname{SSE}(R), \quad \operatorname{SSE}(S) = \sum_{i \in S} (y_i - \bar{y}_S)^2
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Threshold">
 
 $$
-t = midpoint between neighbouring sorted xᵢ values
+t = \text{midpoint between neighbouring sorted } x_i \text{ values}
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Max leaves">
 
 $$
-leaves ≤ 2^depth
+\text{leaves} \le 2^{\text{depth}}
 $$
 
 </Formula>

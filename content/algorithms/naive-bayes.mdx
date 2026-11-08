@@ -11,8 +11,8 @@ In pictures, it means every class gets an ellipse that is lined up with the axes
 
 ## How it learns
 
-1. For each class, compute the mean of x and the mean of y.
-2. Compute the variance of x and of y separately, ignoring any correlation.
+1. For each class, compute the mean of $x$ and the mean of $y$.
+2. Compute the variance of $x$ and of $y$ separately, ignoring any correlation.
 3. Add a little variance smoothing so no bell curve becomes a spike.
 4. Set each class prior to its share of the points.
 5. Score a new point by multiplying the prior with each feature's likelihood, then normalise.
@@ -37,7 +37,7 @@ Because each class has its own variances, the boundaries can curve, just like QD
 <Formula label="Bayes' rule">
 
 $$
-P(k | x) ∝ πₖ · p(x | k)
+P(k \mid x) \propto \pi_k \cdot p(x \mid k)
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Naive assumption">
 
 $$
-p(x | k) = p(x₁ | k) · p(x₂ | k)
+p(x \mid k) = p(x_1 \mid k) \cdot p(x_2 \mid k)
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Per-feature Gaussian">
 
 $$
-p(xⱼ | k) = 𝒩(xⱼ; μₖⱼ, σ²ₖⱼ + ε)
+p(x_j \mid k) = \mathcal{N}\big(x_j;\ \mu_{kj},\ \sigma_{kj}^2 + \varepsilon\big)
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Log score">
 
 $$
-log πₖ − Σⱼ [ ½ log σ²ₖⱼ + (xⱼ − μₖⱼ)² / (2σ²ₖⱼ) ]
+\log \pi_k - \sum_j \left[ \tfrac{1}{2}\log \sigma_{kj}^2 + \frac{(x_j - \mu_{kj})^2}{2\sigma_{kj}^2} \right]
 $$
 
 </Formula>

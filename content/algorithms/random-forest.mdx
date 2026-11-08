@@ -7,13 +7,13 @@ summary: "A random forest trains many decision trees, each on a slightly differe
 
 Ask one person to guess the number of sweets in a jar and they may be way off. Ask a hundred people and average the guesses, and you are usually close. That only works if people make different mistakes.
 
-A forest forces its trees to disagree in two ways. Each tree may see a random resample of the data, and at each split it is only allowed to consider one randomly chosen feature (x or y). Diverse trees, averaged, give a steadier answer than any one of them.
+A forest forces its trees to disagree in two ways. Each tree may see a random resample of the data, and at each split it is only allowed to consider one randomly chosen feature ($x$ or $y$). Diverse trees, averaged, give a steadier answer than any one of them.
 
 ## How it learns
 
-1. For each tree, draw a bootstrap sample: n points picked with replacement.
+1. For each tree, draw a bootstrap sample: $n$ points picked with replacement.
 2. Grow a decision tree on that sample using Gini impurity.
-3. At every split, pick x or y at random and find the best cut on that feature only.
+3. At every split, pick $x$ or $y$ at random and find the best cut on that feature only.
 4. Repeat for the chosen number of trees.
 5. To predict, average the class probabilities from all trees.
 
@@ -37,7 +37,7 @@ With Bootstrap samples on, about a third of the points are left out of each tree
 <Formula label="Bootstrap">
 
 $$
-Dₜ = n draws with replacement from D
+D_t = n \text{ draws with replacement from } D
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Left out">
 
 $$
-P(point not in Dₜ) = (1 − 1/n)ⁿ ≈ 1/e ≈ 37%
+P(\text{point} \notin D_t) = \left(1 - \frac{1}{n}\right)^n \approx \frac{1}{e} \approx 37\%
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Prediction">
 
 $$
-P(k | x) = (1/T) Σₜ Pₜ(k | x)
+P(k \mid x) = \frac{1}{T}\sum_t P_t(k \mid x)
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Out-of-bag">
 
 $$
-score xᵢ with only the trees where xᵢ ∉ Dₜ
+\text{score } x_i \text{ with only the trees where } x_i \notin D_t
 $$
 
 </Formula>

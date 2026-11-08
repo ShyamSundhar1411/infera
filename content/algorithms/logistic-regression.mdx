@@ -7,7 +7,7 @@ summary: "Logistic regression gives each class a linear score and turns those sc
 
 Think of each class as a candidate in an election, with a score that rises as you move in its favoured direction across the plane. Softmax converts the scores into vote shares that add up to one. Where two candidates tie, you get the boundary.
 
-On its own the score is linear, so boundaries are straight lines. Feed it extra features like x², xy and y², and the same linear model can draw circles, ellipses and curves in the original plane.
+On its own the score is linear, so boundaries are straight lines. Feed it extra features like $x^2$, $xy$ and $y^2$, and the same linear model can draw circles, ellipses and curves in the original plane.
 
 ## How it learns
 
@@ -27,8 +27,8 @@ Press play to watch the boundary rotate and slide into place. Log loss in the st
 
 1. On **Blobs**, press play and watch the boundaries settle. Then add a class C point deep in A's territory and see how far it can pull the line.
 2. Switch to **Circles** with Feature degree 1. No straight line works. Set Feature degree to 2 and the boundary becomes a ring.
-3. Try **XOR** at Feature degree 2. The xy feature alone is enough to solve it.
-4. On **Moons**, set Feature degree to 6 and Regularisation (λ) to the far left, then slide λ up. Watch an overly twisty boundary smooth out.
+3. Try **XOR** at Feature degree 2. The $xy$ feature alone is enough to solve it.
+4. On **Moons**, set Feature degree to 6 and Regularisation ($\lambda$) to the far left, then slide $\lambda$ up. Watch an overly twisty boundary smooth out.
 
 ## The maths
 
@@ -37,7 +37,7 @@ Press play to watch the boundary rotate and slide into place. Log loss in the st
 <Formula label="Features">
 
 $$
-φ(x) = [1, x₁, x₂, x₁², x₁x₂, x₂², …]
+\phi(x) = [1, x_1, x_2, x_1^2, x_1 x_2, x_2^2, \dots]
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Scores">
 
 $$
-zₖ = wₖᵀ φ(x)
+z_k = w_k^\top \phi(x)
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Softmax">
 
 $$
-P(y = k | x) = e^{zₖ} / Σⱼ e^{zⱼ}
+P(y = k \mid x) = \frac{e^{z_k}}{\sum_j e^{z_j}}
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Loss">
 
 $$
-L = −(1/n) Σᵢ log P(yᵢ | xᵢ) + (λ/2) Σ ‖wₖ‖²   (bias not penalised)
+L = -\frac{1}{n}\sum_i \log P(y_i \mid x_i) + \frac{\lambda}{2}\sum_k \lVert w_k\rVert^2 \quad (\text{bias not penalised})
 $$
 
 </Formula>
@@ -69,7 +69,7 @@ $$
 <Formula label="Gradient step">
 
 $$
-wₖ ← wₖ − η [ (1/n) Σᵢ (pᵢₖ − 1[yᵢ = k]) φ(xᵢ) + λwₖ ]
+w_k \leftarrow w_k - \eta \left[ \frac{1}{n}\sum_i \big(p_{ik} - \mathbf{1}[y_i = k]\big)\,\phi(x_i) + \lambda w_k \right]
 $$
 
 </Formula>

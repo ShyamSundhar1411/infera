@@ -7,11 +7,11 @@ summary: "Linear regression draws the line (or curve) that sits as close as poss
 
 Imagine every point is tied to the line with a little vertical spring. Long springs pull much harder than short ones, because the pull grows with the square of the stretch. The line settles where the total tension is as small as possible.
 
-A polynomial fit is the same trick with extra ingredients. Instead of only x, the model may use x², x³ and so on, so the curve can bend. The maths does not change: it is still a weighted sum, just of more features.
+A polynomial fit is the same trick with extra ingredients. Instead of only $x$, the model may use $x^2$, $x^3$ and so on, so the curve can bend. The maths does not change: it is still a weighted sum, just of more features.
 
 ## How it learns
 
-1. Turn each x into a row of features: 1, x, x², up to the chosen degree.
+1. Turn each $x$ into a row of features: $1, x, x^2$, up to the chosen degree.
 2. Measure the error as the mean of squared residuals, the vertical gaps between points and curve.
 3. Optionally add a ridge penalty that charges for large weights (the intercept is never penalised).
 4. Solve the resulting linear equations directly. There is no training loop: the best weights come out in one step.
@@ -20,13 +20,13 @@ A polynomial fit is the same trick with extra ingredients. Instead of only x, th
 
 The coloured curve is the fitted model. With Show residuals on, each point gets a thin segment to the curve: those are the errors the model is trying to shrink, and the MSE in the stats is their average squared length.
 
-R² tells you how much better the fit is than a flat line at the mean y. For degree 3 or below the stats also print the fitted equation, so you can read the slope and intercept directly.
+$R^2$ tells you how much better the fit is than a flat line at the mean $y$. For degree 3 or below the stats also print the fitted equation, so you can read the slope and intercept directly.
 
 ## Try this
 
 1. On **Line**, leave Polynomial degree at 1 and drag a single point far up. Watch the whole line tilt towards it: squared error makes one outlier very loud.
-2. Switch to **Curve** and step Polynomial degree from 1 to 2. R² should jump, because the data really is a parabola.
-3. Pick **Wave**, lower the point count, and push Polynomial degree to 12. The curve threads every point and swings wildly between them. Now raise Ridge penalty (λ) and watch it calm down.
+2. Switch to **Curve** and step Polynomial degree from 1 to 2. $R^2$ should jump, because the data really is a parabola.
+3. Pick **Wave**, lower the point count, and push Polynomial degree to 12. The curve threads every point and swings wildly between them. Now raise Ridge penalty ($\lambda$) and watch it calm down.
 4. Try **Outliers** with degree 1 and compare the fit with and without the stray points (shift-click to erase them).
 
 ## The maths
@@ -36,7 +36,7 @@ R² tells you how much better the fit is than a flat line at the mean y. For deg
 <Formula label="Model">
 
 $$
-ŷ = w₀ + w₁x + w₂x² + … + w_d xᵈ
+\hat{y} = w_0 + w_1 x + w_2 x^2 + \dots + w_d x^d
 $$
 
 </Formula>
@@ -44,7 +44,7 @@ $$
 <Formula label="Loss">
 
 $$
-L(w) = (1/n) Σᵢ (yᵢ − ŷᵢ)² + λ Σⱼ₌₁ᵈ wⱼ²
+L(w) = \frac{1}{n}\sum_i (y_i - \hat{y}_i)^2 + \lambda \sum_{j=1}^{d} w_j^2
 $$
 
 </Formula>
@@ -52,7 +52,7 @@ $$
 <Formula label="Closed form">
 
 $$
-w = (XᵀX + nλI′)⁻¹ Xᵀy   (I′ skips the intercept)
+w = (X^\top X + n\lambda I')^{-1} X^\top y \quad (I' \text{ skips the intercept})
 $$
 
 </Formula>
@@ -60,15 +60,15 @@ $$
 <Formula label="Residual">
 
 $$
-rᵢ = yᵢ − ŷᵢ
+r_i = y_i - \hat{y}_i
 $$
 
 </Formula>
 
-<Formula label="R²">
+<Formula label="R-squared">
 
 $$
-R² = 1 − Σ rᵢ² / Σ (yᵢ − ȳ)²
+R^2 = 1 - \frac{\sum_i r_i^2}{\sum_i (y_i - \bar{y})^2}
 $$
 
 </Formula>
@@ -83,7 +83,7 @@ $$
 ### Good at
 
 - Fast, exact and easy to interpret.
-- Coefficients tell you how y changes with x.
+- Coefficients tell you how $y$ changes with $x$.
 - Polynomial features add flexibility without new maths.
 
 </Card>

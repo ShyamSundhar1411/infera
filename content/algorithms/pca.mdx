@@ -12,7 +12,7 @@ That best direction is the first principal component, PC1. The second, PC2, is a
 ## How it works
 
 1. Centre the data by subtracting the mean point.
-2. Compute the 2 × 2 covariance matrix of x and y.
+2. Compute the $2 \times 2$ covariance matrix of $x$ and $y$.
 3. Find its eigenvectors (the directions) and eigenvalues (the variance along each).
 4. Sort them: the largest eigenvalue gives PC1, the other gives PC2.
 5. Project each point onto PC1 to get its one-number summary.
@@ -37,7 +37,7 @@ With Project onto PC1 on, each point is joined to its shadow on the PC1 line. Th
 <Formula label="Covariance">
 
 $$
-Σ = (1/(n − 1)) Σᵢ (xᵢ − μ)(xᵢ − μ)ᵀ
+\Sigma = \frac{1}{n-1}\sum_i (x_i - \mu)(x_i - \mu)^\top
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Components">
 
 $$
-Σ vⱼ = λⱼ vⱼ,   λ₁ ≥ λ₂
+\Sigma v_j = \lambda_j v_j, \quad \lambda_1 \ge \lambda_2
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Explained variance">
 
 $$
-λ₁ / (λ₁ + λ₂)
+\frac{\lambda_1}{\lambda_1 + \lambda_2}
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Projection">
 
 $$
-zᵢ = v₁ᵀ (xᵢ − μ)
+z_i = v_1^\top (x_i - \mu)
 $$
 
 </Formula>
@@ -69,7 +69,7 @@ $$
 <Formula label="Reconstruction">
 
 $$
-x̂ᵢ = μ + zᵢ v₁
+\hat{x}_i = \mu + z_i v_1
 $$
 
 </Formula>

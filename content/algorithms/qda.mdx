@@ -37,7 +37,7 @@ Boundaries are quadratic curves. Watch for regions that wrap around a tight clas
 <Formula label="Class model">
 
 $$
-p(x | k) = 𝒩(x; μₖ, Σₖ)
+p(x \mid k) = \mathcal{N}(x;\ \mu_k, \Sigma_k)
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Covariance">
 
 $$
-Σₖ = (1/(nₖ − 1)) Σᵢ∈k (xᵢ − μₖ)(xᵢ − μₖ)ᵀ + εI
+\Sigma_k = \frac{1}{n_k - 1}\sum_{i \in k} (x_i - \mu_k)(x_i - \mu_k)^\top + \varepsilon I
 $$
 
 </Formula>
@@ -53,7 +53,10 @@ $$
 <Formula label="Discriminant">
 
 $$
-δₖ(x) = −½ log|Σₖ| − ½ (x − μₖ)ᵀ Σₖ⁻¹ (x − μₖ) + log πₖ
+\begin{aligned}
+\delta_k(x) = &-\tfrac{1}{2}\log\lvert\Sigma_k\rvert - \tfrac{1}{2}(x - \mu_k)^\top \Sigma_k^{-1} (x - \mu_k) \\
+&+ \log \pi_k
+\end{aligned}
 $$
 
 </Formula>
@@ -61,7 +64,7 @@ $$
 <Formula label="Posterior">
 
 $$
-P(k | x) = softmax over k of δₖ(x)
+P(k \mid x) = \operatorname{softmax}\big(\delta_1(x), \dots, \delta_K(x)\big)_k
 $$
 
 </Formula>

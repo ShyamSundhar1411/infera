@@ -28,7 +28,7 @@ The stats track epoch, loss, accuracy and the number of parameters. A falling lo
 1. On **Moons** with the defaults, press play. The boundary curves around both moons within a few hundred epochs.
 2. Load **Spiral**, set Hidden layers to 3 and Neurons per layer to 16. Spirals need depth; compare with 1 layer of 4 neurons.
 3. Switch Activation to ReLU. Boundaries become piecewise straight, with visible corners, instead of smooth tanh curves.
-4. Set Weight decay (λ) high on a noisy **Moons**. The boundary stays smoother and refuses to chase individual points.
+4. Set Weight decay ($\lambda$) high on a noisy **Moons**. The boundary stays smoother and refuses to chase individual points.
 
 ## The maths
 
@@ -37,7 +37,7 @@ The stats track epoch, loss, accuracy and the number of parameters. A falling lo
 <Formula label="Layer">
 
 $$
-h⁽ˡ⁾ = g(W⁽ˡ⁾ h⁽ˡ⁻¹⁾ + b⁽ˡ⁾)
+h^{(\ell)} = g\big(W^{(\ell)} h^{(\ell-1)} + b^{(\ell)}\big)
 $$
 
 </Formula>
@@ -45,7 +45,7 @@ $$
 <Formula label="Activations">
 
 $$
-tanh(z),   ReLU(z) = max(0, z),   σ(z) = 1 / (1 + e⁻ᶻ)
+\tanh(z), \quad \operatorname{ReLU}(z) = \max(0, z), \quad \sigma(z) = \frac{1}{1 + e^{-z}}
 $$
 
 </Formula>
@@ -53,7 +53,7 @@ $$
 <Formula label="Output">
 
 $$
-P(y = k | x) = softmax(W⁽ᴸ⁾ h⁽ᴸ⁻¹⁾ + b⁽ᴸ⁾)ₖ
+P(y = k \mid x) = \operatorname{softmax}\big(W^{(L)} h^{(L-1)} + b^{(L)}\big)_k
 $$
 
 </Formula>
@@ -61,7 +61,7 @@ $$
 <Formula label="Loss">
 
 $$
-L = −(1/n) Σᵢ log P(yᵢ | xᵢ) + (λ/2) Σ ‖W‖²
+L = -\frac{1}{n}\sum_i \log P(y_i \mid x_i) + \frac{\lambda}{2}\sum \lVert W\rVert^2
 $$
 
 </Formula>
@@ -69,7 +69,10 @@ $$
 <Formula label="Adam">
 
 $$
-m ← β₁m + (1−β₁)g,  v ← β₂v + (1−β₂)g²,  θ ← θ − η m̂ / (√v̂ + ε)
+\begin{aligned}
+&m \leftarrow \beta_1 m + (1-\beta_1)\,g, \quad v \leftarrow \beta_2 v + (1-\beta_2)\,g^2 \\
+&\theta \leftarrow \theta - \eta\,\frac{\hat{m}}{\sqrt{\hat{v}} + \varepsilon}
+\end{aligned}
 $$
 
 </Formula>
