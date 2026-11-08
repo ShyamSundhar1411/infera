@@ -117,3 +117,15 @@ export const betaI = (a: number, b: number, x: number): number => {
     ? (front * betaContinuedFraction(a, b, x)) / a
     : 1 - (front * betaContinuedFraction(b, a, 1 - x)) / b;
 };
+
+/** Inverse of the regularised incomplete beta by bisection: x with I_x(a, b) = q. */
+export const betaQuantile = (q: number, a: number, b: number) => {
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    if (betaI(a, b, mid) < q) lo = mid;
+    else hi = mid;
+  }
+  return (lo + hi) / 2;
+};
