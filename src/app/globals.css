@@ -33,7 +33,7 @@
   --plot-axis: rgba(236, 235, 230, 0.2);
   --plot-ink: #ecebe6;
   --plot-point-stroke: #0d0e11;
-  --heat-alpha: 0.36;
+  --heat-alpha: 0.5;
 }
 
 @theme inline {
