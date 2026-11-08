@@ -30,6 +30,18 @@ The law of large numbers says the average converges to $\mu$. The central limit 
 2. Compare **Uniform** and **Exponential** at $n = 5$. The uniform already looks normal; the exponential is still leaning right.
 3. Look at the **Coin ($p = 0.2$)** panel at small $n$. Averages of coin flips can only take a few values, so the histogram is spiky until $n$ gets large.
 
+## A Galton board
+
+Francis Galton built a machine that shows the theorem with marbles. Each ball falls through $R$ rows of pegs and at every peg it bounces left or right. Its final bin is the number of right bounces: a sum of $R$ small, independent coin flips. Sums of many small independent effects are exactly what the central limit theorem is about, so the pile at the bottom grows into a bell.
+
+<Lab id="galton-board" />
+
+### Try this
+
+1. Press **Keep dropping** and watch the first few balls land almost anywhere. After a few hundred the outline is unmistakable.
+2. Drop 1,000 balls with only 4 rows. The pile is lumpy and the dashed Normal curve fits it roughly. Clear, set 16 rows and drop 1,000 again: the fit is now very close.
+3. Tilt the board to 0.2. With few rows the pile is clearly lopsided; add rows and it straightens back into a symmetric bell, just centred further to the left.
+
 ## The maths
 
 <Formulas>
