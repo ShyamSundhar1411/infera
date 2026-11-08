@@ -1,11 +1,14 @@
-import type { ContentSection, MathLine } from "./algorithm.types";
-
-export interface Concept {
-  slug: string;
+/** Frontmatter of content/concepts/<slug>.mdx. */
+export interface ConceptFrontmatter {
   name: string;
   tagline: string;
   summary: string;
-  sections: ContentSection[];
-  formulas: MathLine[];
-  tryThis: string[];
+  /** Position in listings; lower comes first. */
+  order?: number;
+  /** Short LaTeX shown large on the concept's card. */
+  glyph?: string;
+}
+
+export interface Concept extends ConceptFrontmatter {
+  slug: string;
 }

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import ConceptLab from "../../components/Concepts/concept-lab";
-import ConceptExplainer from "../../components/Concepts/concept-explainer";
-import { getConcept, getConcepts } from "@/lib/data/concepts.data";
+import MdxArticle from "../../components/Mdx/mdx-article";
+import LabEmbed from "../../components/Concepts/lab-embed";
+import { getConceptDocument, getConcepts } from "@/lib/data/concepts.data";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -13,14 +13,14 @@ interface PageProps {
 export const generateStaticParams = () => getConcepts().map((c) => ({ slug: c.slug }));
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const c = getConcept((await params).slug);
-  return c ? { title: c.name, description: c.summary } : {};
+  const doc = getConceptDocument((await params).slug);
+  return doc ? { title: doc.frontmatter.name, description: doc.frontmatter.summary } : {};
 }
 
 export default async function ConceptPage({ params }: PageProps) {
   const { slug } = await params;
-  const concept = getConcept(slug);
-  if (!concept) notFound();
+  const doc = getConceptDocument(slug);
+  if (!doc) notFound();
 
   const all = getConcepts();
   const index = all.findIndex((c) => c.slug === slug);
@@ -35,15 +35,11 @@ export default async function ConceptPage({ params }: PageProps) {
         </Link>
       </nav>
       <header className="mb-8 max-w-3xl">
-        <h1 className="font-display text-4xl tracking-tight sm:text-5xl">{concept.name}</h1>
-        <p className="mt-3 text-lg leading-relaxed text-muted">{concept.summary}</p>
+        <h1 className="font-display text-4xl tracking-tight sm:text-5xl">{doc.frontmatter.name}</h1>
+        <p className="mt-3 text-lg leading-relaxed text-muted">{doc.frontmatter.summary}</p>
       </header>
 
-      <ConceptLab slug={slug} />
-
-      <div className="mt-20">
-        <ConceptExplainer concept={concept} />
-      </div>
+      <MdxArticle source={doc.body} components={{ Lab: LabEmbed }} />
 
       <nav className="mt-20 grid gap-4 border-t border-line pt-8 sm:grid-cols-2">
         {prev ? (
