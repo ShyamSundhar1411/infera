@@ -68,6 +68,11 @@ export interface AlgorithmMeta {
   datasets: string[];
   defaultDataset: string;
   params: ParamDef[];
+  /**
+   * The parameter that most directly controls model complexity, used to
+   * suggest a fix when the model under- or overfits.
+   */
+  complexity?: { key: string; moreComplex: "higher" | "lower" };
 }
 
 export type Algorithm = AlgorithmMeta;

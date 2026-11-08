@@ -28,6 +28,7 @@ const regularization = (max: number, label = "Regularisation (λ)"): ParamDef =>
 const ALGORITHMS: AlgorithmMeta[] = [
   {
     slug: "linear-regression",
+    complexity: { key: "degree", moreComplex: "higher" },
     name: "Linear & Polynomial Regression",
     shortName: "Linear Regression",
     kind: "regression",
@@ -54,6 +55,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "knn-regression",
+    complexity: { key: "k", moreComplex: "lower" },
     name: "K-Nearest Neighbours Regression",
     shortName: "KNN Regression",
     kind: "regression",
@@ -80,6 +82,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "regression-tree",
+    complexity: { key: "maxDepth", moreComplex: "higher" },
     name: "Regression Tree",
     shortName: "Regression Tree",
     kind: "regression",
@@ -97,6 +100,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "gradient-boosting",
+    complexity: { key: "nEstimators", moreComplex: "higher" },
     name: "Gradient Boosting",
     shortName: "Gradient Boosting",
     kind: "regression",
@@ -115,6 +119,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "logistic-regression",
+    complexity: { key: "degree", moreComplex: "higher" },
     name: "Logistic Regression",
     shortName: "Logistic Regression",
     kind: "classification",
@@ -147,6 +152,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "lda",
+    complexity: { key: "shrinkage", moreComplex: "lower" },
     name: "Linear Discriminant Analysis",
     shortName: "LDA",
     kind: "classification",
@@ -163,6 +169,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "qda",
+    complexity: { key: "reg", moreComplex: "lower" },
     name: "Quadratic Discriminant Analysis",
     shortName: "QDA",
     kind: "classification",
@@ -179,6 +186,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "naive-bayes",
+    complexity: { key: "smoothing", moreComplex: "lower" },
     name: "Gaussian Naive Bayes",
     shortName: "Naive Bayes",
     kind: "classification",
@@ -195,6 +203,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "knn",
+    complexity: { key: "k", moreComplex: "lower" },
     name: "K-Nearest Neighbours",
     shortName: "KNN",
     kind: "classification",
@@ -231,6 +240,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "decision-tree",
+    complexity: { key: "maxDepth", moreComplex: "higher" },
     name: "Decision Tree",
     shortName: "Decision Tree",
     kind: "classification",
@@ -257,6 +267,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "random-forest",
+    complexity: { key: "maxDepth", moreComplex: "higher" },
     name: "Random Forest",
     shortName: "Random Forest",
     kind: "classification",
@@ -275,6 +286,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "adaboost",
+    complexity: { key: "nEstimators", moreComplex: "higher" },
     name: "AdaBoost",
     shortName: "AdaBoost",
     kind: "classification",
@@ -293,6 +305,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "svm",
+    complexity: { key: "gamma", moreComplex: "higher" },
     name: "Support Vector Machine",
     shortName: "SVM",
     kind: "classification",
@@ -322,6 +335,7 @@ const ALGORITHMS: AlgorithmMeta[] = [
   },
   {
     slug: "neural-network",
+    complexity: { key: "neurons", moreComplex: "higher" },
     name: "Neural Network",
     shortName: "Neural Network",
     kind: "classification",

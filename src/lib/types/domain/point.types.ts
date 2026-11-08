@@ -4,4 +4,6 @@ export interface Point {
   y: number;
   /** Class index for classification; ignored for regression and unsupervised data. */
   label: number;
+  /** Held out of training and only used to test the model. */
+  test?: boolean;
 }
