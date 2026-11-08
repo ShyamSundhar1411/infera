@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 import SiteHeader from "./components/Layout/site-header";
 import SiteFooter from "./components/Layout/site-footer";
