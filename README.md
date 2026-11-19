@@ -118,7 +118,7 @@ users -> app rate=50
 ```
 ````
 
-Options after the language become player attributes (`height` and `caption` are handled by Infera). The player script is vendored at `public/vendor/topple-player.js` and only loads when a scene scrolls near the viewport. To update it, build the player in the Topple repo (`bun run --cwd packages/player build`) and run `yarn sync:topple`, or point `TOPPLE_PLAYER` at a built `topple.js`. `NEXT_PUBLIC_TOPPLE_PLAYER_SRC` can serve it from elsewhere instead.
+Options after the language become player attributes (`height` and `caption` are handled by Infera). The player comes from the [`topple-player`](https://www.npmjs.com/package/topple-player) package and is loaded as its own chunk only when a scene scrolls near the viewport; update it with `yarn upgrade topple-player`.
 
 Run `yarn check:content` after editing. It compiles every file with strict KaTeX and flags maths written as plain Unicode instead of LaTeX.
 

@@ -5,24 +5,15 @@ import { useThemeVersion } from "@/hooks/useThemeVersion";
 import type { CodeBlockProps } from "../types";
 import { TOPPLE_PLUGIN } from "./config";
 
-// The player is large (it brings three.js), so the script is fetched once,
-// and only when a scene is about to scroll into view.
-let loading: Promise<void> | null = null;
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+// The player is large (it brings three.js), so it is loaded once, and only
+// when a scene is about to scroll into view.
+let loading: Promise<unknown> | null = null;
 
 function loadPlayer() {
   if (customElements.get("topple-player")) return Promise.resolve();
-  loading ??= new Promise<void>((resolve, reject) => {
-    const script = document.createElement("script");
-    const src = TOPPLE_PLUGIN.playerSrc;
-    script.src = src.startsWith("/") ? `${basePath}${src}` : src;
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => {
-      loading = null;
-      reject(new Error("Topple player failed to load"));
-    };
-    document.head.appendChild(script);
+  loading ??= TOPPLE_PLUGIN.loadPlayer().catch((error) => {
+    loading = null;
+    throw error;
   });
   return loading;
 }
