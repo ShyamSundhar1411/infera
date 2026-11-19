@@ -40,11 +40,22 @@ export function listMdx<T extends { order?: number }>(section: ContentSection): 
     .sort((a, b) => (a.frontmatter.order ?? 99) - (b.frontmatter.order ?? 99));
 }
 
+/** Keep the text after a code fence's language (```topple height=520) so plugins can read it. */
+const remarkCodeMeta = () => (tree: { children?: unknown[] }) => {
+  const visit = (node: { type?: string; meta?: string | null; data?: { hProperties?: Record<string, unknown> }; children?: unknown[] }) => {
+    if (node.type === "code" && node.meta) {
+      node.data = { ...node.data, hProperties: { ...node.data?.hProperties, "data-meta": node.meta } };
+    }
+    node.children?.forEach((child) => visit(child as typeof node));
+  };
+  visit(tree);
+};
+
 /** Compile MDX with GitHub-flavoured Markdown and KaTeX maths. */
 export async function compileMdx(source: string): Promise<MDXContent> {
   const { default: Content } = await evaluate(source, {
     ...runtime,
-    remarkPlugins: [remarkGfm, remarkMath],
+    remarkPlugins: [remarkGfm, remarkMath, remarkCodeMeta],
     rehypePlugins: [[rehypeKatex, { strict: "ignore" }]],
   });
   return Content;

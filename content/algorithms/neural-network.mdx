@@ -83,7 +83,75 @@ $$
 
 A trained network is one box in a bigger machine. In a language-model product it sits inside a loop of retrieval, tools and checks, and most of the engineering is in that loop rather than in the weights.
 
-<Embed url="https://topple.shyamsundhar.com/scenes/rag/" caption="Retrieval augmented generation: index the documents, find the closest passages, answer from them." />
+```topple caption="Retrieval augmented generation: index the documents, find the closest passages, answer from them."
+title: How retrieval augmented generation works
+summary: A language model answers from your documents by looking up the relevant passages first, then writing an answer that uses them.
+kit: agents
+traffic: off
+duration: 40s
+
+node user "You" icon=user
+node app "Chat app" icon=server
+node docs "Your documents" icon=file
+node embed "Embedding model" icon=cpu
+node index "Vector database" icon=database
+node model "Language model" icon=bot
+
+docs -> embed
+embed -> index
+user <-> app
+app <-> embed
+app <-> index
+app <-> model
+
+chapter 0s "First, the documents are indexed"
+  Ahead of time, every document is cut into passages. An embedding model
+  turns each passage into a list of numbers that captures its meaning, and
+  those are stored in a vector database.
+
+at 1.5s: docs -> embed send count=4 "Passages"
+at 2.5s: embed working
+at 4.5s: embed -> index send count=4 "One vector per passage"
+at 5s: embed idle
+at 6s: index done "Ready to be searched"
+
+chapter 9s "A question arrives"
+  The question is turned into numbers the same way, so it can be compared
+  with the passages.
+
+at 10s: user -> app send "What is our refund policy?"
+at 11s: app working
+at 12s: app -> embed send "The question"
+at 13s: embed working
+at 14.5s: embed -> app send "The question as a vector"
+at 14.5s: embed idle
+
+chapter 16s "Find the closest passages"
+  The database returns the handful of passages whose meaning is nearest to
+  the question. This is the retrieval step.
+
+at 16.5s: app -> index send "Find the nearest passages"
+at 17.5s: index working
+at 19.5s: index -> app send count=3 "The three best matches"
+at 19.5s: index done
+
+chapter 22s "Answer using what was found"
+  The app sends the question and those passages to the language model
+  together. The model writes its answer from the passages instead of from
+  memory, and can point to where each part came from.
+
+at 22.5s: app -> model send "The question, plus the three passages"
+at 23.5s: model thinking
+at 28s: model -> app send "An answer that cites the passages"
+at 28s: model done
+at 30s: app -> user send "Refunds within 30 days, per the policy page"
+at 30s: app done
+
+chapter 33s "What it shows"
+  The model never saw your documents during training. It was handed the
+  right pages at the moment it was asked. Most of the quality depends on
+  whether retrieval finds the right ones.
+```
 
 ## Strengths and weaknesses
 

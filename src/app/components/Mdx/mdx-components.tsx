@@ -1,6 +1,8 @@
+import type { ReactElement } from "react";
 import type { MDXComponents } from "mdx/types";
 import { cn } from "@/lib/utils";
 import Embed from "./embed";
+import { codeBlockRenderers, pluginComponents } from "@/plugins";
 
 /** A labelled formula card. Put display maths ($$ … $$) inside. */
 function Formula({ label, children }: { label: string; children: React.ReactNode }) {
@@ -29,6 +31,21 @@ function Callout({ children, title }: { children: React.ReactNode; title?: strin
 /** Two side-by-side lists: what the method is good at, and where it struggles. */
 function ProsCons({ children }: { children: React.ReactNode }) {
   return <div className="mt-5 grid gap-4 sm:grid-cols-2 [&_h3]:mt-0">{children}</div>;
+}
+
+type CodeElement = ReactElement<{ className?: string; children?: string; "data-meta"?: string }>;
+
+/** Fenced code blocks: a plugin that claims the language renders it, otherwise it is plain code. */
+function Pre({ children, ...props }: React.ComponentProps<"pre">) {
+  const code = children as CodeElement;
+  const language = code?.props?.className?.match(/language-(\S+)/)?.[1];
+  const Renderer = language ? codeBlockRenderers[language] : undefined;
+  if (Renderer) return <Renderer source={String(code.props.children ?? "").replace(/\n$/, "")} meta={code.props["data-meta"]} />;
+  return (
+    <pre className="mt-5 overflow-x-auto rounded-xl border border-line bg-surface p-4 text-[13px] [&>code]:bg-transparent [&>code]:p-0" {...props}>
+      {children}
+    </pre>
+  );
 }
 
 function Card({ children }: { children: React.ReactNode }) {
@@ -63,4 +80,6 @@ export const mdxComponents: MDXComponents = {
   ProsCons,
   Card,
   Embed,
+  pre: Pre,
+  ...pluginComponents,
 };

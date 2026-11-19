@@ -103,6 +103,23 @@ Concept files also need `name`, `tagline` and `order` in the frontmatter, and ca
 
 `<Embed url="…" />` embeds any page that publishes an oEmbed discovery link, such as a Topple scene. It is resolved at build time and only keeps an iframe that points back at the page's own site; anything that cannot be resolved becomes a link card, so a missing page never breaks the build.
 
+### Plugins and Topple scenes
+
+`src/plugins` holds optional plugins that add to the MDX vocabulary. A plugin can claim a fenced code block's language; remove it from `src/plugins/index.ts` and those blocks show as plain code.
+
+The Topple plugin plays a [Topple](https://topple.shyamsundhar.com) scene written right in the page, so nothing has to exist in Topple's catalogue:
+
+````mdx
+```topple caption="One server, random arrivals." height=520
+title: Why a busy server's queue explodes
+node users "Visitors" icon=users
+node app "App server" icon=server capacity=100
+users -> app rate=50
+```
+````
+
+Options after the language become player attributes (`height` and `caption` are handled by Infera). The player script is vendored at `public/vendor/topple-player.js` and only loads when a scene scrolls near the viewport. To update it, build the player in the Topple repo (`bun run --cwd packages/player build`) and run `yarn sync:topple`, or point `TOPPLE_PLAYER` at a built `topple.js`. `NEXT_PUBLIC_TOPPLE_PLAYER_SRC` can serve it from elsewhere instead.
+
 Run `yarn check:content` after editing. It compiles every file with strict KaTeX and flags maths written as plain Unicode instead of LaTeX.
 
 The playground can hold out 30% of points as a test set (shown hollow). **Test model** compares training and test scores against a nearest-neighbour baseline and calls the fit good, underfitting or overfitting.

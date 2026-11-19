@@ -37,9 +37,98 @@ The coloured dots are people waiting; the rings fill as each desk serves someone
 
 Every server, database connection pool and message queue is one of these desks. This is why teams keep machines well below full load, why a small traffic increase can suddenly double latency, and why retries during an incident are so dangerous: they push utilisation over 1, and the queue never drains.
 
-<Embed url="https://topple.shyamsundhar.com/scenes/autoscaling/" caption="Autoscaling is not instant: traffic triples, and the queue fills while new servers boot." />
+The scene below puts one of these desks inside a web service. Drag the visitors slider, or switch on the second server, and watch where the line forms.
 
-<Embed url="https://topple.shyamsundhar.com/scenes/retry-storm/" caption="The retry storm: retries push utilisation past 1, and a short spike becomes a lasting outage." />
+```topple caption="One app server between visitors and a database. The waits in the log are the single-desk formula: 10, 40, 190 and 990 ms."
+title: Why a busy server's queue explodes
+summary: A server that handles 100 requests a second is quick at 50, slower at 80 and miserable at 95. Requests arrive at random, so waiting time does not grow in a straight line; it blows up as the server nears its limit.
+kit: outage
+duration: 46s
+
+state busy "Busy, short queue" tone=warn reject=0
+state swamped "Long queue" tone=hot reject=0
+
+node users "Visitors" icon=users
+node app "App server" icon=server capacity=100
+node db "Database" icon=database capacity=400
+
+users -> app "requests" rate=50
+app -> db "queries" rate=50
+
+slider traffic "Visitors per second" users -> app rate 20..130
+
+chapter 0s "Half busy" tag="50% load"
+  Each request takes the server 10 milliseconds of work, so it can finish
+  100 a second. Fifty arrive each second, but not on a schedule: they come
+  in random clumps, and a request that lands during a clump waits its turn.
+
+unless second
+  at 1s: app log info "load 50% · average wait in line 10 ms"
+
+  chapter 8s "A busier afternoon" tag="80% load"
+    Traffic rises to 80 a second. Load went up by 60%, but the average wait
+    quadruples: there is less spare time between clumps to clear the line.
+
+  at 8s: users -> app rate=x1.6 "80 requests a second"
+  at 8s: app -> db rate=x1.6
+  at 8.5s: app busy "Queue forming in bursts"
+  at 9s: app log info "load 80% · average wait in line 40 ms"
+
+  chapter 16s "Nearly full" tag="95% load"
+    At 95 a second the server is busy 95% of the time. Any burst takes
+    ages to drain, because only 5% of its time is free to catch up. The
+    average wait is now nineteen times the work itself.
+
+  at 16s: users -> app rate=x1.9 "95 requests a second"
+  at 16s: app -> db rate=x1.9
+  at 16.5s: app swamped "Rarely catches up"
+  at 17s: app log warn "load 95% · average wait in line 190 ms"
+  at 22s: users -> app rate=x1.98 "99 requests a second"
+  at 22s: app -> db rate=x1.98
+  at 22.5s: app log error "load 99% · average wait in line 990 ms"
+
+  chapter 26s "Over the limit"
+    At 110 a second the line can never empty. It grows until it is full,
+    and then the server turns requests away.
+
+  at 26s: users -> app rate=x2.2 "110 requests a second"
+  at 26s: app -> db rate=x2
+  at 27s: app log error "queue full: rejecting requests"
+  at 34s: users -> app rate=x1.4 "Traffic falls back to 70"
+  at 34s: app -> db rate=x1.4
+  at 36s: app busy
+  at 37s: app log info "load 70% · average wait in line 23 ms"
+
+option second "Add a second app server"
+  node app2 "Second app server" icon=server capacity=100
+  users -> app2 "requests" rate=0
+  app2 -> db "queries" rate=0
+  at 0.5s: users -> app2 rate=25 "Half the traffic goes to the new server"
+  at 0.5s: users -> app rate=25
+
+  chapter 8s "Two servers share the line" tag="What if"
+    The same traffic now has two servers to choose from. At 80 a second
+    each is 40% busy, and a request only waits when both are busy at once.
+
+  at 8s: users -> app rate=40 "80 a second in total"
+  at 8s: users -> app2 rate=40
+  at 9s: app log info "load 40% each · average wait in line 2 ms"
+
+  chapter 16s "Plenty of slack"
+    At 95 a second, where one server made people wait 190 ms, two servers
+    keep the average wait under 3 ms. Halving the load did not halve the
+    wait; it cut it by a factor of sixty.
+
+  at 16s: users -> app rate=47.5 "95 a second in total"
+  at 16s: users -> app2 rate=47.5
+  at 17s: app log info "load 47.5% each · average wait in line 3 ms"
+
+chapter 40s "What it teaches"
+  Waiting grows like load divided by spare capacity, load / (1 - load):
+  1 at 50%, 4 at 80%, 19 at 95%, 99 at 99%. For anything people wait on,
+  plan to run well below the limit, around 70%, and add capacity before the
+  busy season, not during it.
+```
 
 ## The maths
 
