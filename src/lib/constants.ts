@@ -1,8 +1,28 @@
 export const SITE_NAME = "Infera";
 export const SITE_TAGLINE = "Machine learning and statistics you can play with.";
 export const SITE_DESCRIPTION =
-  "Interactive explainers for machine learning algorithms and probability distributions. Add points, drag them around, change parameters and watch everything redraw live.";
+  "Learn machine learning and statistics by playing with them: 20 algorithms that train on points you place, 13 distributions, and simulations from Bayes to MCMC.";
 export const REPO_URL = "https://github.com/ShyamSundhar1411/infera";
+
+/** Public address of the site, used for canonical links, the sitemap and link previews. */
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://infera.shyamsundhar.com").replace(/\/$/, "");
+
+/** Topics the whole site covers, for search engines. */
+export const SITE_KEYWORDS = [
+  "interactive machine learning",
+  "machine learning visualization",
+  "explorable explanations",
+  "learn machine learning interactively",
+  "probability distributions visualizer",
+  "statistics simulator",
+  "decision boundary visualization",
+  "PDF and CDF calculator",
+  "Bayes theorem explained",
+  "central limit theorem simulation",
+  "Monte Carlo simulation",
+  "MCMC visualization",
+  "machine learning in the browser",
+];
 
 /** Class and cluster colours as RGB, shared by the canvas and the UI. */
 export const CLASS_COLORS: [number, number, number][] = [

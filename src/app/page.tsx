@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Hero from "./components/Landing/hero";
@@ -8,6 +9,14 @@ import ConceptCard from "./components/Concepts/concept-card";
 import { getConcepts } from "@/lib/data/concepts.data";
 import { getAlgorithms } from "@/lib/data/algorithms.data";
 import { getDistributions } from "@/lib/data/distributions.data";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
+import { pageMetadata } from "@/lib/seo/metadata";
+
+export const metadata: Metadata = {
+  ...pageMetadata({ path: "/", title: `${SITE_NAME}: ${SITE_TAGLINE.replace(/\.$/, "")}`, description: SITE_DESCRIPTION }),
+  // The home page shows the bare title, without the " · Infera" suffix.
+  title: { absolute: `${SITE_NAME}: ${SITE_TAGLINE.replace(/\.$/, "").toLowerCase()}` },
+};
 
 export default function HomePage() {
   const distributions = getDistributions();

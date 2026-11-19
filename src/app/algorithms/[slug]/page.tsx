@@ -9,6 +9,35 @@ import { readMdx } from "@/lib/mdx/load";
 import type { ExplainerFrontmatter } from "@/lib/types/domain/algorithm.types";
 import { getAlgorithm, getAlgorithms } from "@/lib/data/algorithms.data";
 import { getCategories } from "@/lib/data/categories.data";
+import { explainerMetadata } from "@/lib/seo/metadata";
+import { JsonLd, explainerGraph } from "@/lib/seo/structured-data";
+
+const KIND_KEYWORDS: Record<string, string[]> = {
+  regression: ["regression", "curve fitting"],
+  classification: ["classification", "decision boundary"],
+  clustering: ["clustering", "unsupervised learning"],
+  projection: ["dimensionality reduction", "unsupervised learning"],
+};
+
+const algorithmSeo = (slug: string) => {
+  const algorithm = getAlgorithm(slug)!;
+  const doc = readMdx<ExplainerFrontmatter>("algorithms", slug);
+  const category = getCategories().find((c) => c.id === algorithm.category);
+  return {
+    path: `/algorithms/${slug}/`,
+    title: `${algorithm.name}: interactive visual explainer`,
+    description: doc?.frontmatter.summary ?? algorithm.tagline,
+    keywords: [
+      algorithm.name,
+      `${algorithm.name} explained`,
+      `${algorithm.name} visualization`,
+      `${algorithm.name} interactive demo`,
+      ...KIND_KEYWORDS[algorithm.kind],
+      "machine learning",
+    ],
+    section: { name: category?.name ?? "Algorithms", path: `/algorithms/#${algorithm.category}` },
+  };
+};
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -18,9 +47,9 @@ export const generateStaticParams = () => getAlgorithms().map((a) => ({ slug: a.
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const algorithm = getAlgorithm(slug);
-  const doc = readMdx<ExplainerFrontmatter>("algorithms", slug);
-  return algorithm ? { title: algorithm.name, description: doc?.frontmatter.summary } : {};
+  if (!getAlgorithm(slug)) return {};
+  const seo = algorithmSeo(slug);
+  return explainerMetadata({ ...seo, section: seo.section.name });
 }
 
 export default async function AlgorithmPage({ params }: PageProps) {
@@ -37,6 +66,7 @@ export default async function AlgorithmPage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <JsonLd data={explainerGraph(algorithmSeo(slug))} />
       <nav className="mb-6 text-sm text-muted">
         <Link href="/algorithms/" className="hover:text-ink">
           Algorithms

@@ -9,6 +9,30 @@ import { Tex } from "@/components/ui/tex";
 import { readMdx } from "@/lib/mdx/load";
 import type { ExplainerFrontmatter } from "@/lib/types/domain/algorithm.types";
 import { getDistribution, getDistributions } from "@/lib/data/distributions.data";
+import { explainerMetadata } from "@/lib/seo/metadata";
+import { JsonLd, explainerGraph } from "@/lib/seo/structured-data";
+
+const distributionSeo = (slug: string) => {
+  const d = getDistribution(slug)!;
+  const doc = readMdx<ExplainerFrontmatter>("distributions", slug);
+  const density = d.type === "discrete" ? "PMF" : "PDF";
+  return {
+    path: `/distributions/${slug}/`,
+    title: `${d.name} distribution: ${density}, CDF and calculator`,
+    description: doc?.frontmatter.summary ?? d.tagline,
+    keywords: [
+      `${d.name} distribution`,
+      `${d.name} distribution ${density}`,
+      `${d.name} distribution CDF`,
+      `${d.name} distribution calculator`,
+      `${d.name} distribution mean and variance`,
+      `${d.type} probability distribution`,
+      "probability",
+      "statistics",
+    ],
+    section: { name: "Distributions", path: "/distributions/" },
+  };
+};
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -18,9 +42,9 @@ export const generateStaticParams = () => getDistributions().map((d) => ({ slug:
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const d = getDistribution(slug);
-  const doc = readMdx<ExplainerFrontmatter>("distributions", slug);
-  return d ? { title: `${d.name} distribution`, description: doc?.frontmatter.summary } : {};
+  if (!getDistribution(slug)) return {};
+  const seo = distributionSeo(slug);
+  return explainerMetadata({ ...seo, section: seo.section.name });
 }
 
 export default async function DistributionPage({ params }: PageProps) {
@@ -36,6 +60,7 @@ export default async function DistributionPage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <JsonLd data={explainerGraph(distributionSeo(slug))} />
       <nav className="mb-6 text-sm text-muted">
         <Link href="/distributions/" className="hover:text-ink">
           Distributions

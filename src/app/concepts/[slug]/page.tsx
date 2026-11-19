@@ -5,6 +5,19 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import MdxArticle from "../../components/Mdx/mdx-article";
 import LabEmbed from "../../components/Concepts/lab-embed";
 import { getConceptDocument, getConcepts } from "@/lib/data/concepts.data";
+import { explainerMetadata } from "@/lib/seo/metadata";
+import { JsonLd, explainerGraph } from "@/lib/seo/structured-data";
+
+const conceptSeo = (slug: string) => {
+  const { name, summary } = getConceptDocument(slug)!.frontmatter;
+  return {
+    path: `/concepts/${slug}/`,
+    title: `${name}: interactive simulation`,
+    description: summary,
+    keywords: [name, `${name} explained`, `${name} simulation`, `${name} visualization`, `${name} example`, "probability", "statistics"],
+    section: { name: "Concepts", path: "/concepts/" },
+  };
+};
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -13,8 +26,10 @@ interface PageProps {
 export const generateStaticParams = () => getConcepts().map((c) => ({ slug: c.slug }));
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const doc = getConceptDocument((await params).slug);
-  return doc ? { title: doc.frontmatter.name, description: doc.frontmatter.summary } : {};
+  const { slug } = await params;
+  if (!getConceptDocument(slug)) return {};
+  const seo = conceptSeo(slug);
+  return explainerMetadata({ ...seo, section: seo.section.name });
 }
 
 export default async function ConceptPage({ params }: PageProps) {
@@ -29,6 +44,7 @@ export default async function ConceptPage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <JsonLd data={explainerGraph(conceptSeo(slug))} />
       <nav className="mb-6 text-sm text-muted">
         <Link href="/concepts/" className="hover:text-ink">
           Concepts

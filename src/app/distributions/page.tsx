@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { JsonLd, catalogueGraph } from "@/lib/seo/structured-data";
 import ConceptGrid from "../components/Distributions/concept-grid";
 import DistributionCard from "../components/Distributions/distribution-card";
-import { getDistributionsByType } from "@/lib/data/distributions.data";
+import { getDistributions, getDistributionsByType } from "@/lib/data/distributions.data";
 
-export const metadata: Metadata = {
-  title: "Distributions",
+export const metadata: Metadata = pageMetadata({
+  path: "/distributions/",
+  title: "Probability distributions, interactive",
   description: "Interactive probability distributions: PMFs, PDFs, CDFs, expectation, variance and sampling.",
-};
+});
 
 const GROUPS = [
   {
@@ -24,6 +27,7 @@ const GROUPS = [
 export default function DistributionsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <JsonLd data={catalogueGraph("Probability distributions, interactive", getDistributions().map((d) => ({ path: `/distributions/${d.slug}/`, name: `${d.name} distribution` })))} />
       <header className="mb-12 max-w-2xl">
         <h1 className="font-display text-5xl tracking-tight sm:text-6xl">
           Probability, <em className="italic">by hand</em>.

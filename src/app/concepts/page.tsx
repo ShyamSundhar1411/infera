@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { JsonLd, catalogueGraph } from "@/lib/seo/structured-data";
 import ConceptCard from "../components/Concepts/concept-card";
 import { getConcepts } from "@/lib/data/concepts.data";
 
-export const metadata: Metadata = {
-  title: "Concepts",
+export const metadata: Metadata = pageMetadata({
+  path: "/concepts/",
+  title: "Probability and statistics concepts, simulated",
   description: "Interactive explainers for Bayes' theorem, Bayesian updating, the law of large numbers and the central limit theorem.",
-};
+});
 
 export default function ConceptsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <JsonLd data={catalogueGraph("Probability and statistics concepts, simulated", getConcepts().map((c) => ({ path: `/concepts/${c.slug}/`, name: c.name })))} />
       <header className="mb-12 max-w-2xl">
         <h1 className="font-display text-5xl tracking-tight sm:text-6xl">
           The big ideas, <em className="italic">simulated</em>.
