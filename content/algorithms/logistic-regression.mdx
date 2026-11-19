@@ -76,6 +76,101 @@ $$
 
 </Formulas>
 
+## In a real system
+
+Click prediction in ad serving was logistic regression's biggest job for years: one weighted sum per candidate ad, squashed into a probability, scored thousands of times a second.
+
+```topple caption="An ad server picks one of 40 ads in about 100 milliseconds. Switch on ignoring where the ad was shown to see the training data reinforce the model's own choices."
+title: Predicting clicks in an ad server
+summary: An ad server has about 100 milliseconds to choose an ad. A logistic regression turns each candidate's features into a click probability, and the auction does the rest.
+kit: agents
+traffic: off
+duration: 42s
+
+node reader "Reader" icon=user
+node page "News page" icon=globe
+node adserver "Ad server" icon=server
+node candidates "Candidate ads" icon=database
+node ctr "Click model, logistic regression" icon=brain
+node auction "Auction" icon=payment
+node logs "Impression and click logs" icon=logs
+node trainer "Nightly training" icon=clock
+
+reader <-> page
+page <-> adserver
+adserver <-> candidates
+adserver <-> ctr
+adserver <-> auction
+page -> logs
+logs -> trainer
+trainer -> ctr
+
+chapter 0s "A page loads"
+  A reader opens an article on cycling. The page has one ad slot and asks
+  the ad server to fill it.
+
+at 1s: reader -> page send "Open article"
+at 2s: page -> adserver send "Fill one slot"
+at 3s: adserver working
+at 3.5s: adserver -> candidates send "Ads for this page and reader"
+at 5s: candidates -> adserver send count=3 "40 eligible ads"
+
+chapter 7s "Score every candidate"
+  For each ad, the model adds up weighted features (topic match, time of
+  day, the ad's past performance) and squashes the sum into a probability
+  between 0 and 1.
+
+at 7.5s: adserver -> ctr send "40 feature vectors"
+at 8.5s: ctr thinking
+at 10.5s: ctr log info "bike lights 2.1%, running shoes 0.9%, car insurance 0.4%"
+at 11s: ctr -> adserver send "40 click probabilities"
+at 11s: ctr done
+
+chapter 13s "Auction"
+  Each ad is ranked by bid times predicted click probability, so a cheap
+  ad that people actually click can beat an expensive one they ignore.
+
+at 13.5s: adserver -> auction send "Bids and probabilities"
+at 14.5s: auction thinking
+at 16s: auction log info "bike lights: 0.50 x 2.1% beats insurance: 2.00 x 0.4%"
+at 16.5s: auction -> adserver send "Winner: bike lights"
+at 16.5s: auction done
+at 17.5s: adserver -> page send "Bike lights ad"
+at 17.5s: adserver done
+at 18.5s: page -> logs send "Impression"
+at 21s: page -> logs send "Click"
+
+unless bias
+  chapter 24s "Learning from yesterday"
+    Every night the weights are refitted on the day's impressions and
+    clicks, so the model follows changing tastes.
+
+  at 25s: logs -> trainer send "40 million impressions"
+  at 26s: trainer working
+  at 30s: trainer -> ctr send "New weights"
+  at 30.5s: trainer done
+  at 31s: ctr done "Updated for tomorrow"
+
+option bias "Ignore where the ad was shown"
+  chapter 24s "A loop that feeds itself"
+    The training data only contains ads the model chose to show, and ads in
+    the top slot get clicked more just for being there. Trained naively,
+    the model learns that its favourites are good because they were shown
+    on top.
+
+  at 25s: logs -> trainer send "40 million impressions, top slot only"
+  at 26s: trainer working
+  at 29s: trainer log warn "position not in features: top-slot clicks credited to the ad"
+  at 30s: trainer -> ctr send "New weights"
+  at 30.5s: trainer done
+  at 31s: ctr waiting "Overrates ads it already favours"
+
+chapter 34s "What it shows"
+  Logistic regression is fast, calibrated and easy to retrain, which is
+  why it ran ad auctions for years. The hard part is the data: what the
+  model saw depends on what it chose before.
+```
+
 ## Strengths and weaknesses
 
 <ProsCons>

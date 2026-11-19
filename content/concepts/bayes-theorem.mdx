@@ -48,6 +48,80 @@ Before any ball, all you have is the coin: that is the prior. A red ball is more
 3. Give both bags the same number of red balls. Now the balls carry no information and the bar never moves away from the coin's bias.
 4. Press **Play 1,000 rounds**. Counting which bag the red balls really came from lands on the same number the formula gives.
 
+## In a real system
+
+Fraud detection is the medical test again, with a rarer condition. A model that catches 99% of fraud and flags 1% of honest payments still fills the alert queue mostly with honest payments, because fraud is only 1 payment in 1,000. Turn on the second check in the Lab tab: the first model's alerts become the prior for the second.
+
+```topple caption="A fraud model with 99% sensitivity and a 1% false positive rate, on payments where fraud is 1 in 1,000."
+title: Fraud alerts that are mostly wrong
+summary: A model catches 99% of fraud and flags only 1% of honest payments. Fraud is 1 payment in 1,000. Nine alerts in ten are still false.
+kit: outage
+duration: 42s
+
+state busy "Swamped" tone=hot reject=0
+state calm "Keeping up" tone=ok reject=0
+
+node shoppers "Shoppers" icon=users
+node pay "Payments" icon=payment
+node model "Fraud model" icon=brain
+node ok "Approved" icon=store
+node alerts "Alert queue" icon=queue
+node team "Analysts" icon=user
+
+shoppers -> pay "1,000,000 a day" rate=60
+pay -> model "every payment" rate=60
+model -> ok "not flagged" rate=55
+
+unless second
+  model -> alerts "flagged" rate=12
+  alerts -> team "to review" rate=12
+
+option second "Add a second, independent check"
+  node check "Second check" icon=shield
+  model -> check "flagged" rate=12
+  check -> alerts "still flagged" rate=3
+  alerts -> team "to review" rate=3
+
+  chapter 16s "A second opinion" tag="91% precision"
+    Flagged payments go through a second check that is just as good and
+    makes its own mistakes. Fraud survives it 99% of the time: about 980.
+    Honest payments only 1% of the time: about 100. Now 980 of 1,080 alerts,
+    about 91%, are real.
+
+  at 16s: check note "1% of 9,990 honest still flagged: about 100"
+  at 16.5s: alerts calm "About 1,080 a day"
+  at 17s: team log info "1,080 alerts today, about 980 real fraud"
+
+chapter 0s "A very good model" tag="99% / 1%"
+  Out of a million payments a day, 1,000 are fraud. The model catches 99%
+  of them and wrongly flags 1% of honest payments. Those sound like great
+  numbers.
+
+at 1s: model log info "sensitivity 99%, false positive rate 1%, fraud rate 0.1%"
+
+chapter 8s "Counting the alerts" tag="10,980 a day"
+  Caught fraud: 99% of 1,000 is 990 alerts. False alarms: 1% of 999,000
+  honest payments is 9,990 alerts. Honest payments outnumber fraud a
+  thousand to one, so the small false positive rate wins.
+
+at 9s: alerts log warn "10,980 alerts today: 990 fraud, 9,990 honest"
+
+unless second
+  chapter 16s "Nine alerts in ten are false" tag="9% precision"
+    Of every 100 alerts, about 9 are real fraud: 990 / 10,980. The analysts
+    cannot review them all, start skimming, and miss real fraud among the
+    false ones.
+
+  at 16s: alerts busy "10,980 a day"
+  at 16s: team degraded "Skimming the queue"
+  at 17s: team log error "backlog 6,200 alerts, real fraud slipping through"
+
+chapter 30s "What it teaches"
+  When the thing you look for is rare, even an accurate test produces
+  mostly false alarms. What matters is the base rate. A second independent
+  check uses the first one's alerts as its new prior.
+```
+
 ## The maths
 
 <Formulas>

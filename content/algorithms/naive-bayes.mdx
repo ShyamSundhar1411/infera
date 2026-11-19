@@ -45,6 +45,120 @@ Because each class has its own variances, the boundaries can curve, just like QD
 3. Try **XOR**. Each class has two lobes that a single axis-aligned Gaussian cannot capture, so the fit suffers.
 4. Push Variance smoothing to its maximum. Every ellipse swells and the boundaries straighten.
 
+## In a real system
+
+The classic use of naive Bayes is a spam filter. Words take the place of the colour and rank of a card: each one adds a factor to the product, the counts come from labelled mail, and every "mark as spam" click is a new training example. The scene also shows why the smoothing switch in the card game matters.
+
+```topple caption="A spam filter: count words per class, multiply, and smooth the counts so one unseen word cannot veto the rest."
+title: A spam filter that learns by counting
+summary: Every word in an email is evidence. The filter multiplies how typical each word is of spam and of real mail, and the bigger product wins.
+kit: agents
+traffic: off
+duration: 46s
+
+node sender "Incoming mail" icon=mail
+node server "Mail server" icon=server
+node tok "Tokenizer" icon=code
+node nb "Naive Bayes classifier" icon=brain
+node counts "Word counts" icon=database
+node inbox "Inbox" icon=user
+node junk "Spam folder" icon=box
+
+sender -> server
+server -> tok
+tok -> nb
+counts -> nb
+nb -> inbox
+nb -> junk
+inbox -> counts
+
+chapter 0s "Learned from counting" tag="Training"
+  The filter has seen 1,000 spam emails and 1,000 real ones. For every
+  word it stores one number per class: the share of emails that contain
+  it. "free" is in 20% of spam but 2% of real mail. "meeting" is in 1% of
+  spam and 10% of real mail.
+
+at 1s: counts working "1,000 spam, 1,000 real"
+at 2s: counts log info "free: spam 0.20, real 0.02 | prize: spam 0.10, real 0.005 | meeting: spam 0.01, real 0.10"
+at 3s: counts idle
+
+chapter 6s "A new email arrives" tag="Classify"
+  "Free prize meeting". The tokenizer splits it into words, and the
+  classifier multiplies the prior by one number per word, once for spam
+  and once for real mail, as if the words had nothing to do with each
+  other. That is the naive part.
+
+at 6.5s: sender -> server send "Free prize meeting"
+at 7.5s: server -> tok send
+at 8s: tok working "free, prize, meeting"
+at 9s: tok -> nb send "3 words"
+at 9.5s: counts -> nb send "Look up 3 words"
+at 10s: nb thinking
+at 11s: nb log info "spam: 0.5 x 0.20 x 0.10 x 0.01 = 0.0001"
+at 11.5s: nb log info "real: 0.5 x 0.02 x 0.005 x 0.10 = 0.000005"
+at 12.5s: nb log info "P(spam) = 0.0001 / 0.000105 = 95%"
+at 13s: nb -> junk send "95% spam"
+at 13.5s: nb idle
+at 13.5s: tok idle
+at 14s: junk done "Filed as spam"
+
+chapter 17s "One gets through" tag="Feedback"
+  "Invoice attached" looks ordinary: both words are a little more common
+  in real mail, so the filter gives it only a 20% chance of being spam and
+  delivers it. You mark it as spam, and the counts for those words go up.
+  The filter learns from every correction.
+
+at 17s: junk idle
+at 17.5s: sender -> server send "Invoice attached"
+at 18s: server -> tok send
+at 18.5s: tok -> nb send "invoice, attached"
+at 19s: nb thinking
+at 20s: nb log info "spam: 0.5 x 0.02 x 0.05 = 0.0005, real: 0.5 x 0.04 x 0.10 = 0.002, P(spam) = 20%"
+at 20.5s: nb -> inbox send "20% spam: deliver"
+at 21s: nb idle
+at 22s: inbox working "You: this is spam"
+at 23s: inbox -> counts send "Mark as spam"
+at 23.5s: counts working "invoice and attached +1 in spam"
+at 24.5s: counts idle
+at 24.5s: inbox idle
+
+chapter 27s "A word it has never seen in spam" tag="Zero counts"
+  "Free prize, Priya". The name Priya has turned up in real mail but in
+  none of the 1,000 spam emails, so its spam count is zero.
+
+at 27.5s: sender -> server send "Free prize, Priya"
+at 28s: server -> tok send
+at 28.5s: tok -> nb send "free, prize, priya"
+at 29s: nb thinking
+
+unless smooth
+  at 30s: nb log error "P(priya | spam) = 0 / 1,000 = 0, so the spam score is 0"
+  at 31s: nb -> inbox send "0% spam: deliver"
+  at 31.5s: nb failed "One zero wiped out free and prize"
+  at 32s: inbox log warn "obvious spam delivered"
+
+  chapter 30s "One zero beats all the evidence" tag="Zero counts"
+    Multiplying by zero erases everything else. Two strong spam words lose
+    to one word the filter happened never to see in spam.
+
+option smooth "Laplace smoothing: add one to every count"
+  at 30s: nb log info "P(priya | spam) = (0 + 1) / (1,000 + 2) = 0.001"
+  at 31s: nb log info "spam 0.00001 vs real 0.0000015: P(spam) = 87%"
+  at 31.5s: nb -> junk send "87% spam"
+  at 32s: nb idle
+  at 32.5s: junk done "Filed as spam"
+
+  chapter 30s "Nothing is impossible" tag="What if"
+    Pretend every word was seen once more in each class. An unseen word
+    now counts as rare, not impossible, so free and prize still decide the
+    result.
+
+chapter 37s "What it teaches"
+  Naive Bayes is counting and multiplying. It is fast and learns from
+  every correction, but it needs smoothing so that one missing count
+  cannot overrule everything else.
+```
+
 ## The maths
 
 <Formulas>

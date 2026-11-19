@@ -76,6 +76,102 @@ $$
 
 </Formulas>
 
+## In a real system
+
+Dropping the low-variance directions in the playground is the same move vector databases make to cut storage: keep the components that carry most of the variance and throw away the rest.
+
+```topple caption="Projecting 768-number embeddings onto 128 principal components. Switch on keeping only 16 to see what happens when too much variance is thrown away."
+title: Shrinking embeddings to save storage
+summary: PCA projects 768-number embeddings onto their 128 most important directions. The vector database gets six times smaller and faster, and search quality barely moves.
+kit: agents
+traffic: off
+duration: 40s
+
+node docs "50 million passages" icon=file
+node encoder "Embedding model" icon=cpu
+node pca "PCA projection" icon=code
+node db "Vector database" icon=database
+node search "Search" icon=search
+node user "User" icon=user
+
+docs -> encoder
+encoder -> pca
+pca -> db
+user <-> search
+search <-> encoder
+search <-> db
+
+chapter 0s "Big vectors"
+  Each passage becomes 768 numbers. At 4 bytes each, 50 million passages
+  take about 150 GB, more than fits in one machine's memory.
+
+at 1s: docs -> encoder send count=3 "Passages"
+at 2s: encoder working
+at 4.5s: encoder log info "768 dimensions x 50 million = 154 GB"
+at 5s: encoder done
+
+chapter 7s "Fit the projection once"
+  PCA is fitted on a sample of a million vectors. It finds the directions
+  along which the embeddings vary most, and how much variance each keeps.
+
+at 7.5s: encoder -> pca send "1 million sample vectors"
+at 8.5s: pca working "Eigenvectors of the covariance"
+
+unless tiny
+  at 11s: pca log info "first 128 components keep 93% of the variance"
+
+  chapter 13s "Store 128 numbers instead of 768"
+    Every vector is projected onto those 128 directions before it is
+    stored. The database shrinks from 154 GB to 26 GB and fits in memory.
+
+  at 13.5s: pca -> db send count=3 "128-number vectors"
+  at 14.5s: pca done
+  at 15s: db done "26 GB, all in memory"
+
+  chapter 18s "Searching the smaller space"
+    Queries are projected the same way, so they can be compared directly.
+
+  at 18.5s: user -> search send "How do I rotate API keys?"
+  at 19.5s: search -> encoder send
+  at 20.5s: encoder -> search send "Query, projected to 128"
+  at 21.5s: search -> db send
+  at 22.5s: db working
+  at 24s: db -> search send count=3 "10 passages"
+  at 24s: db done
+  at 24.5s: search log info "search 6 ms instead of 31 ms, recall 97% of full size"
+  at 25s: search -> user send "10 passages"
+
+option tiny "Keep only 16 components"
+  at 11s: pca log warn "first 16 components keep 41% of the variance"
+
+  chapter 13s "Too much thrown away"
+    Sixteen numbers per vector is tempting: the database falls to 3 GB.
+    But most of what told passages apart is gone.
+
+  at 13.5s: pca -> db send count=3 "16-number vectors"
+  at 14.5s: pca done
+  at 15s: db done "3 GB"
+
+  chapter 18s "Searching a blurry space"
+    Different topics now land close together, and the nearest passages
+    are often not the relevant ones.
+
+  at 18.5s: user -> search send "How do I rotate API keys?"
+  at 19.5s: search -> encoder send
+  at 20.5s: encoder -> search send "Query, projected to 16"
+  at 21.5s: search -> db send
+  at 22.5s: db working
+  at 24s: db -> search send count=3 "10 passages"
+  at 24s: db done
+  at 24.5s: search log warn "search 2 ms, recall 58%: half the results are off topic"
+  at 25s: search waiting "Results about passwords and billing"
+
+chapter 29s "What it shows"
+  PCA keeps the directions that carry the most variance and drops the
+  rest. The explained variance tells you, before you ship, how much
+  search quality you are about to give up.
+```
+
 ## Strengths and weaknesses
 
 <ProsCons>

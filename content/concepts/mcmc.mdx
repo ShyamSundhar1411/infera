@@ -51,6 +51,115 @@ The catch is that the samples are correlated. Each point is close to the previou
 4. Set the step size to 5 on **Correlated**. Almost everything is rejected, because a big jump in a random direction nearly always leaves the thin ridge.
 5. Turn off **Discard burn-in**, press **Reset**, then **Step once** a few times and watch the walk from the corner. Those early points have nothing to do with the target.
 
+## In a real system
+
+In practice you never trust a single chain. Running several from spread-out starts and comparing them is how real Bayesian tools notice the "Two peaks" problem from the lab.
+
+```topple caption="Four chains, one stuck in a side valley, and a convergence check that refuses to publish. Try the longer warm-up."
+title: Four chains, one stuck
+summary: A data team fits a Bayesian model by running four MCMC chains at once. Three agree. The fourth started in a bad place, got stuck in a side valley, and a convergence check is all that stops its answer being averaged in.
+kit: plain
+traffic: off
+duration: 40s
+
+state stuck "Stuck in a side valley" tone=warn reject=0
+
+node analyst "Data scientist" icon=user
+node scheduler "Sampling job" icon=pipeline
+
+group chains "MCMC chains"
+  node c1 "Chain 1" icon=cpu
+  node c2 "Chain 2" icon=cpu
+  node c3 "Chain 3" icon=cpu
+  node c4 "Chain 4" icon=cpu
+
+node check "Convergence check" icon=gauge
+node report "Results" icon=dashboard
+
+analyst -> scheduler
+scheduler -> c1
+scheduler -> c2
+scheduler -> c3
+scheduler -> c4
+c1 -> check
+c2 -> check
+c3 -> check
+c4 -> check
+check -> report
+check -> analyst
+
+chapter 0s "Four chains, four starting points"
+  The question: how big is the effect of a price change on sales? The model
+  only gives an unnormalised posterior, so the job runs four Markov chains
+  from four random starting points. If they all end up describing the same
+  distribution, that is good evidence they found it.
+
+at 1s: analyst -> scheduler send "Fit the model, 4 chains"
+at 2s: scheduler -> c1 send "Start here"
+at 2s: scheduler -> c2 send "Start here"
+at 2s: scheduler -> c3 send "Start here"
+at 2s: scheduler -> c4 send "Start here"
+
+chapter 5s "Warm-up"
+  Each chain walks for 1,000 steps that are thrown away, so its starting
+  point stops mattering. Then it keeps 2,000 more as samples.
+
+at 5.5s: c1 active
+at 5.5s: c2 active
+at 5.5s: c3 active
+at 5.5s: c4 active
+at 10s: c4 stuck "Never left its starting valley"
+
+chapter 13s "Three agree, one does not"
+  Chains 1 to 3 say the effect is about 0.42. Chain 4 says -0.38: it
+  started near a small side peak of the posterior and its steps were too
+  short to climb out. Averaging all four would report 0.22, a number none
+  of the chains believes.
+
+at 13.5s: c1 -> check send "effect 0.42"
+at 13.5s: c2 -> check send "effect 0.43"
+at 13.5s: c3 -> check send "effect 0.41"
+at 13.5s: c4 -> check send "effect -0.38"
+at 14s: c1 done
+at 14s: c2 done
+at 14s: c3 done
+at 15s: check active
+at 16s: check log warn "R-hat 1.43 for effect (want below 1.01)"
+
+unless warmup
+  chapter 19s "Do not publish"
+    R-hat compares the spread between chains with the spread within them.
+    Near 1 means they agree. At 1.43 the job refuses to report and sends
+    the result back instead.
+
+  at 19.5s: check blocked "Chains disagree"
+  at 20s: check -> analyst send "Not converged: chain 4 disagrees"
+  at 21s: report blocked "Held back"
+
+  chapter 28s "What it teaches"
+    One chain cannot tell you it is stuck. Several chains from spread-out
+    starting points, checked against each other, can.
+
+option warmup "Longer warm-up from spread-out starts"
+  chapter 19s "Give it time" tag="What if"
+    The data scientist reruns chain 4 with 4,000 warm-up steps and larger
+    proposals early on. It climbs out of the side valley and joins the
+    others, and R-hat drops to 1.004.
+
+  at 19.5s: scheduler -> c4 send "Warm up 4,000 steps"
+  at 20s: c4 active
+  at 25s: c4 -> check send "effect 0.41"
+  at 25.5s: c4 done
+  at 26s: check log info "R-hat 1.004 for effect"
+  at 26.5s: check -> report send "effect 0.42 (94% interval 0.31 to 0.53)"
+  at 27s: check done
+  at 27s: report active "Published"
+
+  chapter 30s "What it teaches"
+    Convergence checks do not fix a sampler, they tell you when to keep
+    going. Give the chains time and room, then check again.
+```
+
 ## The maths
 
 <Formulas>

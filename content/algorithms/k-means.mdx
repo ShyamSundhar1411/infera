@@ -67,6 +67,108 @@ $$
 
 </Formulas>
 
+## In a real system
+
+Vector databases use k-means to split millions of embeddings into clusters ahead of time, so a search only has to look inside the few clusters nearest the query.
+
+```topple caption="An IVF index: 10 million vectors clustered by k-means into 1,024 groups. Switch on searching four clusters instead of two to catch neighbours just across a cluster border."
+title: k-means inside a vector index
+summary: An IVF index runs k-means over every stored vector ahead of time. A query then searches only the few clusters nearest to it, instead of everything.
+kit: agents
+traffic: off
+duration: 40s
+
+node builder "Index builder" icon=tool
+node kmeans "k-means, k = 1,024" icon=cpu
+
+group lists "1,024 clusters of documents"
+  node c1 "Cluster 17" icon=storage
+  node c2 "Cluster 203" icon=storage
+  node c3 "Cluster 588" icon=storage
+  node c4 "Cluster 901" icon=storage
+
+node search "Search service" icon=search
+node user "User" icon=user
+
+builder -> kmeans
+kmeans -> c1
+kmeans -> c2
+kmeans -> c3
+kmeans -> c4
+user <-> search
+search <-> c1
+search <-> c2
+search <-> c3
+search <-> c4
+
+chapter 0s "Building the index"
+  Ten million document vectors are clustered with k-means into 1,024
+  groups. Each vector is filed under its nearest centroid, so each list
+  holds about 10,000 vectors.
+
+at 1s: builder -> kmeans send "10 million vectors"
+at 2s: kmeans working "Lloyd iterations: assign, then move centroids"
+at 6s: kmeans log info "converged after 18 iterations"
+at 6.5s: kmeans -> c1 send
+at 6.5s: kmeans -> c2 send
+at 6.5s: kmeans -> c3 send
+at 6.5s: kmeans -> c4 send
+at 7s: kmeans done
+at 7.5s: lists done "About 10,000 vectors per cluster"
+
+chapter 10s "A query"
+  The query is compared with the 1,024 centroids first. That is cheap,
+  and it says which neighbourhoods are worth searching.
+
+at 10.5s: user -> search send "Papers on sparse attention"
+at 11.5s: search thinking "Compare with 1,024 centroids"
+
+unless probes
+  chapter 14s "Search the nearest 2 clusters"
+    With nprobe = 2, only the two closest clusters are searched: 20,000
+    vectors out of 10 million.
+
+  at 14s: search -> c1 send
+  at 14s: search -> c2 send
+  at 14.5s: c1 working
+  at 14.5s: c2 working
+  at 16.5s: c1 -> search send
+  at 16.5s: c2 -> search send
+  at 16.5s: c1 done
+  at 16.5s: c2 done
+  at 17.5s: search log info "searched 20,000 vectors in 2 ms, recall 84%"
+  at 18s: search log warn "2 of the true top 10 sat in cluster 588, just over the border"
+
+option probes "Search the nearest 4 clusters"
+  chapter 14s "Search the nearest 4 clusters"
+    With nprobe = 4, the search also checks the next two clusters, which
+    catches neighbours that sit just across a cluster border.
+
+  at 14s: search -> c1 send
+  at 14s: search -> c2 send
+  at 14s: search -> c3 send
+  at 14s: search -> c4 send
+  at 14.5s: lists working
+  at 17.5s: c1 -> search send
+  at 17.5s: c2 -> search send
+  at 17.5s: c3 -> search send
+  at 17.5s: c4 -> search send
+  at 17.5s: lists done
+  at 18.5s: search log info "searched 40,000 vectors in 4 ms, recall 96%"
+
+chapter 21s "The answer"
+  The search keeps the ten closest vectors it found and returns their
+  documents.
+
+at 21.5s: search -> user send count=3 "10 papers"
+at 22s: search done
+
+chapter 25s "What it shows"
+  k-means turns one huge search into a quick choice of neighbourhood plus
+  a small search inside it. Points near a cluster border are the price,
+  and nprobe sets how much you pay to catch them.
+```
+
 ## Strengths and weaknesses
 
 <ProsCons>

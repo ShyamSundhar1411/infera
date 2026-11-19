@@ -42,6 +42,88 @@ Francis Galton built a machine that shows the theorem with marbles. Each ball fa
 2. Drop 1,000 balls with only 4 rows. The pile is lumpy and the dashed Normal curve fits it roughly. Clear, set 16 rows and drop 1,000 again: the fit is now very close.
 3. Tilt the board to 0.2. With few rows the pile is clearly lopsided; add rows and it straightens back into a symmetric bell, just centred further to the left.
 
+## In a real system
+
+The calm bell curve of averages is also a trap. Averaging over many shards and requests shrinks the noise, and it shrinks a real problem on one shard just as much.
+
+```topple caption="Fifty shards, one slow one, and an average that barely moves. Switch on tail alerting to catch it."
+title: The average that hides a hot shard
+summary: A database is split across 50 shards and the dashboard shows their average latency. One shard slows to 200 ms, and the average barely moves, because it shares the pain out across all fifty.
+kit: outage
+duration: 42s
+
+node people "Customers" icon=users
+node api "API" icon=gateway capacity=300
+node shards "49 healthy shards" icon=cluster capacity=300
+node hot "Shard 37" icon=database capacity=20
+node metrics "Metrics" icon=metrics
+node dash "Dashboard: average latency" icon=dashboard
+node support "Support tickets" icon=message
+
+people -> api rate=100
+api -> shards "98% of requests" rate=98
+api -> hot "2% of requests" rate=2
+shards -> metrics rate=4
+hot -> metrics rate=1
+metrics -> dash rate=2
+
+chapter 0s "Fifty shards, one number"
+  Each customer's data lives on one of 50 shards. The dashboard averages
+  latency over thousands of requests across all of them: about 20 ms,
+  wobbling between 18 and 24. Averages of many independent requests form a
+  narrow bell, which is why the line looks so calm.
+
+chapter 8s "One shard heats up"
+  A bad query plan on shard 37 makes every request there take 200 ms. The
+  customers on that shard, 2% of all customers, are having a bad day.
+
+at 8.5s: hot overloaded "Every request 200 ms"
+at 9s: hot log error "slow query plan on orders table, 200 ms per request"
+
+chapter 14s "The average shrugs"
+  Forty-nine shards at 20 ms and one at 200 average to 23.6 ms, still
+  inside the usual wobble. The one number on the dashboard divides the
+  problem by fifty.
+
+at 15s: dash log info "average latency 23.6 ms (usual range 18 to 24)"
+
+unless tail
+  chapter 22s "Customers notice first"
+    No alert fires. Tickets from the affected customers pile up, and it is
+    support, not monitoring, that finds the problem an hour later.
+
+  at 22.5s: support degraded "Tickets from 2% of customers"
+  at 30s: hot recovering "Query plan fixed"
+  at 34s: hot healthy
+
+  chapter 36s "What it teaches"
+    Averages are good at hiding exactly the problems you care about. A
+    calm bell curve says the typical request is fine, not that every
+    customer is.
+
+option tail "Alert on p99 and the slowest shard"
+  node alert "Alerting" icon=alert
+  node oncall "On-call engineer" icon=user
+  metrics -> alert rate=1
+  alert -> oncall rate=0
+
+  chapter 18s "Look at the tail" tag="What if"
+    2% of requests are now slow, more than the 1% a p99 can hide, so p99
+    jumps to 200 ms. Per-shard maximum latency points straight at shard
+    37, and someone is paged within minutes.
+
+  at 18.5s: alert degraded "p99 above 200 ms, shard 37"
+  at 19s: alert -> oncall send "Page: shard 37 slow"
+  at 22s: hot recovering "Query plan fixed"
+  at 26s: hot healthy
+  at 26s: alert healthy
+
+  chapter 30s "What it teaches"
+    Watch the tail and the worst part, not only the middle. The average is
+    what most requests feel; the p99 and the slowest shard are what your
+    unhappiest customers feel.
+```
+
 ## The maths
 
 <Formulas>

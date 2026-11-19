@@ -75,6 +75,100 @@ $$
 
 </Formulas>
 
+## In a real system
+
+A straight line through recent traffic is often all a capacity planner needs. The playground's outlier dataset shows what can go wrong; this is the same effect on a fleet of servers.
+
+```topple caption="A trend line forecasts next week's peak so servers are added in advance. Switch on the sale week to see one outlier book seven idle servers."
+title: Scaling before the traffic arrives
+summary: Instead of waiting for CPU to spike, a capacity planner fits a straight line to recent traffic and adds servers ahead of the forecast.
+kit: agents
+traffic: off
+duration: 40s
+
+node metrics "Traffic metrics" icon=metrics
+node model "Trend model, linear regression" icon=brain
+node planner "Capacity planner" icon=dashboard
+node scaler "Autoscaler" icon=gauge
+node fleet "Web servers" icon=rack
+
+metrics -> model
+model -> planner
+planner -> scaler
+scaler -> fleet
+fleet -> metrics
+
+chapter 0s "Eight weeks of history"
+  Every Monday morning the planner looks at peak requests per second for
+  the last eight weeks: 4,100, 4,250, 4,380, 4,500 and climbing.
+
+at 1s: metrics -> model send count=3 "8 weekly peaks"
+at 2s: model thinking "Least squares: peak = a + b x week"
+
+unless sale
+  chapter 6s "A clean trend"
+    The line fits well. Traffic grows by about 130 requests a second each
+    week, and next week's peak should land near 5,020.
+
+  at 6s: model log info "slope +131 per week, R squared 0.98, forecast 5,020"
+  at 7s: model -> planner send "Forecast 5,020 rps"
+  at 7s: model done
+
+  chapter 10s "Scale ahead"
+    Each server handles 500 requests a second at a safe load, so the
+    planner asks for 11 servers before Monday, one more than today.
+
+  at 10.5s: planner thinking "5,020 / 500 = 10.04, round up to 11"
+  at 12s: planner -> scaler send "11 servers by Monday 8:00"
+  at 12s: planner done
+  at 13s: scaler working
+  at 16s: scaler -> fleet send "Add 1 server"
+  at 18s: fleet done "11 servers ready"
+  at 18s: scaler done
+
+  chapter 22s "Monday"
+    Traffic peaks at 4,990. The extra server was already warm, so nothing
+    queued and nothing had to boot in a hurry.
+
+  at 22.5s: fleet -> metrics send "Peak 4,990 rps"
+  at 23.5s: metrics log info "forecast error 0.6%"
+
+option sale "One week had a big sale"
+  chapter 6s "One outlier"
+    Week 6 had a flash sale that peaked at 9,800. Least squares weighs
+    every point by its squared distance, so that one week drags the whole
+    line upwards.
+
+  at 6s: model log warn "slope +410 per week, R squared 0.41, forecast 8,900"
+  at 7s: model -> planner send "Forecast 8,900 rps"
+  at 7s: model done
+
+  chapter 10s "Scaling for a phantom"
+    The planner trusts the forecast and books 18 servers for an ordinary
+    Monday.
+
+  at 10.5s: planner thinking "8,900 / 500 = 17.8, round up to 18"
+  at 12s: planner -> scaler send "18 servers by Monday 8:00"
+  at 12s: planner done
+  at 13s: scaler working
+  at 16s: scaler -> fleet send "Add 8 servers"
+  at 18s: fleet done "18 servers ready"
+  at 18s: scaler done
+
+  chapter 22s "Monday"
+    Traffic peaks at 4,990, as it would have anyway. Seven servers sit
+    idle all week. Dropping the sale week, or a robust fit, would have
+    given the honest 5,020.
+
+  at 22.5s: fleet -> metrics send "Peak 4,990 rps"
+  at 23.5s: metrics log warn "forecast error 78%: 7 servers idle"
+
+chapter 28s "What it shows"
+  A straight line is a fine forecast when the past is clean. One extreme
+  point can move it a long way, so look at the data before you trust the
+  slope.
+```
+
 ## Strengths and weaknesses
 
 <ProsCons>

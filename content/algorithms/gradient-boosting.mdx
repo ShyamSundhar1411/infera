@@ -76,6 +76,114 @@ $$
 
 </Formulas>
 
+## In a real system
+
+Fraud scoring is one of the most common places boosted trees run in production. The playground shows one model's boundary; here it is one step in a payment, with a threshold, a review queue and features that have to arrive on time.
+
+```topple caption="A payment scored by 400 boosted trees in about 20 milliseconds. Switch on the stale feature store to see a confident wrong score, and the rule that catches it."
+title: Scoring a payment for fraud
+summary: Every card payment is scored by a gradient-boosted model in about 20 milliseconds. The score decides whether it goes through, waits for a person, or is declined.
+kit: agents
+traffic: off
+duration: 40s
+
+node shopper "Shopper" icon=user
+node checkout "Checkout" icon=payment
+node features "Feature store" icon=database
+node model "Boosted trees, 400 of them" icon=brain
+node policy "Decision policy" icon=gateway
+node review "Review queue" icon=users
+node bank "Card network" icon=globe
+
+shopper -> checkout
+checkout <-> features
+checkout <-> model
+model -> policy
+policy -> review
+policy -> bank
+review -> bank
+
+chapter 0s "A payment arrives"
+  A shopper pays 240 dollars for headphones. Before the card network sees
+  it, the checkout asks a fraud model how risky it looks.
+
+at 1s: shopper -> checkout send "Pay 240 dollars"
+at 2s: checkout working
+
+unless stale
+  chapter 4s "Recent history"
+    The model needs context the payment itself does not carry: how many
+    payments this card made in the last hour, how far the shipping address
+    is from past ones, how old the account is.
+
+  at 4.5s: checkout -> features send "Card 4412, account 9081"
+  at 5.5s: features working
+  at 7s: features -> checkout send count=3 "3 payments in 10 minutes, new address, account 2 days old"
+  at 7s: features done
+
+  chapter 10s "Four hundred small trees"
+    Gradient boosting builds trees one after another, each fixing the
+    mistakes of the ones before. Each tree adds a little to the score, and
+    the sum becomes a probability of fraud.
+
+  at 10.5s: checkout -> model send "Amount, velocity, address, account age"
+  at 11.5s: model thinking "Adding up 400 trees"
+  at 14s: model log info "score 0.71 (velocity +0.38, new address +0.21, age +0.09)"
+  at 14.5s: model -> policy send "Fraud probability 0.71"
+  at 14.5s: model done
+
+  chapter 17s "Score against thresholds"
+    Below 0.3 the payment goes straight through. Above 0.9 it is declined.
+    In between, a person looks at it, because a wrong decline loses a real
+    customer.
+
+  at 17.5s: policy thinking
+  at 19s: policy log warn "0.71 is between 0.3 and 0.9: send to review"
+  at 19.5s: policy -> review send "Payment 4412, score 0.71"
+  at 20s: policy done
+  at 21s: review working "An analyst checks the order"
+  at 27s: review log info "Address matches the bank's records: approve"
+  at 27.5s: review -> bank send "Approved after review"
+  at 28s: review done
+
+option stale "The feature store is behind"
+  chapter 4s "Recent history is missing"
+    The feature store's update job is stuck. It still answers, but its
+    counts are an hour old, so this card's burst of payments is invisible.
+
+  at 4.5s: checkout -> features send "Card 4412, account 9081"
+  at 5s: features waiting "Last update 61 minutes ago"
+  at 7s: features -> checkout send "0 payments in 10 minutes"
+  at 7.5s: checkout log warn "features older than 15 minutes"
+
+  chapter 10s "A confident wrong answer"
+    The model has no idea its inputs are stale. Without the velocity
+    signal the payment looks ordinary, and it scores low.
+
+  at 10.5s: checkout -> model send "Amount, stale velocity, address, age"
+  at 11.5s: model thinking
+  at 14s: model log info "score 0.18"
+  at 14.5s: model -> policy send "Fraud probability 0.18"
+  at 14.5s: model done
+
+  chapter 17s "A fallback rule catches it"
+    The policy checks feature freshness before trusting the score. With
+    stale features it falls back to a simple rule: new accounts paying over
+    200 dollars go to review.
+
+  at 17.5s: policy thinking
+  at 19s: policy log warn "stale features: fallback rule, new account over 200 dollars"
+  at 19.5s: policy -> review send "Payment 4412, by rule"
+  at 20s: policy done
+  at 21s: review working
+  at 27s: review -> bank send "Approved after review"
+  at 28s: review done
+
+chapter 31s "What it shows"
+  The model is only as good as the features it is handed at that moment.
+  Production fraud systems watch their inputs as closely as their scores.
+```
+
 ## Strengths and weaknesses
 
 <ProsCons>

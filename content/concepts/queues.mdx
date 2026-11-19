@@ -130,6 +130,195 @@ chapter 40s "What it teaches"
   busy season, not during it.
 ```
 
+Two more places where chance shapes a system. When one request fans out to many servers, a rare slow server becomes the common case. And when a load balancer places work at random, the busiest server ends up far above the average, unless it checks two servers before choosing.
+
+```topple caption="Fan-out to 100 shards: each is slow 1% of the time, so 63% of searches wait for a slow one. Hedged requests fix most of it."
+title: Why the slowest server sets your speed
+summary: One search asks 100 servers and waits for all of them. Each is slow only 1% of the time, yet most searches end up waiting for a slow one.
+kit: agents
+traffic: off
+duration: 40s
+
+state slow "Paused, answering late" tone=hot reject=0
+
+node user "You" icon=user
+node front "Search front end" icon=server
+group index "Search index, 100 shards"
+  node s1 "Shard 1" icon=database
+  node s2 "Shard 2" icon=database
+  node s3 "Shard 3" icon=database
+  node rest "Shards 4 to 100" icon=cluster
+
+user <-> front
+front <-> s1
+front <-> s2
+front <-> s3
+front <-> rest
+
+chapter 0s "One search, a hundred servers" tag="Fan-out"
+  The index is too big for one machine, so it is split into 100 shards. A
+  search goes to every shard, and the front end can only answer once all
+  100 have replied.
+
+at 1s: user -> front send "A search"
+at 1.5s: front waiting "Waiting for 100 answers"
+at 2s: front -> s1 send
+at 2s: front -> s2 send
+at 2s: front -> s3 send
+at 2s: front -> rest send count=6 "The same query, 97 more times"
+at 2.5s: s1 working
+at 2.5s: s2 working
+at 2.5s: s3 working
+at 2.5s: rest working
+at 3.5s: s1 -> front send "10 ms"
+at 3.5s: s2 -> front send "11 ms"
+at 3.5s: s3 -> front send "9 ms"
+at 3.5s: rest -> front send count=6 "97 answers, all quick"
+at 4s: s1 idle
+at 4s: s2 idle
+at 4s: s3 idle
+at 4s: rest idle
+at 4.5s: front -> user send "Results in 14 ms"
+at 5s: front done
+at 5s: front log info "search 1: 14 ms, slowest shard 11 ms"
+
+chapter 8s "Fast almost always"
+  Each shard answers in about 10 ms. Once in a hundred requests it is
+  caught by a pause, such as garbage collection or a slow disk read, and
+  takes a full second instead.
+
+chapter 12s "But a search waits for the slowest" tag="The tail"
+  The next search goes out the same way. This time shard 2 is in one of
+  its pauses. The other 99 answer at once, and the whole search waits.
+
+at 12s: front idle
+at 12.5s: user -> front send "Another search"
+at 13s: front waiting
+at 13.5s: front -> s1 send
+at 13.5s: front -> s2 send
+at 13.5s: front -> s3 send
+at 13.5s: front -> rest send count=6
+at 14s: s1 working
+at 14s: s2 slow "Garbage collection pause"
+at 14s: s3 working
+at 14s: rest working
+at 15s: s1 -> front send "10 ms"
+at 15s: s3 -> front send "9 ms"
+at 15s: rest -> front send count=6 "Quick answers"
+at 15.5s: s1 idle
+at 15.5s: s3 idle
+at 15.5s: rest idle
+
+unless hedge
+  at 16s: front log warn "search 2: still waiting on shard 2"
+  at 21s: s2 -> front send "1,000 ms"
+  at 21.5s: s2 idle
+  at 22s: front -> user send "Results in 1,012 ms"
+  at 22.5s: front done
+  at 22.5s: front log error "search 2: 1,012 ms, slowest shard 1,000 ms"
+
+option hedge "Hedge: ask a replica when a shard is late"
+  node r2 "Shard 2 replica" icon=database
+  front <-> r2
+  at 16s: front -> r2 send "No answer after 15 ms: ask the replica"
+  at 16.5s: r2 working
+  at 17.5s: r2 -> front send "10 ms"
+  at 18s: r2 idle
+  at 18s: front -> user send "Results in 27 ms"
+  at 18.5s: front done
+  at 18.5s: front log info "search 2: 27 ms, hedged around shard 2"
+
+  chapter 16s "Ask twice, take the first" tag="What if"
+    The front end does not wait. If a shard has not answered after 15 ms,
+    the usual time for nearly all of them, it sends the same query to a
+    replica and uses whichever answer arrives first. Both copies being
+    slow happens once in 10,000 requests, so slow searches drop from 63%
+    to about 1%, for a few percent of extra load.
+
+chapter 26s "The arithmetic" tag="1 - 0.99^100"
+  The chance that all 100 shards are quick is 0.99 multiplied by itself
+  100 times, about 37%. So 63% of searches meet at least one slow shard.
+  A one-in-a-hundred problem on each server becomes the usual experience
+  for the person searching.
+
+at 26s: front log info "P(at least one slow shard) = 1 - 0.99^100 = 63%"
+
+chapter 34s "What it teaches"
+  When a request fans out, the tail of each server's latency becomes the
+  middle of yours. Measure the 99th percentile, not the average, and fix
+  it by hedging, by fanning out to fewer servers, or by removing the pauses.
+```
+
+```topple caption="Random placement against the best of two random servers, for 1,000 jobs on 1,000 servers."
+title: The power of two choices
+summary: Send each job to a random server and some servers drown while others sit idle. Look at two random servers and pick the less busy one, and the pile-ups almost vanish.
+kit: outage
+duration: 40s
+
+node users "Jobs" icon=users
+node lb "Load balancer" icon=lb
+group fleet "1,000 servers"
+  node s1 "Server 17" icon=server capacity=30
+  node s2 "Server 402" icon=server capacity=30
+  node s3 "Server 655" icon=server capacity=30
+  node s4 "Server 931" icon=server capacity=30
+  node rest "The other 996" icon=cluster
+
+users -> lb "long jobs" rate=60
+lb -> s1 rate=12
+lb -> s2 rate=12
+lb -> s3 rate=12
+lb -> s4 rate=12
+lb -> rest rate=12
+
+chapter 0s "Even on average" tag="1 job each"
+  A thousand long-running jobs arrive for a thousand servers: one each on
+  average. Each server can comfortably run two or three at once.
+
+unless two
+  chapter 6s "Pick a server at random" tag="Random"
+    The load balancer sends every job to a server chosen at random. Random
+    is fair on average, but not in each place: some servers are picked
+    again and again, and about 37% are never picked at all.
+
+  at 6s: lb log info "strategy: one random server per job"
+  at 8s: lb -> s1 rate=36 "Picked 6 times"
+  at 8s: lb -> s3 rate=0 "Never picked"
+  at 8s: lb -> s4 rate=6
+  at 9s: s1 overloaded "6 jobs, room for 3"
+  at 9.5s: s3 offline "Idle"
+  at 10s: s1 log error "6 jobs queued, each running at half speed"
+  at 11s: lb log warn "busiest server: 6 jobs | idle servers: 37%"
+
+  chapter 18s "The busiest server sets the pace"
+    The job stuck on server 17 finishes last, and with a thousand servers
+    the busiest one typically ends up with 5 or 6 jobs. Adding servers
+    barely helps: the worst pile grows slowly, like log n over log log n.
+
+option two "Look at two servers, pick the less busy"
+  chapter 6s "Two random choices" tag="What if"
+    For each job the load balancer picks two servers at random, asks how
+    busy each is, and sends the job to the quieter one. One extra question
+    per job.
+
+  at 6s: lb log info "strategy: best of two random servers"
+  at 8s: lb -> s1 rate=18 "3 jobs"
+  at 8s: lb -> s3 rate=6 "1 job"
+  at 8s: lb -> s4 rate=12 "2 jobs"
+  at 9s: s1 healthy "3 jobs, within capacity"
+  at 11s: lb log info "busiest server: 3 jobs | idle servers: 24%"
+
+  chapter 18s "The pile-ups vanish"
+    The busiest server now has 3 jobs instead of 5 or 6, and it stays near
+    3 even as the fleet grows, because the worst pile grows like log log n.
+    The second choice does nearly all the work; a third adds little.
+
+chapter 30s "What it teaches"
+  Randomness spreads load evenly on average but leaves hot spots. A
+  little information, one extra sample per decision, removes most of
+  them. Many real load balancers use exactly this rule.
+```
+
 ## The maths
 
 <Formulas>

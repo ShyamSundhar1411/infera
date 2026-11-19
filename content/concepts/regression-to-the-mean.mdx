@@ -35,6 +35,84 @@ Each dot is a student, with their test 1 score across and their next score up. T
 3. Drag it to 90%. Test scores are now mostly noise, the best-fit line is almost flat, and both groups fall nearly all the way back to the class average.
 4. Shrink **Group size** to 2%. The most extreme students regress the most, because they needed the most luck to get there.
 
+## In a real system
+
+Operations teams meet this every week. Rank servers by last week's latency, act on the worst, and they improve whatever you did, because the ranking picked out bad luck as well as bad machines. A control group that gets no change is the only way to tell.
+
+```topple caption="Fixing the five slowest servers: they get faster, and so do five slow servers nobody touched."
+title: Fixing the slowest servers
+summary: The team finds the five slowest servers, applies a fix, and they get faster. So would five slow servers nobody touched.
+kit: outage
+duration: 40s
+
+node users "Requests" icon=users
+node lb "Load balancer" icon=lb
+node fast "195 other servers" icon=cluster
+node slow "Last week's 5 slowest" icon=rack
+node dash "Latency dashboard" icon=dashboard
+node team "Ops team" icon=users
+
+users -> lb rate=100
+lb -> fast rate=95
+lb -> slow rate=5
+fast -> dash rate=2
+slow -> dash rate=2
+dash -> team "reports" rate=0
+team -> slow "changes" rate=0
+
+chapter 0s "Every week, someone is slowest" tag="Skill plus luck"
+  A server's average latency for the week is part how good the machine
+  really is and part luck: noisy neighbours, which customers it served,
+  when its disks were busy. The fleet averages 100 ms.
+
+at 1s: dash log info "fleet average 100 ms"
+
+chapter 6s "Pick the worst five" tag="Last week"
+  The dashboard ranks all 200 servers. The five slowest averaged 180 ms.
+  They are a little worse than the rest, but they mostly had a bad week:
+  picking the worst also picks the unluckiest.
+
+at 6s: slow degraded "180 ms last week"
+at 7s: dash log warn "slowest five: 180 ms average"
+at 9s: dash -> team send "Fix these five"
+
+chapter 13s "Apply the fix" tag="Intervention"
+  The team updates the kernel on the five servers and waits a week.
+
+at 13s: team -> slow send "Kernel update"
+at 14s: slow recovering "Updated"
+
+chapter 20s "They got faster" tag="This week"
+  This week the same five average 125 ms. The fix looks like it took 55 ms
+  off. But their luck has reset: most of last week's bad luck will not
+  repeat, fix or no fix.
+
+at 20s: slow healthy "125 ms this week"
+at 21s: dash log info "fixed five: 180 ms -> 125 ms"
+
+unless control
+  at 24s: team log info "fix worked: 31% faster, roll it out everywhere?"
+
+option control "Keep five equally slow servers as a control"
+  node ctrl "5 slow servers, left alone" icon=rack
+  lb -> ctrl rate=5
+  ctrl -> dash rate=2
+  at 6s: ctrl degraded "182 ms last week"
+  at 20s: ctrl healthy "127 ms this week"
+  at 21.5s: dash log warn "untouched five: 182 ms -> 127 ms"
+  at 24s: team log warn "the control improved just as much: the fix did nothing"
+
+  chapter 20s "The control improved too" tag="What if"
+    Five other slow servers got no fix at all, and they improved by the
+    same 55 ms. The difference between the two groups, not the before and
+    after, is the effect of the fix: here, about zero.
+
+chapter 30s "What it teaches"
+  Anything chosen for being extreme drifts back towards the average next
+  time. Without an untouched comparison group, that drift looks exactly
+  like a fix that worked.
+```
+
 ## The maths
 
 <Formulas>

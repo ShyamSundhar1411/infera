@@ -41,6 +41,88 @@ The dot grids show the first 300 visitors to each button, coloured if they click
 3. Set **Button B's real click rate** equal to A's. Run 1,000 tests: about 5% still declare a winner, and every one is wrong.
 4. With the buttons still equal, turn on **Stop as soon as p < 0.05** and run 1,000 tests. False wins jump to around a quarter. Run one test and watch it stop at the first lucky dip.
 
+## In a real system
+
+In production an A/B test is a pipeline: assignment, two versions, an event stream, a warehouse and an analysis. The scene shows the two classic ways it goes wrong: stopping the moment a daily peek looks significant, and groups that are not really comparable. Switch on the bots in the Lab tab to see a sample ratio mismatch caught before anyone reads the metric.
+
+```topple caption="A 50/50 A/B test through assignment, events, warehouse and analysis, with early peeking and a sample ratio mismatch."
+title: An A/B test in production
+summary: Visitors are split 50/50 by a hash of their id. Events flow to a warehouse and a notebook works out the winner. Two common mistakes can crown a winner that is not there.
+kit: outage
+duration: 48s
+
+state winner "Declared a winner" tone=warn reject=0
+state check "Checks pass" tone=ok reject=0
+state hold "Results on hold" tone=hot reject=0
+
+node users "Visitors" icon=users
+node assign "Assignment" icon=key
+node a "Page A" icon=monitor
+node b "Page B" icon=monitor
+node events "Event pipeline" icon=pipeline
+node wh "Warehouse" icon=warehouse
+node nb "Analysis" icon=code
+
+users -> assign "visits" rate=60
+assign -> a "hash(id) even" rate=30
+assign -> b "hash(id) odd" rate=30
+a -> events "clicks" rate=6
+b -> events "clicks" rate=6
+events -> wh rate=12
+wh -> nb "daily totals" rate=3
+
+chapter 0s "A fair split" tag="50 / 50"
+  Each visitor's id is hashed, so the same person always sees the same
+  page and the two groups differ only by chance. In truth, page B is no
+  better: both convert 10% of visitors.
+
+at 1s: assign log info "split 50/50 on hash(user_id)"
+
+unless bots
+  chapter 9s "Peeking every morning" tag="Day 3: p = 0.04"
+    The plan was 14 days. But the team checks the p-value daily. On day 3,
+    by chance, B is ahead and p = 0.04. They stop and ship B.
+
+  at 9s: nb winner "Day 3: B +6%, p = 0.04"
+  at 9.5s: nb log warn "stopped early on day 3, shipping page B"
+
+  chapter 18s "What the full test said" tag="Day 14: p = 0.71"
+    Had they waited, the 14-day result would have been p = 0.71: no
+    difference. Checking daily and stopping at the first p below 0.05
+    calls a false winner in about one test in five, not one in twenty.
+
+  at 18s: nb log info "day 14 (not run): B +0.4%, p = 0.71"
+
+option bots "Bots slip into one group"
+  node bot "Crawlers" icon=bot
+  bot -> b "fake visits" rate=4
+
+  chapter 9s "One group is bigger" tag="SRM"
+    Page B is new and its URL skipped the bot filter. Crawlers land only
+    on B. Page B looks worse per visit, or better, depending on what the
+    crawlers click, and the comparison is no longer fair.
+
+  at 9s: wh log warn "users: A 50,000, B 53,600"
+
+  chapter 18s "The SRM check" tag="p < 0.001"
+    Before reading any metric, the notebook checks the split itself. With
+    a 50/50 design, 50,000 against 53,600 has a chi-square of 125: far
+    beyond chance. The results are held until the bots are filtered out.
+
+  at 18s: nb hold "Sample ratio mismatch"
+  at 18.5s: nb log error "SRM: expected 51,800 each, got 50,000 / 53,600, chi2 = 125, p < 0.001"
+
+chapter 30s "Doing it properly" tag="Fixed plan"
+  Fix the sample size up front, check the split before the metric, and
+  only read the result at the end, or use a method built for repeated looks.
+
+at 31s: nb check "Planned test, checks first"
+
+chapter 38s "What it teaches"
+  The statistics are the easy part. The pipeline decides whether the two
+  groups are really comparable and whether the p-value means what it says.
+```
+
 ## The maths
 
 <Formulas>

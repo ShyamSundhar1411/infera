@@ -68,6 +68,84 @@ $$
 
 </Formulas>
 
+## In a real system
+
+The splits in the playground are questions about $x$ and $y$. In lending they are questions about income and debt, and the path a case takes down the tree doubles as the reason for the decision.
+
+```topple caption="A loan application walks three splits to a leaf. Switch on the applicant asking why to see the stored path become the explanation."
+title: A loan decision you can explain
+summary: A decision tree turns a loan application into a short chain of yes-or-no questions. The path it took is the explanation, and it is kept for the auditors.
+kit: agents
+traffic: off
+duration: 38s
+
+node applicant "Applicant" icon=user
+node portal "Loan portal" icon=server
+node bureau "Credit bureau" icon=search
+node tree "Decision tree" icon=brain
+node audit "Audit log" icon=logs
+node officer "Loan officer" icon=user
+
+applicant <-> portal
+portal <-> bureau
+portal <-> tree
+tree -> audit
+officer <-> audit
+officer -> applicant
+
+chapter 0s "An application"
+  An applicant asks to borrow 15,000 dollars. They earn 52,000 a year and
+  already pay 1,900 a month towards other debts.
+
+at 1s: applicant -> portal send "Borrow 15,000"
+at 2s: portal working
+at 3s: portal -> bureau send "Credit history"
+at 4s: bureau working
+at 6s: bureau -> portal send "2 late payments in 3 years"
+at 6s: bureau done
+
+chapter 8s "Three questions"
+  The tree was learned from past loans. Each split is the question that
+  best separated loans that were repaid from ones that were not.
+
+at 8.5s: portal -> tree send "Income, debts, history"
+at 9.5s: tree thinking "Income above 45,000? Yes"
+at 11.5s: tree thinking "Debt payments above 40% of income? Yes, 44%"
+at 13.5s: tree thinking "Late payments in 3 years above 1? Yes, 2"
+at 15s: tree done "Leaf: 31% of similar loans defaulted. Decline"
+
+chapter 17s "The path is the explanation"
+  Unlike most models, the reason is not a guess about the model. It is the
+  exact path the application took, and it is stored with the decision.
+
+at 17.5s: tree -> audit send "income yes, debt ratio 44% yes, late payments 2 yes: decline"
+at 18.5s: audit done
+at 19s: tree -> portal send "Declined"
+at 20s: portal -> applicant send "Declined"
+at 20s: portal done
+
+unless explain
+  chapter 23s "Settled"
+    The decision and its path stay in the log. If a regulator asks how
+    the bank decides, every decision can be replayed question by question.
+
+option explain "The applicant asks why"
+  chapter 23s "The applicant asks why"
+    Lenders must tell a declined applicant the main reasons. Here the
+    reasons come straight from the path, not from a separate explainer.
+
+  at 23.5s: applicant -> portal send "Why was I declined?"
+  at 24.5s: officer working "Looks up the decision"
+  at 25.5s: audit -> officer send "The stored path"
+  at 27s: officer log info "Reasons: debt payments 44% of income, 2 late payments"
+  at 28s: officer -> applicant send "Lower your debt ratio below 40% to qualify"
+  at 29s: officer done
+
+chapter 31s "What it shows"
+  A tree trades some accuracy for decisions anyone can follow. That is why
+  shallow trees are still common wherever decisions must be explained.
+```
+
 ## Strengths and weaknesses
 
 <ProsCons>

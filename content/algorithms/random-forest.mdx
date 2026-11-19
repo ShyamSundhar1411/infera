@@ -68,6 +68,91 @@ $$
 
 </Formulas>
 
+## In a real system
+
+Averaging many trees smooths the boundary in the playground. Served across several machines, the same averaging means one failed worker barely changes the answer.
+
+```topple caption="A hundred trees on five workers vote on one question. Switch on answering with the trees that replied: 80 votes give almost the same answer, 18 seconds sooner."
+title: Many trees, one vote
+summary: A random forest asks many trees the same question and takes the majority. Spread across workers, that also makes it hard to break.
+kit: agents
+traffic: off
+duration: 36s
+
+node client "Client app" icon=phone
+node api "Prediction API" icon=gateway
+
+group forest "Forest of 100 trees, on 5 workers"
+  node w1 "Trees 1-20" icon=server
+  node w2 "Trees 21-40" icon=server
+  node w3 "Trees 41-60" icon=server
+  node w4 "Trees 61-80" icon=server
+  node w5 "Trees 81-100" icon=server
+
+client <-> api
+api <-> w1
+api <-> w2
+api <-> w3
+api <-> w4
+api <-> w5
+
+chapter 0s "One question, a hundred answers"
+  An app asks whether a customer is about to cancel. Each tree was trained
+  on a different random sample of past customers, so each has a slightly
+  different opinion.
+
+at 1s: client -> api send "Will customer 7731 cancel?"
+at 2s: api working
+at 2.5s: api -> w1 send
+at 2.5s: api -> w2 send
+at 2.5s: api -> w3 send
+at 2.5s: api -> w4 send
+at 2.5s: api -> w5 send
+at 3s: forest thinking
+
+chapter 6s "The votes come back"
+  Most workers answer within a few milliseconds.
+
+at 6s: w1 -> api send "14 yes, 6 no"
+at 6s: w1 done
+at 6.5s: w2 -> api send "15 yes, 5 no"
+at 6.5s: w2 done
+at 7s: w4 -> api send "12 yes, 8 no"
+at 7s: w4 done
+at 7.5s: w5 -> api send "13 yes, 7 no"
+at 7.5s: w5 done
+at 8s: w3 failed "Worker 3 restarting"
+
+unless partial
+  chapter 11s "Waiting for everyone"
+    The API insists on all 100 votes. Worker 3 is restarting, so the whole
+    request waits for it.
+
+  at 11s: api waiting "Waiting for trees 41-60"
+  at 18s: w3 working "Back up"
+  at 19s: w3 -> api send "13 yes, 7 no"
+  at 19s: w3 done
+  at 20s: api log info "67 of 100 trees say yes: 0.67"
+  at 20.5s: api -> client send "67% likely to cancel, after 18 seconds"
+  at 21s: api done
+
+option partial "Answer with the trees that replied"
+  chapter 11s "Eighty trees are enough"
+    The API answers after a short timeout with whatever votes arrived.
+    Losing 20 random trees barely moves a majority of 80.
+
+  at 11s: api thinking "Timeout: 4 of 5 workers replied"
+  at 12s: api log info "54 of 80 trees say yes: 0.675"
+  at 12.5s: api -> client send "68% likely to cancel"
+  at 13s: api done
+  at 18s: w3 working "Back up for the next request"
+
+chapter 24s "What it shows"
+  Averaging many decorrelated trees makes the answer stable: no single
+  tree, or single worker, decides it. The same property that cuts
+  variance in the model makes the service tolerant of a failed machine.
+```
+
 ## Strengths and weaknesses
 
 <ProsCons>

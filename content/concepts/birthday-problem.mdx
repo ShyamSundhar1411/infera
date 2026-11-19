@@ -35,6 +35,78 @@ Each circle is a person who has entered the room, and the calendar shows which d
 3. Switch to **1,000 buckets**. A collision now takes about 38 people, not 500.
 4. Drag **Possible birthdays** to 2,000 and back down to 10. The number needed for 50% tracks $1.18\sqrt{d}$ throughout.
 
+## In a real system
+
+Random IDs are the birthday problem with a much bigger calendar. A 32-bit ID has about 4.3 billion possible values, so by the square-root rule a repeat is likely after roughly 77,000 of them, which a busy service can reach in a day.
+
+```topple caption="Random 32-bit order IDs: half a chance of a duplicate key after about 77,000 orders, and why UUIDs use 122 random bits."
+title: Random IDs that collide
+summary: Each order gets a random 32-bit ID. Four billion possibilities sounds like plenty, but a repeat becomes likely after about 77,000 orders.
+kit: outage
+duration: 42s
+
+node users "Shoppers" icon=users
+node api "Order service" icon=server
+node gen "ID generator" icon=key
+node db "Orders table" icon=database
+
+users -> api "orders" rate=30
+api -> gen "new ID" rate=30
+api -> db "inserts" rate=30
+
+slider traffic "Orders per second" users -> api rate 10..120
+
+chapter 0s "Four billion IDs" tag="32 bits"
+  Every order gets a random 32-bit number as its ID: one of 4,294,967,296.
+  Picking the same one twice feels about as likely as winning the lottery.
+
+at 1s: gen log info "id space: 2^32 = 4,294,967,296"
+
+chapter 7s "The first thousand orders"
+  After 1,000 orders the chance that any two share an ID is 0.012%. It
+  is not about one order hitting one other order: every pair counts, and
+  1,000 orders make almost half a million pairs.
+
+at 7s: api log info "orders: 1,000 | P(any repeat) = 0.012%"
+
+chapter 13s "Pairs grow faster than orders" tag="n^2 / 2"
+  At 10,000 orders the chance is 1.2%. The number of pairs grows with the
+  square of the orders, so the risk climbs much faster than the count.
+
+at 13s: users -> api rate=x3 "Launch week"
+at 13s: api -> gen rate=x3
+at 13s: api -> db rate=x3
+at 14s: api log info "orders: 10,000 | P(any repeat) = 1.2%"
+
+unless uuid
+  chapter 20s "A coin flip at 77,000" tag="Birthday bound"
+    By about 77,000 orders a repeat is as likely as not. Then it happens:
+    the generator hands out an ID that is already in the table, and the
+    insert is refused.
+
+  at 20s: api log warn "orders: 77,163 | P(any repeat) = 50%"
+  at 23s: gen log info "new id 2841903377"
+  at 23.5s: db degraded "Duplicate key: id 2841903377 exists"
+  at 24s: db log error "insert failed: duplicate key value violates unique constraint orders_pkey"
+  at 24.5s: api log error "order rejected, customer sees an error"
+  at 28s: db healthy
+  at 29s: api log warn "orders: 200,000 | P(any repeat) = 99%"
+
+option uuid "Use random 122-bit UUIDs instead"
+  chapter 20s "Room to spare" tag="What if"
+    A random UUID has 122 random bits. Even a billion new IDs a day for a
+    hundred years gives a chance of a repeat around one in eight billion.
+
+  at 20s: gen log info "id space: 2^122, about 5.3 x 10^36"
+  at 22s: api log info "orders: 77,163 | P(any repeat) = about 6 x 10^-28"
+  at 25s: db log info "no duplicate keys"
+
+chapter 33s "What it teaches"
+  Collisions follow the birthday problem: with d possible values, expect
+  a repeat after roughly the square root of d. Size random IDs for the
+  square root, not for the total, or let the database hand them out.
+```
+
 ## The maths
 
 <Formulas>

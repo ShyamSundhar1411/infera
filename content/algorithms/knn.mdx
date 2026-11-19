@@ -76,6 +76,84 @@ $$
 
 </Formulas>
 
+## In a real system
+
+Recommendation systems are k-nearest neighbours at enormous scale: items become points, and similar items sit close together. With millions of points, the engineering is in finding the neighbours quickly.
+
+```topple caption="Finding the 200 films nearest a viewer's taste among 2 million. Switch on exact search to trade 4 milliseconds for 610 and the last 5% of accuracy."
+title: Nearest neighbours for recommendations
+summary: To recommend a film, find the films whose embeddings sit closest to the ones you liked. At millions of items, finding the nearest neighbours fast is the whole problem.
+kit: agents
+traffic: off
+duration: 38s
+
+node viewer "Viewer" icon=user
+node app "Streaming app" icon=phone
+node recs "Recommendation service" icon=server
+node embed "Taste profile" icon=cpu
+node index "Vector index, 2 million films" icon=database
+node rerank "Reranker" icon=brain
+
+viewer <-> app
+app <-> recs
+recs <-> embed
+recs <-> index
+recs <-> rerank
+
+chapter 0s "What to watch next"
+  A viewer finishes a film. The app asks for ten more like the ones they
+  have been enjoying.
+
+at 1s: viewer -> app send "Finished: a heist thriller"
+at 2s: app -> recs send "Recommend 10"
+at 3s: recs working
+at 3.5s: recs -> embed send "Last 20 films watched"
+at 4.5s: embed working
+at 6s: embed -> recs send "A point in 256 dimensions"
+at 6s: embed done
+
+unless exact
+  chapter 8s "Approximate search"
+    Comparing against all 2 million films would be slow, so the index uses
+    a graph that hops towards the nearest region and only checks about
+    3,000 films there.
+
+  at 8.5s: recs -> index send "k = 200 nearest"
+  at 9.5s: index thinking "Graph search, 3,000 distance checks"
+  at 11s: index log info "200 neighbours in 4 ms, about 95% of the true nearest"
+  at 11.5s: index -> recs send count=3 "200 candidates"
+  at 11.5s: index done
+
+option exact "Search every film exactly"
+  chapter 8s "Brute force"
+    Without an approximate index, the service measures the distance to
+    every one of the 2 million films. The answer is exact, and slow.
+
+  at 8.5s: recs -> index send "k = 200 nearest"
+  at 9.5s: index working "2,000,000 distance checks"
+  at 15s: index log warn "200 neighbours in 610 ms, 100% of the true nearest"
+  at 15.5s: index -> recs send count=3 "200 candidates"
+  at 15.5s: index done
+
+chapter 18s "Rerank the shortlist"
+  Nearest in taste is not the whole story. A second model reorders the
+  candidates using freshness, what is trending, and what this viewer has
+  already seen.
+
+at 18.5s: recs -> rerank send "200 candidates"
+at 19.5s: rerank thinking
+at 22.5s: rerank -> recs send "Top 10"
+at 22.5s: rerank done
+at 23.5s: recs -> app send "10 films"
+at 24s: recs done
+at 24.5s: app -> viewer send "Because you watched a heist thriller"
+
+chapter 28s "What it shows"
+  The idea is k-nearest neighbours: similar things are close together.
+  At scale, the engineering is in finding the neighbours fast enough, and
+  giving up a little accuracy is usually the right trade.
+```
+
 ## Strengths and weaknesses
 
 <ProsCons>

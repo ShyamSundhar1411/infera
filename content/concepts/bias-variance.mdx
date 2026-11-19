@@ -35,6 +35,94 @@ The bar splits the expected error into $\text{bias}^2$, variance and noise. The 
 3. Raise **Points per training set** to 80 with degree 12. Variance collapses, and the best degree on the U curve moves to the right. More data makes complex models safe.
 4. Raise **Noise** and watch the grey floor rise. That part of the error is there whatever model you pick.
 
+## In a real system
+
+A deployed model meets the same trade-off over time. It was fitted to one world, and when that world moves its error grows as bias, even though nothing in the service looks broken.
+
+```topple caption="The same model, the same speed, and a falling click rate. Switch on the drift monitor to catch it from the inputs."
+title: A model that quietly goes stale
+summary: A recommendation model keeps answering in 40 ms with no errors while the shoppers it learned from change their habits. Nothing alerts, because nothing is broken. It is just more and more wrong.
+kit: outage
+duration: 44s
+
+state changed "Habits changed" tone=warn reject=0
+state stale "Fast, healthy, wrong" tone=warn reject=0
+state training "Training" tone=mend reject=0
+
+node shoppers "Shoppers" icon=users
+node shop "Shop pages" icon=store
+node features "Feature pipeline" icon=pipeline
+node model "Recommendation model" icon=brain capacity=200
+node metrics "Service dashboard" icon=dashboard
+
+shoppers -> shop "browsing" rate=60
+shop -> model "what to show?" rate=60
+features -> model "features" rate=60
+model -> metrics "latency and errors" rate=4
+
+chapter 0s "Trained on last season" tag="31% clicked"
+  The model learned from last season's shopping: what people bought, how
+  big their baskets were, which items went together. On that data, about
+  31% of its recommendations get clicked.
+
+chapter 8s "Habits change" tag="Data drift"
+  A new season, a competitor's sale and a redesigned mobile app change how
+  people shop. Baskets get smaller and different items sell together. The
+  inputs no longer look like the data the model was trained on.
+
+at 8.5s: shoppers changed "Buying different things"
+at 9s: features log info "basket_size mean 4.1 -> 2.6 items"
+
+chapter 16s "Fast, healthy and wrong"
+  Every request still gets an answer in 40 ms and nothing throws an error,
+  so the service dashboard stays green. But the model is answering last
+  season's question: clicks on its suggestions slide from 31% towards 24%.
+
+at 17s: model stale "Click rate 31% -> 24%"
+at 17.5s: model log info "p99 40 ms, error rate 0.00%"
+at 18s: metrics log info "all checks passing"
+
+unless monitor
+  chapter 26s "Found weeks later"
+    Nobody is paged, because no rule watches what the model sees or how
+    good its answers are. Six weeks later a monthly revenue report shows
+    recommendations earning less, and someone starts digging.
+
+  at 27s: model log warn "click rate 19%, six weeks after the shift"
+  at 28s: model degraded "Click rate down to 19%"
+
+  chapter 36s "What it teaches"
+    A model can be perfectly stable and still be biased, once the world it
+    learned from moves on. Watch the inputs and the quality of the answers,
+    not only latency and errors.
+
+option monitor "Watch the inputs with a drift monitor"
+  node monitor "Drift monitor" icon=gauge
+  node trainer "Retraining job" icon=cpu
+  features -> monitor "daily input stats" rate=2
+  monitor -> trainer rate=0
+  trainer -> model rate=0
+
+  chapter 20s "The monitor notices" tag="What if"
+    Every day the monitor compares the inputs with the training data, one
+    feature at a time, using the population stability index. Above 0.25
+    counts as a large shift. Basket size scores 0.31, so it acts.
+
+  at 21s: monitor degraded "PSI 0.31 on basket size"
+  at 21.5s: monitor log warn "feature drift: basket_size PSI=0.31 (threshold 0.25)"
+  at 22.5s: monitor -> trainer send "Retrain on the last 30 days"
+  at 23s: trainer training "Training on recent data"
+  at 30s: trainer -> model send "New model"
+  at 30.5s: model healthy "Click rate back to 29%"
+  at 31s: trainer healthy
+  at 31s: monitor healthy
+
+  chapter 34s "What it teaches"
+    The drift was caught in days, not weeks, by watching what the model was
+    being asked rather than whether it answered. Errors only tell you a
+    model is broken; drift tells you it is out of date.
+```
+
 ## The maths
 
 <Formulas>

@@ -38,6 +38,81 @@ Each horizontal line is one interval from one sample, with a dot at that sample'
 4. Switch the population to **Clicks** with a small sample. Sometimes nobody clicks, the sample's spread is zero, and the interval collapses to a point that misses. This is why proportions get their own interval methods.
 5. Move **Confidence level** to 80% and then 99%. Coverage follows, and so does the width.
 
+## In a real system
+
+Monitoring dashboards compute rates from samples, so every number on them has an interval, even when the panel does not show it. At night the sample is small, the interval is wide, and an alert on the bare number fires on noise. Turn on the interval-aware alert in the Lab tab and replay the night.
+
+```topple caption="An error-rate panel built from sampled requests, with a 95% interval, against a 1% objective."
+title: How sure is the dashboard?
+summary: An error-rate panel computed from a sample of requests. By day the sample is huge and the number is sharp. At night it is tiny, and a noisy blip pages someone.
+kit: outage
+duration: 44s
+
+state paging "Paging on-call" tone=hot reject=0
+state quiet "No page" tone=ok reject=0
+
+node users "Visitors" icon=users
+node api "API" icon=server
+node sample "Request sampler" icon=ingest
+node dash "Error-rate panel" icon=dashboard
+node pager "Pager" icon=alert
+
+users -> api "requests" rate=60
+api -> sample "logs" rate=30
+sample -> dash "5-minute windows" rate=10
+dash -> pager "alerts" rate=0
+
+chapter 0s "Daytime" tag="0.54% to 0.67%"
+  Each 5-minute window holds 50,000 requests, 300 of them errors: 0.6%. The
+  95% interval is 0.54% to 0.67%, well under the 1% objective.
+
+at 1s: dash log info "error rate 0.60%, 95% CI 0.54% to 0.67%, n = 50,000"
+
+chapter 9s "Night" tag="n = 400"
+  Traffic falls to 400 requests per window. The true error rate has not
+  changed, but 6 errors land in one window: 1.5%. With so few requests the
+  interval runs from about 0.7% to 3.2%. It contains the objective and
+  plenty of values below it.
+
+at 9s: users -> api rate=x0.1 "Night: 400 per window"
+at 9s: api -> sample rate=x0.1
+at 10s: dash log warn "error rate 1.50%, 95% CI 0.69% to 3.23%, n = 400"
+
+unless clear
+  chapter 15s "The 3 a.m. page" tag="False alarm"
+    The alert compares the point estimate with 1%, sees 1.5% and pages
+    on-call. Six errors in a window of 400 happens a few times most nights
+    at 0.6%. The engineer finds nothing.
+
+  at 15s: pager paging "Error rate 1.5% > 1%"
+  at 15s: dash -> pager send "page"
+  at 22s: pager quiet "Resolved itself"
+
+option clear "Page only when the whole interval is above 1%"
+  chapter 15s "Not enough evidence" tag="No page"
+    The alert waits until the lower end of the interval is above 1%. At
+    night that lower end is 0.7%, so nobody is woken for six errors.
+
+  at 15s: pager quiet "Lower bound 0.69% < 1%"
+  at 15.5s: pager log info "no page: interval still includes the objective"
+
+chapter 26s "A real incident" tag="1.88% to 2.13%"
+  In the morning a bad config sends the error rate to 2.0% across 50,000
+  requests. The interval is 1.88% to 2.13%, entirely above 1%. Both rules
+  page, and this time it is real.
+
+at 26s: users -> api rate=x1 "Morning traffic"
+at 26s: api -> sample rate=x1
+at 26.5s: api degraded "Bad config: 2.0% errors"
+at 27s: dash log error "error rate 2.00%, 95% CI 1.88% to 2.13%, n = 50,000"
+at 27.5s: pager paging "Lower bound 1.88% > 1%"
+at 27.5s: dash -> pager send "page"
+
+chapter 36s "What it teaches"
+  A rate from a small sample is a wide range, not a number. Show the
+  interval on the panel and alert on it, and the noise stops waking people.
+```
+
 ## The maths
 
 <Formulas>

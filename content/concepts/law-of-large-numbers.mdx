@@ -34,6 +34,87 @@ The law needs the expected value to exist. The Cauchy distribution (Student's $t
 2. Switch to **Exponential**. The paths overshoot upwards more than downwards early on because the distribution is skewed, but they still converge.
 3. Pick **Cauchy** and run it several times. The paths jump and never settle, because there is no mean for them to converge to.
 
+## In a real system
+
+Monitoring runs on sampled averages, so it inherits the law of large numbers directly: an estimate from 100 traces wobbles like a 100-roll average in the lab, whatever share of traffic it covers.
+
+```topple caption="Two services with the same true error rate, estimated from 1% of their traces. Try a minimum sample per service."
+title: Sampling 1% of traces
+summary: Two services keep 1 in every 100 traces and estimate their error rate from them. Both really fail 1% of the time. The busy one reports a steady 1%; the quiet one swings from 0% to 3% and pages someone for nothing.
+kit: outage
+duration: 44s
+
+state noisy "Noisy estimate" tone=warn reject=0
+
+node people "Customers" icon=users
+node checkout "Checkout, 2M requests an hour" icon=payment capacity=200
+node gifts "Gift cards, 10k requests an hour" icon=store capacity=200
+node collector "Trace collector" icon=ingest
+node backend "Tracing backend" icon=logs
+node dash "Error-rate dashboard" icon=dashboard
+node oncall "On-call engineer" icon=user
+
+people -> checkout rate=100
+people -> gifts rate=5
+checkout -> collector "1% of traces" rate=10
+gifts -> collector "1% of traces" rate=2
+collector -> backend rate=12
+backend -> dash rate=4
+
+chapter 0s "Keep 1 in 100"
+  Storing every trace is expensive, so each service keeps a random 1%. The
+  dashboard estimates each service's error rate from the traces it kept.
+  Both services really fail on 1% of requests.
+
+chapter 8s "The busy service"
+  Checkout keeps 20,000 traces an hour, about 200 of them errors. Its
+  estimate sits at 1.0%, give or take 0.14 points, hour after hour.
+
+at 9s: dash log info "checkout error rate 1.02% (204 of 20,000 traces)"
+at 10s: dash log info "checkout error rate 0.98% (196 of 20,000 traces)"
+
+chapter 16s "The quiet service"
+  Gift cards keeps 100 traces an hour, about one of them an error. One
+  hour shows 0%, the next 3%. Give or take 2 points: the estimate is mostly
+  noise.
+
+at 17s: dash log info "gift cards error rate 0.0% (0 of 100 traces)"
+at 19s: dash log warn "gift cards error rate 3.0% (3 of 100 traces)"
+
+unless minimum
+  at 19.5s: gifts noisy "Looks like 3% failing"
+
+  chapter 24s "A false alarm"
+    The alert fires at 2%. Three errors in one hour's 100 traces is enough,
+    and with a true rate of 1% that happens about one hour in twelve. The
+    on-call engineer is woken up for a service that is fine.
+
+  at 24.5s: dash degraded "Alert: gift cards above 2%"
+  at 25s: dash log error "ALERT gift cards error rate 3.0% > 2.0%"
+  at 25.5s: oncall degraded "Paged for nothing"
+  at 32s: oncall healthy "Nothing wrong, alert snoozed"
+  at 32s: dash healthy
+  at 32s: gifts healthy
+
+  chapter 36s "What it teaches"
+    An average settles down as the number of samples grows, with a spread
+    like one over the square root of n. What matters is how many samples
+    sit behind a number, not what share of traffic they are.
+
+option minimum "Keep at least 1,000 traces per service an hour"
+  chapter 22s "A floor on the sample" tag="What if"
+    Quiet services now keep 10% instead of 1%, so gift cards also has 1,000
+    traces an hour. Its estimate stays within about 0.6 points of 1%, well
+    under the alert line.
+
+  at 22.5s: gifts -> collector rate=x10 "10% of traces"
+  at 24s: dash log info "gift cards error rate 1.1% (11 of 1,000 traces)"
+
+  chapter 34s "What it teaches"
+    Sample by the number you need, not by a fixed percentage. A fixed 1% is
+    plenty for a busy service and far too little for a quiet one.
+```
+
 ## The maths
 
 <Formulas>

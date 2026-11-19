@@ -43,6 +43,117 @@ The $1/\sqrt{n}$ rate is both the weakness and the strength of Monte Carlo. Each
 3. Turn on **Keep throwing** and watch the standard error. Going from 1,000 to 100,000 darts only gains you about one extra correct digit.
 4. Switch to **Area under a curve**. The same method integrates $\sin x$ from 0 to $\pi$, whose exact answer is 2, without any calculus.
 
+## In a real system
+
+Production Monte Carlo is the lab with more darts and more machines. The same square-root law sets the price of precision, and independence is what makes the darts count.
+
+```topple caption="A million simulated years split across four workers. Try giving every worker the same random seed."
+title: A risk simulation, fanned out
+summary: A risk team needs the chance that a portfolio loses more than 10% in a year. There is no formula for it, so they simulate a million random years, split across four workers, and count.
+kit: plain
+traffic: off
+duration: 42s
+
+node analyst "Risk analyst" icon=user
+node scheduler "Scheduler" icon=pipeline
+
+group workers "Simulation workers"
+  node w1 "Worker 1" icon=cpu
+  node w2 "Worker 2" icon=cpu
+  node w3 "Worker 3" icon=cpu
+  node w4 "Worker 4" icon=cpu
+
+node agg "Aggregator" icon=metrics
+node report "Risk report" icon=dashboard
+
+analyst -> scheduler
+scheduler -> w1
+scheduler -> w2
+scheduler -> w3
+scheduler -> w4
+w1 -> agg
+w2 -> agg
+w3 -> agg
+w4 -> agg
+agg -> report
+
+chapter 0s "One question"
+  What is the chance this portfolio loses more than 10% next year? The
+  answer depends on thousands of prices moving together, so there is no
+  neat formula. Instead: simulate many possible years and count.
+
+at 1s: analyst -> scheduler send "Simulate 1,000,000 years"
+at 2s: scheduler active
+
+chapter 4s "Split the work"
+  The scheduler gives each worker 250,000 years and its own random seed.
+  Each worker draws random market moves, values the portfolio at the end of
+  every simulated year, and counts the years that lost more than 10%.
+
+at 4.5s: scheduler -> w1 send "250,000 years, seed 1"
+at 4.5s: scheduler -> w2 send "250,000 years, seed 2"
+at 4.5s: scheduler -> w3 send "250,000 years, seed 3"
+at 4.5s: scheduler -> w4 send "250,000 years, seed 4"
+at 5.5s: w1 active
+at 5.5s: w2 active
+at 5.5s: w3 active
+at 5.5s: w4 active
+
+unless sameseed
+  chapter 12s "Count and combine"
+    Each worker sends back one count. The aggregator adds them up: 49,998
+    losing years out of a million, a 5.00% chance, give or take 0.04
+    percentage points.
+
+  at 12s: w1 -> agg send "12,512 losing years"
+  at 12.3s: w2 -> agg send "12,431 losing years"
+  at 12.6s: w3 -> agg send "12,566 losing years"
+  at 12.9s: w4 -> agg send "12,489 losing years"
+  at 13s: w1 done
+  at 13s: w2 done
+  at 13s: w3 done
+  at 13s: w4 done
+  at 14s: agg log info "49,998 of 1,000,000 years lose more than 10%: 5.00% +/- 0.04 points"
+  at 15s: agg -> report send "5.00% (+/- 0.04)"
+
+  chapter 22s "Want it sharper?"
+    The error shrinks with the square root of the number of years. One
+    worker alone would give +/- 0.09 points; four give +/- 0.04. To halve it
+    again to +/- 0.02 takes four times the work: 16 workers, or 4,000,000
+    years.
+
+  at 23s: agg log info "250,000 years: +/- 0.09 | 1,000,000: +/- 0.04 | 4,000,000: +/- 0.02"
+
+  chapter 32s "What it teaches"
+    Monte Carlo swaps hard maths for computing time, but precision is
+    expensive: ten times more accuracy costs a hundred times more
+    simulation. Spare workers buy certainty slowly.
+
+option sameseed "Every worker uses the same random seed"
+  chapter 12s "Four copies of one answer" tag="What if"
+    A config bug gives every worker seed 1. They simulate the very same
+    250,000 years and send back the very same count. The report still says
+    a million years and +/- 0.04 points, but it only knows as much as one
+    worker: the real uncertainty is +/- 0.09.
+
+  at 12s: w1 -> agg send "12,512 losing years"
+  at 12.3s: w2 -> agg send "12,512 losing years"
+  at 12.6s: w3 -> agg send "12,512 losing years"
+  at 12.9s: w4 -> agg send "12,512 losing years"
+  at 13s: w1 done
+  at 13s: w2 done
+  at 13s: w3 done
+  at 13s: w4 done
+  at 14s: agg waiting "Four identical counts"
+  at 14.5s: agg log warn "1,000,000 results but only 250,000 distinct years"
+  at 15s: agg -> report send "5.00% (+/- 0.04, really +/- 0.09)"
+
+  chapter 24s "What it teaches"
+    Repeating the same random numbers adds work, not information. Each
+    worker needs its own independent random stream, or the error bars are
+    a lie.
+```
+
 ## The maths
 
 <Formulas>

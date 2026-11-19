@@ -50,6 +50,81 @@ The histogram at the bottom collects the p-values of many experiments. When the 
 3. Lower **Significance level** to 0.01 with a biased coin. False alarms fall, but more real biases slip through.
 4. Flip a fair coin a dozen times by hand. Sooner or later you hit a "significant" result. If you only reported that one, you would have fooled yourself.
 
+## In a real system
+
+Canary releases are hypothesis tests run by machines. The null hypothesis is that the new version fails as often as the old one, and the canary judge only rolls back once the gap is too large to be chance. Switch on the larger canary in the Lab tab to see the trade-off between evidence and exposure.
+
+```topple caption="A canary judge comparing error rates between a new version on 5% of servers and the stable fleet."
+title: Canary analysis
+summary: A new version goes to 5 servers out of 100. Is its error rate really higher, or is it noise? With little traffic, the honest answer is that you cannot tell yet.
+kit: outage
+duration: 46s
+
+state suspect "Higher, not significant" tone=warn reject=0
+state worse "Significantly worse" tone=hot reject=0
+state judge "Comparing" tone=idle reject=0
+
+node users "Visitors" icon=users
+node lb "Load balancer" icon=lb
+node stable "Stable, v41" icon=rack
+node canary "Canary, v42" icon=server
+node judge "Canary judge" icon=gauge
+
+users -> lb "requests" rate=60
+
+unless big
+  lb -> stable "95%" rate=57
+  lb -> canary "5%" rate=3
+
+option big "Send 25% of traffic to the canary"
+  lb -> stable "75%" rate=45
+  lb -> canary "25%" rate=15
+
+  chapter 8s "Ten minutes in" tag="p < 0.0001"
+    A quarter of the traffic gives the canary 10,000 requests in ten
+    minutes: 100 errors, 1.0%, against 150 in 30,000, 0.5%. That is already
+    decisive. The cost: five times as many visitors met the bug.
+
+  at 8s: canary worse "100 / 10,000 errors"
+  at 8.5s: judge log error "canary 1.00% vs stable 0.50%, z = 5.5, p < 0.0001: roll back"
+  at 10s: lb -> canary cut "Rolled back"
+  at 10s: lb -> stable rate=x1.33
+
+stable -> judge "errors" rate=3
+canary -> judge "errors" rate=3
+
+chapter 0s "Two versions side by side" tag="Null: same error rate"
+  The stable version fails 0.5% of requests. v42 has a bug that doubles that
+  to 1.0%, but nobody knows yet. The judge assumes there is no difference
+  until the data says otherwise.
+
+at 1s: canary log info "v42 deployed to the canary group"
+
+unless big
+  chapter 8s "Ten minutes in" tag="p = 0.22"
+    The canary has served 2,000 requests with 14 errors, 0.7%. The stable
+    group has served 38,000 with 190, 0.5%. Higher, but a gap this size
+    turns up by chance about one time in five. Not significant.
+
+  at 8s: canary suspect "14 / 2,000 errors"
+  at 8.5s: judge log info "canary 0.70% vs stable 0.50%, z = 1.22, p = 0.22: keep watching"
+
+  chapter 18s "An hour in" tag="p < 0.0001"
+    Now the canary has 12,000 requests and 120 errors, 1.0%, against 0.5%
+    from 228,000 stable requests. A gap like that from chance alone is
+    vanishingly unlikely. The judge rolls back.
+
+  at 18s: canary worse "120 / 12,000 errors"
+  at 18.5s: judge log error "canary 1.00% vs stable 0.50%, z = 7.4, p < 0.0001: roll back"
+  at 20s: lb -> canary cut "Rolled back"
+  at 20s: lb -> stable rate=x1.05
+
+chapter 30s "What it teaches"
+  A canary is a hypothesis test. Small samples cannot separate a real
+  regression from noise, so the judge needs either time or traffic, and
+  more canary traffic means more people see a bad release.
+```
+
 ## The maths
 
 <Formulas>

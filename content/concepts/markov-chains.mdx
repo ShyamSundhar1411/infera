@@ -41,6 +41,93 @@ The lower chart drops the token and follows probabilities instead. Each line is 
 3. Under **Edit the arrows leaving**, pick Sunny and raise **Sunny to Sunny** to its maximum. Sunny spells get longer and the long-run share of sunny days climbs.
 4. Switch to **Web pages** and push **Damping: chance of following a link** towards 0.99. Page D, with no links in, sinks towards zero, while A and C, which link to each other, share almost all of the rank.
 
+## In a real system
+
+PageRank is the "Web pages" preset of the lab at the scale of the whole web: a Markov chain over pages, run until its long-run shares stop changing.
+
+```topple caption="A crawler, a link graph and a random surfer. Switch on the link farm to see what the 15% random jump is for."
+title: How a search engine ranks pages
+summary: A crawler fetches the web, links become a graph, and PageRank runs a Markov chain over it: an imaginary surfer clicking random links. Where the surfer spends most of its time is how pages are ranked.
+kit: plain
+duration: 44s
+
+state spam "Link farm" tone=hot reject=0
+
+node web "The web" icon=globe
+node crawler "Crawler" icon=bot
+node store "Page store" icon=storage
+node graph "Link graph" icon=network
+node ranker "PageRank job" icon=cpu
+node index "Search index" icon=search
+node people "Searchers" icon=users
+node front "Search page" icon=monitor
+
+web -> crawler "pages" rate=40
+crawler -> store "fetched pages" rate=40
+store -> graph "links" rate=20
+graph -> ranker rate=10
+ranker -> index "ranks" rate=10
+people -> front "queries" rate=50
+front -> index "lookups" rate=50
+
+chapter 0s "Crawl"
+  The crawler fetches pages and follows their links to find more. Every
+  page and every link it finds is stored.
+
+at 1s: crawler active
+
+chapter 8s "Links become a graph"
+  Each page is a state and each link is an arrow out of it. A page with ten
+  links gives each one a tenth of its vote. This is a transition matrix: the
+  chance of moving from one page to the next.
+
+at 8.5s: graph active "Billions of pages, tens of billions of links"
+
+chapter 16s "The random surfer"
+  Picture a surfer who clicks a random link 85% of the time and jumps to a
+  random page the other 15%. That is a Markov chain, and PageRank is its
+  stationary distribution: the share of time the surfer spends on each
+  page. The job finds it by passing rank along the links over and over.
+
+at 16.5s: ranker active "Power iteration"
+at 17s: ranker log info "pass 1: largest change 0.31"
+at 19s: ranker log info "pass 20: largest change 0.014"
+at 21s: ranker log info "pass 85: largest change below 0.000001, stopped"
+
+unless farm
+  chapter 26s "Searching"
+    The ranks go into the index. When someone searches, the matching pages
+    are ordered partly by how much of the surfer's time they would get.
+
+  at 26.5s: ranker done
+  at 27s: index active "Ranks updated"
+
+  chapter 36s "What it teaches"
+    Each pass shrinks the error by at least 15%, the share of random jumps,
+    so the ranks settle no matter where they start. The same idea, a chain
+    run until it forgets its start, is what MCMC uses.
+
+option farm "A link farm tries to game the ranking"
+  node farm "Link farm, 500 pages" icon=rack
+  farm -> crawler "spam pages" rate=10
+
+  chapter 26s "The link farm" tag="What if"
+    Someone builds 500 pages that only link to each other and to one shop.
+    Without random jumps, a surfer that wandered in could never leave, and
+    the farm would soak up all the rank. The 15% jump is what lets it out,
+    so the farm keeps only the rank that flows in plus its share of jumps.
+
+  at 26.5s: farm spam "Links only to itself"
+  at 28s: ranker log warn "closed loop of 500 pages: rank capped by the 15% jump"
+  at 30s: ranker done
+  at 30.5s: index active "Ranks updated, farm capped"
+
+  chapter 36s "What it teaches"
+    Damping does two jobs: it makes the chain settle on one answer, and it
+    stops closed loops from trapping the surfer. Real engines add spam
+    detection on top.
+```
+
 ## The maths
 
 <Formulas>

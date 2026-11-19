@@ -33,6 +33,77 @@ In **Kidney stones**, each square is one patient. Coloured squares recovered. Tu
 3. Push it to 100%. A now gets every large stone, and its overall rate falls even further behind.
 4. Switch to **Exercise and cholesterol** and drag **How strongly age drives both** to 0. The age groups sit on top of each other and the pooled line slopes down, just like the group lines.
 
+## In a real system
+
+The same paradox turns up in production dashboards. Here every region gets faster after a release, yet the overall average gets slower, because the traffic mix shifted towards the slower region at the same time. Toggle the what-if switch in the Lab tab to compare at last week's traffic mix.
+
+```topple caption="Average latency before and after a release, by region and overall. Every region improves; the total gets worse."
+title: The release that made latency worse, except it didn't
+summary: After a deploy the average response time jumps from 138 ms to 178 ms. Every region got faster. The traffic mix changed underneath the average.
+kit: outage
+duration: 44s
+
+state alarm "Average up" tone=warn reject=0
+state fine "Average down" tone=ok reject=0
+
+node us "US visitors" icon=users
+node asia "Asia visitors" icon=users
+node usr "US region" icon=server
+node apac "Asia region" icon=server
+node dash "Latency dashboard" icon=dashboard
+
+us -> usr "900 req/s" rate=90
+asia -> apac "100 req/s" rate=10
+usr -> dash "timings" rate=6
+apac -> dash "timings" rate=6
+
+chapter 0s "Before the release" tag="138 ms"
+  The US region answers in 120 ms on average, the Asia region in 300 ms,
+  because it sits further from the database. Nine requests in ten come from
+  the US, so the overall average is 0.9 x 120 + 0.1 x 300 = 138 ms.
+
+at 1s: dash log info "average 138 ms (US 120 ms, Asia 300 ms)"
+
+chapter 7s "Version 42 ships" tag="Both faster"
+  The release trims work from every request. The US region drops to 110 ms
+  and the Asia region to 280 ms. Both regions are faster than before.
+
+at 7s: usr note "120 ms -> 110 ms"
+at 7s: apac note "300 ms -> 280 ms"
+at 7.5s: usr log info "v42 deployed, mean latency 110 ms"
+at 7.5s: apac log info "v42 deployed, mean latency 280 ms"
+
+chapter 14s "A campaign in Asia" tag="Mix shifts"
+  The same morning, a marketing push goes live in Asia. Traffic there jumps
+  from 100 to 600 requests a second, while the US stays at 900. Now four
+  requests in ten go to the slower region.
+
+at 14s: asia -> apac rate=x6 "Campaign: 600 req/s"
+
+unless mix
+  chapter 21s "The dashboard blames the release" tag="178 ms"
+    The overall average is (900 x 110 + 600 x 280) / 1500 = 178 ms, up 40 ms.
+    The alert links it to the deploy, and someone starts a rollback of a
+    release that made every region faster.
+
+  at 21s: dash alarm "Average 178 ms, up from 138 ms"
+  at 21.5s: dash log warn "latency regression after v42: 138 ms -> 178 ms"
+
+option mix "Compare at the old traffic mix"
+  chapter 21s "Same mix, fair comparison" tag="127 ms"
+    The dashboard reports each region, and an overall figure weighted by
+    last week's mix: 0.9 x 110 + 0.1 x 280 = 127 ms, down from 138 ms. The
+    release helped. The extra latency comes from where the traffic went.
+
+  at 21s: dash fine "127 ms at last week's mix, down from 138"
+  at 21.5s: dash log info "per region: US 120 -> 110 ms, Asia 300 -> 280 ms"
+
+chapter 32s "What it teaches"
+  An average over groups mixes two things: how each group did and how big
+  each group was. When the mix changes, the total can move the opposite way
+  to every part. Split by the thing that changed before blaming the release.
+```
+
 ## The maths
 
 <Formulas>
