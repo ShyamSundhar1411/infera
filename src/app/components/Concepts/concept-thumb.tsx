@@ -11,16 +11,26 @@ const CORAL = rgb(CLASS_COLORS[0]);
 const TEAL = rgb(CLASS_COLORS[1]);
 const INDIGO = rgb(CLASS_COLORS[2]);
 const AMBER = rgb(CLASS_COLORS[3]);
-const MUTED = "var(--muted)";
-const LINE = "var(--line)";
-const SOFT = "var(--surface-2)";
+
+/** Neutral colours. On the site they are theme tokens; link preview images, which cannot read CSS variables, pass fixed ones. */
+export interface ThumbPalette {
+  ink: string;
+  muted: string;
+  line: string;
+  soft: string;
+  surface: string;
+  /** Small text labels; the preview renderer has no font for SVG text, so it turns them off. */
+  labels: boolean;
+}
+
+const THEME: ThumbPalette = { ink: "var(--ink)", muted: "var(--muted)", line: "var(--line)", soft: "var(--surface-2)", surface: "var(--surface)", labels: true };
 
 const bell = (x: number, m = 0, s = 1) => Math.exp(-0.5 * ((x - m) / s) ** 2);
 const path = (pts: [number, number][]) => pts.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`).join("");
 const curve = (f: (t: number) => number, x0 = 14, x1 = W - 14, base = H - 14, height = H - 30, n = 80) =>
   path(Array.from({ length: n + 1 }, (_, i) => [x0 + ((x1 - x0) * i) / n, base - f(i / n) * height]));
 
-function Picture({ slug }: { slug: string }) {
+function Picture({ slug, c }: { slug: string; c: ThumbPalette }) {
   const r = createRandom(slug.length * 97 + slug.charCodeAt(0));
   switch (slug) {
     case "bayes-theorem": {
@@ -29,7 +39,7 @@ function Picture({ slug }: { slug: string }) {
       return (
         <>
           {Array.from({ length: 160 }, (_, i) => (
-            <rect key={i} x={24 + (i % 20) * 10} y={18 + Math.floor(i / 20) * 11} width={8} height={8} rx={2} fill={sick.has(i) ? CORAL : alarms.has(i) ? INDIGO : SOFT} />
+            <rect key={i} x={24 + (i % 20) * 10} y={18 + Math.floor(i / 20) * 11} width={8} height={8} rx={2} fill={sick.has(i) ? CORAL : alarms.has(i) ? INDIGO : c.soft} />
           ))}
         </>
       );
@@ -38,17 +48,17 @@ function Picture({ slug }: { slug: string }) {
       return (
         <>
           {[0, 1, 2].map((i) => (
-            <rect key={i} x={50 + i * 50} y={24} width={40} height={60} rx={6} fill={i === 2 ? "var(--surface)" : SOFT} stroke={i === 0 ? INDIGO : i === 1 ? TEAL : LINE} strokeWidth={2} />
+            <rect key={i} x={50 + i * 50} y={24} width={40} height={60} rx={6} fill={i === 2 ? c.surface : c.soft} stroke={i === 0 ? INDIGO : i === 1 ? TEAL : c.line} strokeWidth={2} />
           ))}
           <path d="M162 46 C162 41 169 39 172 45 C175 39 182 41 182 46 C182 53 172 60 172 63 C172 60 162 53 162 46 Z" fill={CORAL} />
-          <text x={70} y={102} textAnchor="middle" className="fill-muted font-mono text-[9px]">stick</text>
-          <text x={120} y={102} textAnchor="middle" className="fill-muted font-mono text-[9px]">switch</text>
+          {c.labels && <text x={70} y={102} textAnchor="middle" fill={c.muted} fontSize={9} fontFamily="monospace">stick</text>}
+          {c.labels && <text x={120} y={102} textAnchor="middle" fill={c.muted} fontSize={9} fontFamily="monospace">switch</text>}
         </>
       );
     case "bayesian-updating":
       return (
         <>
-          <path d={curve((t) => 0.35 + 0.1 * Math.sin(t * 3))} fill="none" stroke={MUTED} strokeWidth={1.5} strokeDasharray="4 3" />
+          <path d={curve((t) => 0.35 + 0.1 * Math.sin(t * 3))} fill="none" stroke={c.muted} strokeWidth={1.5} strokeDasharray="4 3" />
           <path d={curve((t) => bell(t, 0.68, 0.07))} fill="none" stroke={INDIGO} strokeWidth={2.5} />
           <line x1={14 + 0.7 * (W - 28)} x2={14 + 0.7 * (W - 28)} y1={16} y2={H - 14} stroke={CORAL} strokeDasharray="2 3" />
         </>
@@ -96,13 +106,13 @@ function Picture({ slug }: { slug: string }) {
       const y0 = 12;
       return (
         <>
-          <rect x={x0} y={y0} width={S} height={S} fill="none" stroke={LINE} />
+          <rect x={x0} y={y0} width={S} height={S} fill="none" stroke={c.line} />
           {Array.from({ length: 260 }, (_, i) => {
             const a = r.next();
             const b = r.next();
             return <circle key={i} cx={x0 + a * S} cy={y0 + S - b * S} r={1.6} fill={a * a + b * b <= 1 ? TEAL : CORAL} />;
           })}
-          <path d={`M${x0},${y0} A${S},${S} 0 0 1 ${x0 + S},${y0 + S}`} fill="none" stroke="var(--ink)" strokeWidth={1.5} />
+          <path d={`M${x0},${y0} A${S},${S} 0 0 1 ${x0 + S},${y0 + S}`} fill="none" stroke={c.ink} strokeWidth={1.5} />
         </>
       );
     }
@@ -114,12 +124,12 @@ function Picture({ slug }: { slug: string }) {
       ];
       return (
         <>
-          <path d="M108 36 Q80 56 76 80" fill="none" stroke={MUTED} strokeWidth={1.4} />
-          <path d="M132 36 Q160 56 164 80" fill="none" stroke={MUTED} strokeWidth={1.4} />
-          <path d="M86 98 Q120 112 154 98" fill="none" stroke={MUTED} strokeWidth={1.4} />
-          <path d="M86 86 Q120 74 154 86" fill="none" stroke={MUTED} strokeWidth={1.4} />
-          {nodes.map(([x, y, c], i) => (
-            <circle key={i} cx={x} cy={y} r={13} fill="var(--surface)" stroke={c} strokeWidth={2.5} />
+          <path d="M108 36 Q80 56 76 80" fill="none" stroke={c.muted} strokeWidth={1.4} />
+          <path d="M132 36 Q160 56 164 80" fill="none" stroke={c.muted} strokeWidth={1.4} />
+          <path d="M86 98 Q120 112 154 98" fill="none" stroke={c.muted} strokeWidth={1.4} />
+          <path d="M86 86 Q120 74 154 86" fill="none" stroke={c.muted} strokeWidth={1.4} />
+          {nodes.map(([x, y, color], i) => (
+            <circle key={i} cx={x} cy={y} r={13} fill={c.surface} stroke={color} strokeWidth={2.5} />
           ))}
           <circle cx={120} cy={26} r={4} fill={AMBER} />
         </>
@@ -161,9 +171,9 @@ function Picture({ slug }: { slug: string }) {
         <>
           <path d={tail(0, 0.245)} fill={rgb(CLASS_COLORS[0], 0.35)} />
           <path d={tail(0.755, 1)} fill={rgb(CLASS_COLORS[0], 0.35)} />
-          <path d={curve(f, 14, W - 14, H - 14, 86)} fill="none" stroke={MUTED} strokeWidth={2} />
+          <path d={curve(f, 14, W - 14, H - 14, 86)} fill="none" stroke={c.muted} strokeWidth={2} />
           <line x1={x(0.82)} x2={x(0.82)} y1={18} y2={H - 14} stroke={INDIGO} strokeWidth={2} />
-          <line x1={14} x2={W - 14} y1={H - 14} y2={H - 14} stroke={LINE} />
+          <line x1={14} x2={W - 14} y1={H - 14} y2={H - 14} stroke={c.line} />
         </>
       );
     }
@@ -187,11 +197,11 @@ function Picture({ slug }: { slug: string }) {
           {[0, 1].map((g) =>
             Array.from({ length: 48 }, (_, i) => {
               const clicked = r.next() < (g ? 0.22 : 0.1);
-              return <circle key={`${g}-${i}`} cx={30 + g * 104 + (i % 8) * 10} cy={22 + Math.floor(i / 8) * 13} r={3.6} fill={clicked ? (g ? AMBER : INDIGO) : SOFT} />;
+              return <circle key={`${g}-${i}`} cx={30 + g * 104 + (i % 8) * 10} cy={22 + Math.floor(i / 8) * 13} r={3.6} fill={clicked ? (g ? AMBER : INDIGO) : c.soft} />;
             }),
           )}
-          <text x={64} y={112} textAnchor="middle" className="font-mono text-[9px]" fill={INDIGO}>A</text>
-          <text x={168} y={112} textAnchor="middle" className="font-mono text-[9px]" fill={AMBER}>B</text>
+          {c.labels && <text x={64} y={112} textAnchor="middle" fontSize={9} fontFamily="monospace" fill={INDIGO}>A</text>}
+          {c.labels && <text x={168} y={112} textAnchor="middle" fontSize={9} fontFamily="monospace" fill={AMBER}>B</text>}
         </>
       );
     case "bootstrap": {
@@ -199,7 +209,7 @@ function Picture({ slug }: { slug: string }) {
       return (
         <>
           {sample.map((_, i) => (
-            <circle key={i} cx={36 + i * 15} cy={22} r={5} fill={MUTED} opacity={0.6} />
+            <circle key={i} cx={36 + i * 15} cy={22} r={5} fill={c.muted} opacity={0.6} />
           ))}
           {[0, 1, 2].map((row) => {
             const picks = Array.from({ length: 12 }, () => r.int(12)).sort((a, b) => a - b);
@@ -228,14 +238,14 @@ function Picture({ slug }: { slug: string }) {
             </g>
           ))}
           {/* Within each group the trend falls; pooled together it rises. */}
-          <line x1={18} x2={204} y1={100} y2={36} stroke="var(--ink)" strokeWidth={1.8} strokeDasharray="5 4" />
+          <line x1={18} x2={204} y1={100} y2={36} stroke={c.ink} strokeWidth={1.8} strokeDasharray="5 4" />
         </>
       );
     }
     case "regression-to-the-mean":
       return (
         <>
-          <line x1={20} x2={220} y1={108} y2={12} stroke={LINE} strokeDasharray="4 3" />
+          <line x1={20} x2={220} y1={108} y2={12} stroke={c.line} strokeDasharray="4 3" />
           {Array.from({ length: 70 }, (_, i) => {
             const s = r.gaussian();
             const a = s + r.gaussian() * 0.8;
@@ -256,10 +266,10 @@ function Picture({ slug }: { slug: string }) {
       const y = (v: number) => H - 14 - v * 92;
       return (
         <>
-          <line x1={16} x2={W - 16} y1={y(0.5)} y2={y(0.5)} stroke={LINE} strokeDasharray="4 3" />
+          <line x1={16} x2={W - 16} y1={y(0.5)} y2={y(0.5)} stroke={c.line} strokeDasharray="4 3" />
           <path d={path(Array.from({ length: 71 }, (_, n) => [x(n), y(p(n))]))} fill="none" stroke={INDIGO} strokeWidth={2.5} />
           <circle cx={x(23)} cy={y(p(23))} r={4.5} fill={CORAL} />
-          <text x={x(23) + 8} y={y(p(23)) + 12} className="font-mono text-[9px]" fill={CORAL}>23</text>
+          {c.labels && <text x={x(23) + 8} y={y(p(23)) + 12} fontSize={9} fontFamily="monospace" fill={CORAL}>23</text>}
         </>
       );
     }
@@ -267,8 +277,8 @@ function Picture({ slug }: { slug: string }) {
       const x = (t: number) => 14 + (t / 120) * (W - 28);
       return (
         <>
-          <path d={path(Array.from({ length: 121 }, (_, t) => [x(t), H / 2 - Math.sqrt(t) * 4.8]))} fill="none" stroke={LINE} strokeWidth={1.5} />
-          <path d={path(Array.from({ length: 121 }, (_, t) => [x(t), H / 2 + Math.sqrt(t) * 4.8]))} fill="none" stroke={LINE} strokeWidth={1.5} />
+          <path d={path(Array.from({ length: 121 }, (_, t) => [x(t), H / 2 - Math.sqrt(t) * 4.8]))} fill="none" stroke={c.line} strokeWidth={1.5} />
+          <path d={path(Array.from({ length: 121 }, (_, t) => [x(t), H / 2 + Math.sqrt(t) * 4.8]))} fill="none" stroke={c.line} strokeWidth={1.5} />
           {Array.from({ length: 6 }, (_, k) => {
             let s = 0;
             return (
@@ -292,7 +302,7 @@ function Picture({ slug }: { slug: string }) {
       const y = (w: number) => H - 14 - Math.min(w, 10) * 9;
       return (
         <>
-          <line x1={14} x2={W - 14} y1={H - 14} y2={H - 14} stroke={LINE} />
+          <line x1={14} x2={W - 14} y1={H - 14} y2={H - 14} stroke={c.line} />
           <path d={path(Array.from({ length: 96 }, (_, i) => [x(i / 100), y(1 / (1 - i / 100))]))} fill="none" stroke={CORAL} strokeWidth={2.5} />
           {Array.from({ length: 7 }, (_, i) => (
             <circle key={i} cx={30 + i * 11} cy={30} r={4} fill={INDIGO} />
@@ -336,12 +346,18 @@ function Picture({ slug }: { slug: string }) {
   }
 }
 
-/** A concept's card picture, or null when it has none yet. */
-export default function ConceptThumb({ slug }: { slug: string }) {
-  const picture = Picture({ slug });
+/** A concept's card picture, or null when it has none yet. Pass a palette and size for rendering outside the site. */
+export default function ConceptThumb({ slug, palette = THEME, width }: { slug: string; palette?: ThumbPalette; width?: number }) {
+  const picture = Picture({ slug, c: palette });
   if (!picture) return null;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-full w-full overflow-hidden" aria-hidden>
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      width={width}
+      height={width ? (width * H) / W : undefined}
+      className={width ? undefined : "h-full w-full overflow-hidden"}
+      aria-hidden
+    >
       {picture}
     </svg>
   );

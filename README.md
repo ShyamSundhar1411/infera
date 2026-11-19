@@ -59,9 +59,13 @@ yarn lint
 yarn typecheck
 ```
 
+## Embedding labs
+
+Every lab can be embedded on another site from `/embed/<lab>/`. Each lab on the site has an **Embed this lab** button with a ready-to-paste iframe, and `?theme=light` or `?theme=dark` forces a colour scheme to match the host page. Embed pages link back to the lab's explainer, are kept out of search results (`noindex`, disallowed in `robots.txt`, canonical to the explainer), and publish oEmbed at `/oembed/<lab>.json`, so pasting an embed link into Ghost, Notion and similar tools shows the live lab. The list of labs and the page each belongs to is `src/lib/data/labs.data.ts`.
+
 ## Analytics
 
-Build with `NEXT_PUBLIC_GA_ID=G-XXXXXXX` to turn on Google Analytics; without it nothing is loaded. Besides page views (and GA's built-in outbound-click tracking), the site records `playground_used`, `distribution_lab_used` and `lab_used` the first time a reader interacts with a lab, and forwards Topple scene actions as `scene_*` events (plays, finishes, what-ifs, breaks), from the `topple-action` events the player emits. The Topple plugin itself sends nothing.
+Build with `NEXT_PUBLIC_GA_ID=G-XXXXXXX` to turn on Google Analytics; without it nothing is loaded. Besides page views (and GA's built-in outbound-click tracking), the site records `embed_view` and `embed_copied`, `playground_used`, `distribution_lab_used` and `lab_used` the first time a reader interacts with a lab, and forwards Topple scene actions as `scene_*` events (plays, finishes, what-ifs, breaks), from the `topple-action` events the player emits. The Topple plugin itself sends nothing.
 
 ## Deploying
 
@@ -133,9 +137,13 @@ The playground can hold out 30% of points as a test set (shown hollow). **Test m
 ```
 src/
   app/                    routes and page components
-    algorithms/[slug]/    one page per algorithm
-    distributions/[slug]/ one page per distribution
-    concepts/[slug]/      one page per concept
+    (site)/               pages with the header and footer
+      algorithms/[slug]/    one page per algorithm
+      distributions/[slug]/ one page per distribution
+      concepts/[slug]/      one page per concept
+    (embed)/embed/[lab]/  bare lab pages for embedding elsewhere
+    og/                   link preview images, /og/<section>/<slug>.png
+    oembed/               oEmbed JSON for each lab
     components/           Playground, Distributions, Concepts, Catalog, Explainer, Landing, Layout
   components/ui/          shared primitives (slider, segmented control, toggle, panel)
   hooks/                  playground state, training loop, distribution lab

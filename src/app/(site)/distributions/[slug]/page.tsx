@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import DistributionLab from "../../components/Distributions/distribution-lab";
-import LabEmbed from "../../components/Concepts/lab-embed";
-import TrackInteraction from "../../components/Layout/track-interaction";
-import MdxArticle from "../../components/Mdx/mdx-article";
+import DistributionLab from "@/app/components/Distributions/distribution-lab";
+import LabEmbed from "@/app/components/Concepts/lab-embed";
+import TrackInteraction from "@/app/components/Layout/track-interaction";
+import MdxArticle from "@/app/components/Mdx/mdx-article";
 import { Tex } from "@/components/ui/tex";
 import { readMdx } from "@/lib/mdx/load";
 import type { ExplainerFrontmatter } from "@/lib/types/domain/algorithm.types";
 import { getDistribution, getDistributions } from "@/lib/data/distributions.data";
-import { explainerMetadata } from "@/lib/seo/metadata";
+import { explainerMetadata, ogImagePath } from "@/lib/seo/metadata";
 import { JsonLd, explainerGraph } from "@/lib/seo/structured-data";
 
 const distributionSeo = (slug: string) => {
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   if (!getDistribution(slug)) return {};
   const seo = distributionSeo(slug);
-  return explainerMetadata({ ...seo, section: seo.section.name });
+  return explainerMetadata({ ...seo, section: seo.section.name, image: ogImagePath("distributions", slug) });
 }
 
 export default async function DistributionPage({ params }: PageProps) {

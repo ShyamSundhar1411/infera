@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import Hero from "./components/Landing/hero";
-import HowItWorks from "./components/Landing/how-it-works";
-import AlgorithmCatalog from "./components/Catalog/algorithm-catalog";
-import DistributionCard from "./components/Distributions/distribution-card";
-import ConceptCard from "./components/Concepts/concept-card";
+import Hero from "@/app/components/Landing/hero";
+import HowItWorks from "@/app/components/Landing/how-it-works";
+import AlgorithmCatalog from "@/app/components/Catalog/algorithm-catalog";
+import DistributionCard from "@/app/components/Distributions/distribution-card";
+import ConceptCard from "@/app/components/Concepts/concept-card";
 import { getConcepts } from "@/lib/data/concepts.data";
 import { getAlgorithms } from "@/lib/data/algorithms.data";
 import { getDistributions } from "@/lib/data/distributions.data";

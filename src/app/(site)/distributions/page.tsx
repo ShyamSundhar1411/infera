@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { JsonLd, catalogueGraph } from "@/lib/seo/structured-data";
-import ConceptGrid from "../components/Distributions/concept-grid";
-import DistributionCard from "../components/Distributions/distribution-card";
+import ConceptGrid from "@/app/components/Distributions/concept-grid";
+import DistributionCard from "@/app/components/Distributions/distribution-card";
 import { getDistributions, getDistributionsByType } from "@/lib/data/distributions.data";
 
 export const metadata: Metadata = pageMetadata({

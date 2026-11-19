@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import AlgorithmPlayground from "../../components/Playground/algorithm-playground";
-import LabEmbed from "../../components/Concepts/lab-embed";
-import TrackInteraction from "../../components/Layout/track-interaction";
-import MdxArticle from "../../components/Mdx/mdx-article";
+import AlgorithmPlayground from "@/app/components/Playground/algorithm-playground";
+import LabEmbed from "@/app/components/Concepts/lab-embed";
+import TrackInteraction from "@/app/components/Layout/track-interaction";
+import MdxArticle from "@/app/components/Mdx/mdx-article";
 import { readMdx } from "@/lib/mdx/load";
 import type { ExplainerFrontmatter } from "@/lib/types/domain/algorithm.types";
 import { getAlgorithm, getAlgorithms } from "@/lib/data/algorithms.data";
 import { getCategories } from "@/lib/data/categories.data";
-import { explainerMetadata } from "@/lib/seo/metadata";
+import { explainerMetadata, ogImagePath } from "@/lib/seo/metadata";
 import { JsonLd, explainerGraph } from "@/lib/seo/structured-data";
 
 const KIND_KEYWORDS: Record<string, string[]> = {
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   if (!getAlgorithm(slug)) return {};
   const seo = algorithmSeo(slug);
-  return explainerMetadata({ ...seo, section: seo.section.name });
+  return explainerMetadata({ ...seo, section: seo.section.name, image: ogImagePath("algorithms", slug) });
 }
 
 export default async function AlgorithmPage({ params }: PageProps) {

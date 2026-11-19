@@ -2,8 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "katex/dist/katex.min.css";
 import "./globals.css";
-import SiteHeader from "./components/Layout/site-header";
-import SiteFooter from "./components/Layout/site-footer";
 import { THEME_SCRIPT } from "./components/Layout/theme-script";
 import Analytics from "./components/Layout/analytics";
 import { SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/constants";
@@ -42,8 +40,9 @@ export const metadata: Metadata = {
     title: `${SITE_NAME}: ${SITE_TAGLINE.replace(/\.$/, "")}`,
     description: SITE_DESCRIPTION,
     locale: "en_GB",
+    images: [{ url: "/og/home.png", width: 1200, height: 630, type: "image/png", alt: `${SITE_NAME}: ${SITE_TAGLINE}` }],
   },
-  twitter: { card: "summary_large_image", title: `${SITE_NAME}: ${SITE_TAGLINE.replace(/\.$/, "")}`, description: SITE_DESCRIPTION, creator: AUTHOR.twitter },
+  twitter: { card: "summary_large_image", title: `${SITE_NAME}: ${SITE_TAGLINE.replace(/\.$/, "")}`, description: SITE_DESCRIPTION, creator: AUTHOR.twitter, images: ["/og/home.png"] },
   formatDetection: { email: false, address: false, telephone: false },
 };
 
@@ -62,9 +61,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <JsonLd data={siteGraph()} />
       </head>
       <body className={`${inter.variable} ${instrument.variable} ${jetbrains.variable} antialiased`}>
-        <SiteHeader />
-        <main>{children}</main>
-        <SiteFooter />
+        {children}
         <Analytics />
       </body>
     </html>

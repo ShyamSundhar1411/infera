@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { JsonLd, catalogueGraph } from "@/lib/seo/structured-data";
-import AlgorithmCatalog from "../components/Catalog/algorithm-catalog";
+import AlgorithmCatalog from "@/app/components/Catalog/algorithm-catalog";
 import { getAlgorithms } from "@/lib/data/algorithms.data";
 
 export const metadata: Metadata = pageMetadata({

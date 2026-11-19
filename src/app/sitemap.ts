@@ -13,7 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: now,
     changeFrequency: "monthly",
     priority,
-    ...(image ? { images: [`${SITE_URL}${path}opengraph-image`] } : {}),
+    ...(image ? { images: [`${SITE_URL}/og${path === "/" ? "/home" : path.replace(/\/$/, "")}.png`] } : {}),
   });
   return [
     { ...page("/", 1), changeFrequency: "weekly" },

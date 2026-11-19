@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import MdxArticle from "../../components/Mdx/mdx-article";
-import LabEmbed from "../../components/Concepts/lab-embed";
+import MdxArticle from "@/app/components/Mdx/mdx-article";
+import LabEmbed from "@/app/components/Concepts/lab-embed";
 import { getConceptDocument, getConcepts } from "@/lib/data/concepts.data";
-import { explainerMetadata } from "@/lib/seo/metadata";
+import { explainerMetadata, ogImagePath } from "@/lib/seo/metadata";
 import { JsonLd, explainerGraph } from "@/lib/seo/structured-data";
 
 const conceptSeo = (slug: string) => {
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   if (!getConceptDocument(slug)) return {};
   const seo = conceptSeo(slug);
-  return explainerMetadata({ ...seo, section: seo.section.name });
+  return explainerMetadata({ ...seo, section: seo.section.name, image: ogImagePath("concepts", slug) });
 }
 
 export default async function ConceptPage({ params }: PageProps) {

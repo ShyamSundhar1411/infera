@@ -1,11 +1,9 @@
-import { OG_SIZE, ogImage } from "@/lib/seo/og-image";
+import { ogImage } from "@/lib/seo/og-image";
 
 export const dynamic = "force-static";
-export const size = OG_SIZE;
-export const contentType = "image/png";
-export const alt = "Infera: machine learning and statistics you can play with";
 
-export default function Image() {
+/** The site-wide link preview, used by the home page and the section indexes. */
+export function GET() {
   return ogImage({
     eyebrow: "Interactive explainers",
     title: "Machine learning and statistics you can play with",

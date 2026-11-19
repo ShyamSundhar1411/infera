@@ -9,6 +9,7 @@ import { ENGINES } from "@/lib/ml/engines";
 import { createRandom } from "@/lib/ml/random";
 import { DISTRIBUTION_MATH } from "@/lib/stats/distributions";
 import { LogoMark } from "@/app/components/Layout/logo";
+import ConceptThumb from "@/app/components/Concepts/concept-thumb";
 
 // Link preview images, rendered once at build time. Each one shows the page's
 // title beside a picture drawn from the same code as the page itself: the
@@ -206,6 +207,9 @@ function ConceptVisual({ slug }: { slug: string }) {
       </svg>
     );
   }
+  // Otherwise the card picture from the concepts page, drawn in the preview's dark colours.
+  const thumb = ConceptThumb({ slug, width: V, palette: { ink: INK, muted: MUTED, line: LINE, soft: "#1d2027", surface: PANEL, labels: false } });
+  if (thumb) return thumb;
   // Default: a sampled histogram settling under its bell curve.
   const bins = Array(22).fill(0);
   for (let i = 0; i < 1500; i++) {

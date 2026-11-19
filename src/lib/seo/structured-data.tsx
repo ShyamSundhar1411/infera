@@ -77,7 +77,7 @@ export function explainerGraph(page: ExplainerPage) {
         url,
         headline: page.title,
         description: page.description,
-        image: `${url}opengraph-image`,
+        image: `${SITE_URL}/og${page.path.replace(/\/$/, "")}.png`,
         inLanguage: "en",
         isPartOf: { "@id": SITE_ID },
         mainEntityOfPage: url,

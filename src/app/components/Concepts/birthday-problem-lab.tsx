@@ -265,8 +265,9 @@ function MatchCurve({ days, n, nMax, n50, firstMatches }: { days: number; n: num
             {k}
           </text>
         ))}
-        <text x={CW - CP.right} y={CH - 10} textAnchor="end" className="fill-muted text-[10px]">
-          people
+        {/* Sits just above the axis so it never collides with the last tick label. */}
+        <text x={CW - CP.right} y={sy(0) - 6} textAnchor="end" className="fill-muted text-[10px]">
+          people in the room
         </text>
         <line x1={sx(n50)} x2={sx(n50)} y1={sy(0.5)} y2={sy(0)} stroke="var(--muted)" strokeDasharray="3 3" />
         <text x={sx(n50) + 5} y={sy(0.5) - 6} className="fill-muted font-mono text-[10px]">
