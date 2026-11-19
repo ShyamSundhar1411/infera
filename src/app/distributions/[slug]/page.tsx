@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import DistributionLab from "../../components/Distributions/distribution-lab";
 import LabEmbed from "../../components/Concepts/lab-embed";
+import TrackInteraction from "../../components/Layout/track-interaction";
 import MdxArticle from "../../components/Mdx/mdx-article";
 import { Tex } from "@/components/ui/tex";
 import { readMdx } from "@/lib/mdx/load";
@@ -80,7 +81,9 @@ export default async function DistributionPage({ params }: PageProps) {
         <p className="mt-3 text-lg leading-relaxed text-muted">{doc?.frontmatter.summary ?? distribution.tagline}</p>
       </header>
 
-      <DistributionLab slug={slug} />
+      <TrackInteraction event="distribution_lab_used" params={{ distribution: slug }}>
+        <DistributionLab slug={slug} />
+      </TrackInteraction>
 
       {doc && (
         <div className="mt-20">

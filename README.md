@@ -59,6 +59,10 @@ yarn lint
 yarn typecheck
 ```
 
+## Analytics
+
+Build with `NEXT_PUBLIC_GA_ID=G-XXXXXXX` to turn on Google Analytics; without it nothing is loaded. Besides page views (and GA's built-in outbound-click tracking), the site records `playground_used`, `distribution_lab_used` and `lab_used` the first time a reader interacts with a lab, and forwards Topple scene actions as `scene_*` events (plays, finishes, what-ifs, breaks), from the `topple-action` events the player emits. The Topple plugin itself sends nothing.
+
 ## Deploying
 
 The site is a fully static export (`output: "export"`), so it runs anywhere.

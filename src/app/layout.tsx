@@ -5,6 +5,7 @@ import "./globals.css";
 import SiteHeader from "./components/Layout/site-header";
 import SiteFooter from "./components/Layout/site-footer";
 import { THEME_SCRIPT } from "./components/Layout/theme-script";
+import Analytics from "./components/Layout/analytics";
 import { SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/constants";
 import { AUTHOR } from "@/lib/data/author.data";
 import { JsonLd, siteGraph } from "@/lib/seo/structured-data";
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
+        <Analytics />
       </body>
     </html>
   );

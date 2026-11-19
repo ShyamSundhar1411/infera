@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import AlgorithmPlayground from "../../components/Playground/algorithm-playground";
 import LabEmbed from "../../components/Concepts/lab-embed";
+import TrackInteraction from "../../components/Layout/track-interaction";
 import MdxArticle from "../../components/Mdx/mdx-article";
 import { readMdx } from "@/lib/mdx/load";
 import type { ExplainerFrontmatter } from "@/lib/types/domain/algorithm.types";
@@ -81,7 +82,9 @@ export default async function AlgorithmPage({ params }: PageProps) {
         <p className="mt-3 text-lg leading-relaxed text-muted">{doc?.frontmatter.summary ?? algorithm.tagline}</p>
       </header>
 
-      <AlgorithmPlayground slug={slug} />
+      <TrackInteraction event="playground_used" params={{ algorithm: slug }}>
+        <AlgorithmPlayground slug={slug} />
+      </TrackInteraction>
 
       {doc && (
         <div className="mt-20">
