@@ -1,0 +1,82 @@
+---
+name: "Birthday Problem"
+tagline: "Only 23 people for an even chance that two share a birthday."
+summary: "In a room of just 23 people there is a better than even chance that two share a birthday. The surprise comes from counting people instead of pairs: 23 people make 253 pairs, and any one of them can match."
+order: 13
+---
+
+
+<Lab id="birthday-problem" />
+
+## The idea
+
+How many people do you need in a room before two of them probably share a birthday? Most people guess somewhere around 180, half of 365. The answer is 23.
+
+The intuition goes wrong because it imagines matching your own birthday. With 23 people you are not making 22 comparisons, you are making 253: every person against every other. Each pair is unlikely to match, but there are a lot of pairs, and the number grows roughly like $n^2/2$.
+
+The same maths decides how soon two items land in the same slot of a hash table, how many random IDs you can issue before two collide, and the "birthday attack" on cryptographic hashes. With $d$ equally likely values, a collision becomes likely after about $\sqrt{d}$ draws, far sooner than $d$.
+
+## How to think about it
+
+1. It is easier to compute the chance that nobody matches.
+2. The second person must avoid one birthday, the third must avoid two, and so on.
+3. Multiply those chances together: $\frac{364}{365} \cdot \frac{363}{365} \cdots$
+4. Each factor is close to 1, but there are many of them, and they shrink.
+5. One minus that product is the chance of at least one match. It crosses 50% at 23 people and 99% at 57.
+
+## Reading the picture
+
+Each circle is a person who has entered the room, and the calendar shows which days are taken. When two people share a day, both turn coral and the day lights up. The chart below plots the exact chance of a match against the number of people, with your current room marked.
+
+## Try this
+
+1. Press **Fill until a match** a few times, using **Empty the room** in between. Note how many people it takes. It is often fewer than 30.
+2. Press **Run 1,000 rooms**. The simulated dots land on the exact curve.
+3. Switch to **1,000 buckets**. A collision now takes about 38 people, not 500.
+4. Drag **Possible birthdays** to 2,000 and back down to 10. The number needed for 50% tracks $1.18\sqrt{d}$ throughout.
+
+## The maths
+
+<Formulas>
+
+<Formula label="No match among n people">
+
+$$
+P(\text{no match}) = \prod_{k=0}^{n-1} \left(1 - \frac{k}{d}\right)
+$$
+
+</Formula>
+
+<Formula label="At least one match">
+
+$$
+P(\text{match}) = 1 - \frac{d!}{(d - n)!\, d^{\,n}}
+$$
+
+</Formula>
+
+<Formula label="Pairs to compare">
+
+$$
+\binom{n}{2} = \frac{n(n - 1)}{2}
+$$
+
+</Formula>
+
+<Formula label="Approximation">
+
+$$
+P(\text{match}) \approx 1 - e^{-n(n-1)/(2d)}
+$$
+
+</Formula>
+
+<Formula label="People needed for an even chance">
+
+$$
+n_{50} \approx \sqrt{2 d \ln 2} \approx 1.18\sqrt{d}
+$$
+
+</Formula>
+
+</Formulas>

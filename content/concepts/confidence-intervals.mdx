@@ -1,0 +1,77 @@
+---
+name: "Confidence Intervals"
+tagline: "Draw a hundred intervals and watch about 95 of them catch the truth."
+summary: "A 95% confidence interval comes from a procedure that catches the true value 95% of the time. Run that procedure over and over and you can watch the promise being kept, and see when it breaks."
+order: 8
+---
+
+
+<Lab id="confidence-intervals" />
+
+## The idea
+
+You measure the heights of 10 people and get an average of 172 cm. The true average of everyone is surely not exactly 172, so you report a range instead: maybe 165 to 179. A confidence interval is a range like that, built by a recipe with a guarantee attached.
+
+The guarantee is about the recipe, not about any one range. If you took many samples and built a 95% interval from each, about 95% of those intervals would contain the true average. Any single interval either contains it or it does not; you just do not know which.
+
+## How it works
+
+1. Take a sample of $n$ values and work out its mean $\bar{x}$ and standard deviation $s$.
+2. The standard error $s/\sqrt{n}$ says how much sample means typically wobble.
+3. Go a critical number of standard errors either side of $\bar{x}$: about 1.96 for 95% when $n$ is large.
+4. For small samples, use the $t$ distribution's critical value instead. It is larger, which pays for the fact that $s$ is itself only an estimate.
+5. Repeat with fresh samples, and about 95% of the intervals catch the true mean.
+
+## What it does not mean
+
+It is tempting to say "there is a 95% chance the true mean is in this interval". Strictly, it is not: the true mean is fixed, and this particular interval either contains it or not. The 95% describes how often the method works across repeated samples. A Bayesian credible interval is the tool that makes the "95% chance" statement, and it needs a prior.
+
+## Reading the picture
+
+Each horizontal line is one interval from one sample, with a dot at that sample's mean. The dashed line is the true mean, which in real life you would never see. Teal intervals cross it; coral ones miss. The bar underneath tracks the share of all intervals so far that caught the truth, against the confidence level promised.
+
+## Try this
+
+1. Press **Keep drawing** with the defaults. Roughly one interval in twenty misses, and the coverage bar settles near 95%.
+2. Raise **Sample size (n)** from 10 to 100. Intervals get much narrower, yet coverage stays at 95%: more data buys precision, not a better hit rate.
+3. Set **Sample size (n)** to 3 and turn off **Use the t distribution**. The z interval is too narrow and coverage drops well below 95%. Turn t back on and it recovers.
+4. Switch the population to **Clicks** with a small sample. Sometimes nobody clicks, the sample's spread is zero, and the interval collapses to a point that misses. This is why proportions get their own interval methods.
+5. Move **Confidence level** to 80% and then 99%. Coverage follows, and so does the width.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Interval for a mean">
+
+$$
+\bar{x} \pm t_{n-1,\,1-\alpha/2} \cdot \frac{s}{\sqrt{n}}
+$$
+
+</Formula>
+
+<Formula label="Large-sample version">
+
+$$
+\bar{x} \pm z_{1-\alpha/2} \cdot \frac{s}{\sqrt{n}}, \quad z_{0.975} \approx 1.96
+$$
+
+</Formula>
+
+<Formula label="The guarantee">
+
+$$
+P\big(L \le \mu \le U\big) = 1 - \alpha \quad \text{over repeated samples}
+$$
+
+</Formula>
+
+<Formula label="Width shrinks like">
+
+$$
+\text{width} \propto \frac{1}{\sqrt{n}}
+$$
+
+</Formula>
+
+</Formulas>

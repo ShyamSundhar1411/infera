@@ -1,0 +1,80 @@
+---
+name: "Simpson's Paradox"
+tagline: "A treatment that wins in every group can still lose overall."
+summary: "Simpson's paradox is when a trend that holds inside every group reverses once the groups are pooled. It happens when a hidden variable affects both who ends up in which group and the outcome, and it is why you cannot read causes off a single table."
+order: 11
+---
+
+
+<Lab id="simpsons-paradox" />
+
+## The idea
+
+In a 1986 study of kidney stone treatments, open surgery (A) cured 93% of patients with small stones and 73% of patients with large stones. Keyhole surgery (B) cured 87% and 69%. A is better for small stones and better for large stones. Yet across everyone, A cured 78% and B cured 83%.
+
+Nothing is wrong with the arithmetic. Large stones are harder to treat, and doctors gave the hard cases to surgery. A's overall rate is dragged down by the difficult patients it was handed, not by the treatment itself. Stone size is a confounder: it influences both which treatment you get and whether you recover.
+
+## How to think about it
+
+1. A pooled rate is a weighted average of the group rates, with weights set by how many people each group contributed.
+2. If the two treatments see very different mixes of easy and hard cases, their weights differ.
+3. Different weights can flip the comparison even though every group points the same way.
+4. To compare treatments fairly, compare like with like: within each group, or after adjusting for the mix.
+5. Whether to split or pool is a causal question, not a statistical one. Split by a variable that causes both the treatment choice and the outcome. Do not split by something the treatment itself changes.
+
+## Reading the picture
+
+In **Kidney stones**, each square is one patient. Coloured squares recovered. Turn on **Split by stone size** and the same patients regroup: the table below shows A winning both rows and losing the bottom one. In **Exercise and cholesterol**, the solid black line fits everyone at once. Turn on **Colour by age group** and each group gets its own line, sloping the other way.
+
+## Try this
+
+1. In **Kidney stones**, toggle **Split by stone size** on and off while watching the table. The patients and outcomes never change, only the grouping.
+2. Drag **Large stones sent to A** down to about 50%. With the hard cases shared evenly, A wins overall too and the paradox is gone.
+3. Push it to 100%. A now gets every large stone, and its overall rate falls even further behind.
+4. Switch to **Exercise and cholesterol** and drag **How strongly age drives both** to 0. The age groups sit on top of each other and the pooled line slopes down, just like the group lines.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Pooled rate as a weighted average">
+
+$$
+P(R \mid A) = P(R \mid A, S)\,P(S \mid A) + P(R \mid A, L)\,P(L \mid A)
+$$
+
+</Formula>
+
+<Formula label="The reversal">
+
+$$
+P(R \mid A, g) > P(R \mid B, g) \text{ for every } g, \quad \text{yet} \quad P(R \mid A) < P(R \mid B)
+$$
+
+</Formula>
+
+<Formula label="Kidney stones, treatment A">
+
+$$
+0.93 \cdot \tfrac{87}{350} + 0.73 \cdot \tfrac{263}{350} = 0.78
+$$
+
+</Formula>
+
+<Formula label="Kidney stones, treatment B">
+
+$$
+0.87 \cdot \tfrac{270}{350} + 0.69 \cdot \tfrac{80}{350} = 0.83
+$$
+
+</Formula>
+
+<Formula label="Adjusting for the confounder">
+
+$$
+P(R \mid \text{do}(A)) = \sum_g P(R \mid A, g)\, P(g)
+$$
+
+</Formula>
+
+</Formulas>

@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import { cn } from "@/lib/utils";
+import Embed from "./embed";
 
 /** A labelled formula card. Put display maths ($$ … $$) inside. */
 function Formula({ label, children }: { label: string; children: React.ReactNode }) {
@@ -61,4 +62,5 @@ export const mdxComponents: MDXComponents = {
   Callout,
   ProsCons,
   Card,
+  Embed,
 };

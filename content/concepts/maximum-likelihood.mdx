@@ -1,0 +1,82 @@
+---
+name: "Maximum Likelihood"
+tagline: "Pick the parameters that make the data you saw as likely as possible."
+summary: "Maximum likelihood estimation chooses a model's parameters by asking which values would have made the observed data most probable. It is the principle behind fitting a normal curve, estimating a coin's bias, logistic regression and most of machine learning."
+order: 16
+---
+
+
+<Lab id="maximum-likelihood" />
+
+## The idea
+
+You have some data and a family of models, such as normal curves with different centres and spreads. Each choice of parameters says how likely every data point is. Multiply those numbers together and you get the likelihood: how probable the whole dataset is under that choice.
+
+Maximum likelihood picks the parameters with the largest likelihood. For a normal curve that turns out to be the sample mean and the spread of the points around it. For a coin it is the share of heads. Results you could have guessed, but now with a principle behind them that also works where guessing does not.
+
+## Likelihood is not probability
+
+The probability $P(\text{data} \mid \theta)$ is a function of the data with the parameters fixed. The likelihood $L(\theta)$ is the same expression read the other way: the data is fixed and the parameters vary. It does not add up to 1 over $\theta$, and it is not the probability that the parameters are right. It only ranks parameter values by how well they explain what you saw.
+
+## Why logs?
+
+Multiplying a dozen densities gives tiny numbers, and multiplying thousands underflows to zero in a computer. Taking logs turns the product into a sum, keeps the numbers readable, and has its peak in exactly the same place because the logarithm only ever goes up.
+
+## Reading the picture
+
+Each data point sits on the axis with a stick up to the curve: the stick's height is that point's likelihood. A narrow curve makes the central sticks tall but leaves points in the tails with almost nothing, and one tiny stick drags the whole product down. A wide curve gives every point a short stick. The best curve balances the two.
+
+The square map shows the log-likelihood for every combination of centre and spread, darker where it is higher. Your curve is the coral dot, the maximum is the teal ring, and clicking the map moves you there.
+
+## Try this
+
+1. Move the centre ($\mu$) and spread ($\sigma$) sliders by hand and try to beat the best log-likelihood. Then press **Jump to the MLE**.
+2. Shrink the spread ($\sigma$) to its minimum. The sticks near the centre shoot up, but the far points collapse and the log-likelihood falls off a cliff.
+3. Switch to **Coin flips**. The likelihood curve peaks at the share of heads. Press **Flip 10 more** a few times and watch the curve get narrower: more data pins the answer down.
+4. Press **New data** and click around the map to see how the shape of the hill changes.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Likelihood">
+
+$$
+L(\theta) = \prod_{i=1}^{n} f(x_i \mid \theta)
+$$
+
+</Formula>
+
+<Formula label="Log-likelihood">
+
+$$
+\ell(\theta) = \sum_{i=1}^{n} \log f(x_i \mid \theta)
+$$
+
+</Formula>
+
+<Formula label="Normal model">
+
+$$
+\hat{\mu} = \bar{x}, \qquad \hat{\sigma}^2 = \frac{1}{n} \sum_{i=1}^{n} (x_i - \bar{x})^2
+$$
+
+</Formula>
+
+<Formula label="Coin">
+
+$$
+L(p) = p^{h} (1 - p)^{n - h}, \qquad \hat{p} = \frac{h}{n}
+$$
+
+</Formula>
+
+<Formula label="Finding the peak">
+
+$$
+\frac{\partial \ell}{\partial \theta} = 0
+$$
+
+</Formula>
+
+</Formulas>

@@ -1,0 +1,74 @@
+---
+name: "Bias-Variance Tradeoff"
+tagline: "Too simple misses the pattern; too flexible chases the noise."
+summary: "The bias-variance tradeoff splits a model's expected error into bias (systematic misses from being too simple), variance (wobble from being too sensitive to the particular training data) and noise that nothing can remove. The best model sits where their sum is smallest."
+order: 17
+---
+
+
+<Lab id="bias-variance" />
+
+## The idea
+
+Fit a straight line to points that follow a curve and you will miss the curve however much data you have. That is bias. Fit a polynomial of degree 12 to 15 points and it will thread through every one of them, including their noise. Draw a fresh 15 points and you get a wildly different curve. That is variance.
+
+The lab makes both visible by fitting the same model to many training sets drawn from the same truth. If the fits disagree with each other, the model has high variance. If their average misses the truth, it has high bias.
+
+## How to think about it
+
+1. Imagine drawing many training sets from the same process and fitting your model to each.
+2. **Bias** is how far the average fit is from the truth.
+3. **Variance** is how much individual fits scatter around that average.
+4. **Noise** is the randomness in the data itself. No model can predict it.
+5. Expected error on a new point is the sum of the three. Raising complexity lowers bias and raises variance, so the total traces a U.
+
+## Reading the picture
+
+The faint blue curves are fits to different training sets, the bold blue curve is their average and the dashed coral curve is the truth, a sine wave. The amber points are the latest training set.
+
+The bar splits the expected error into $\text{bias}^2$, variance and noise. The small chart shows the same split for every degree from 0 to 12, computed from 60 simulated training sets. The black total error curve is the U, and its lowest point is the best degree for this much data and noise.
+
+## Try this
+
+1. Set **Polynomial degree** to 0 or 1. The fits agree closely with each other but all miss the wave: low variance, high bias.
+2. Set it to 12. The average fit is close to the truth, but the individual fits fly all over the place: low bias, high variance.
+3. Raise **Points per training set** to 80 with degree 12. Variance collapses, and the best degree on the U curve moves to the right. More data makes complex models safe.
+4. Raise **Noise** and watch the grey floor rise. That part of the error is there whatever model you pick.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Data">
+
+$$
+y = f(x) + \varepsilon, \qquad \mathbb{E}[\varepsilon] = 0,\ \operatorname{Var}(\varepsilon) = \sigma^2
+$$
+
+</Formula>
+
+<Formula label="Decomposition">
+
+$$
+\mathbb{E}\big[(y - \hat{f}(x))^2\big] = \mathrm{Bias}\big[\hat{f}(x)\big]^2 + \operatorname{Var}\big[\hat{f}(x)\big] + \sigma^2
+$$
+
+</Formula>
+
+<Formula label="Bias">
+
+$$
+\mathrm{Bias}\big[\hat{f}(x)\big] = \mathbb{E}\big[\hat{f}(x)\big] - f(x)
+$$
+
+</Formula>
+
+<Formula label="Variance">
+
+$$
+\operatorname{Var}\big[\hat{f}(x)\big] = \mathbb{E}\Big[\big(\hat{f}(x) - \mathbb{E}[\hat{f}(x)]\big)^2\Big]
+$$
+
+</Formula>
+
+</Formulas>

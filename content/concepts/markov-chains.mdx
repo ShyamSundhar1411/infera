@@ -1,0 +1,96 @@
+---
+name: "Markov Chains"
+tagline: "Tomorrow depends only on today. Run it long enough and the start stops mattering."
+summary: "A Markov chain moves between states using fixed probabilities that depend only on where it is now. However it starts, it settles into a long-run pattern called the stationary distribution, the idea behind PageRank and MCMC."
+order: 5.5
+---
+
+
+<Lab id="markov-chains" />
+
+## The idea
+
+Suppose the weather has three moods: sunny, cloudy and rainy. A sunny day is followed by another sunny day 70% of the time, a cloudy one 20% of the time and rain 10% of the time. Cloudy and rainy days have their own rules. Crucially, tomorrow depends only on today, not on last week. That is the Markov property, or memorylessness.
+
+Follow the chain day after day and something useful happens. The share of days spent in each state settles down to fixed numbers, and those numbers are the same whether you started on a sunny day or a rainy one. With the default arrows, about 46% of days are sunny, 31% cloudy and 23% rainy in the long run. That limit is the stationary distribution.
+
+## How to think about it
+
+1. List the states, and for each one the probability of moving to every other state next. These numbers form the transition matrix $P$, one row per current state.
+2. Every row adds up to 1, because the chain has to go somewhere.
+3. To get the chances in $n$ steps, multiply the starting distribution by $P$ a total of $n$ times.
+4. The stationary distribution $\pi$ is the one that does not change when you take another step: $\pi P = \pi$.
+5. If every state can reach every other and the chain does not cycle in lockstep, it forgets its starting point and converges to $\pi$.
+
+## Where it shows up
+
+**PageRank.** Imagine a web surfer who clicks a random link on the current page and, now and then, jumps to a random page instead. The pages are the states, and the share of time the surfer spends on each page is its rank. In the **Web pages** preset, page D has no links pointing to it, so it is only ever reached by a random jump and ends up with about 4% of the surfer's time.
+
+**MCMC.** [Markov chain Monte Carlo](/concepts/mcmc/) turns this idea around. Instead of being handed a chain and asking for its stationary distribution, you design a chain whose stationary distribution is the posterior you want, then run it and collect the states it visits.
+
+## Reading the picture
+
+The diagram shows each state as a circle and each possible move as an arrow labelled with its probability; thicker arrows are more likely. The dot is the token, and the arrow it just took lights up. On the right, each bar is the share of steps the token has spent in a state so far, and the black tick is the exact stationary share.
+
+The lower chart drops the token and follows probabilities instead. Each line is the chance of being in one state after $n$ steps from the chosen start. The lines begin far apart, at 100% for the start, and settle onto the dashed long-run levels within a handful of steps.
+
+## Try this
+
+1. Press **Run** and watch the bars wander, then press **1,000 steps at once**. The time shares land on the black ticks.
+2. In the lower chart, switch the start between Sunny and Rainy. The lines start in different places but end in the same place by about step 10.
+3. Under **Edit the arrows leaving**, pick Sunny and raise **Sunny to Sunny** to its maximum. Sunny spells get longer and the long-run share of sunny days climbs.
+4. Switch to **Web pages** and push **Damping: chance of following a link** towards 0.99. Page D, with no links in, sinks towards zero, while A and C, which link to each other, share almost all of the rank.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Markov property">
+
+$$
+P(X_{t+1} = j \mid X_t = i, X_{t-1}, \ldots, X_0) = P(X_{t+1} = j \mid X_t = i) = P_{ij}
+$$
+
+</Formula>
+
+<Formula label="Distribution after n steps">
+
+$$
+\mu_n = \mu_0 P^n
+$$
+
+</Formula>
+
+<Formula label="Stationary distribution">
+
+$$
+\pi P = \pi, \qquad \sum_i \pi_i = 1
+$$
+
+</Formula>
+
+<Formula label="Long-run time share">
+
+$$
+\frac{1}{T} \sum_{t=1}^{T} \mathbf{1}[X_t = i] \to \pi_i
+$$
+
+</Formula>
+
+<Formula label="Weather chain, default arrows">
+
+$$
+\pi = \left(\tfrac{6}{13},\ \tfrac{4}{13},\ \tfrac{3}{13}\right) \approx (0.46,\ 0.31,\ 0.23)
+$$
+
+</Formula>
+
+<Formula label="PageRank with damping d">
+
+$$
+P_{ij} = \frac{1 - d}{n} + d \cdot \frac{\mathbf{1}[i \to j]}{\text{out}(i)}
+$$
+
+</Formula>
+
+</Formulas>

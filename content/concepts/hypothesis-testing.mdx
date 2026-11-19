@@ -1,0 +1,89 @@
+---
+name: "Hypothesis Testing"
+tagline: "Is this coin fair? What a p-value really measures, and how often a test cries wolf."
+summary: "A hypothesis test asks whether your data would be surprising if nothing interesting were going on. The p-value measures that surprise, and the significance level decides how much surprise you need before you stop believing in 'nothing'."
+order: 7
+---
+
+
+<Lab id="hypothesis-testing" />
+
+## The idea
+
+Someone hands you a coin and you want to know if it is fair. You flip it 50 times and get 33 heads. Is that proof of a bias, or the kind of streak a fair coin throws up now and then?
+
+A hypothesis test answers by playing devil's advocate. It assumes the boring explanation, called the null hypothesis: the coin is fair. Then it asks how unusual your result would be in that boring world. If a fair coin almost never does what you just saw, you reject the null and conclude the coin is probably biased. If a fair coin does it fairly often, you have no case.
+
+## How to think about it
+
+1. State the null hypothesis: the coin is fair, so $p = 0.5$.
+2. Pick a significance level $\alpha$, usually 0.05. This is how often you are willing to call a fair coin biased.
+3. Flip the coin and count the heads.
+4. Work out the p-value: the probability that a fair coin gives a result at least as far from half heads as yours.
+5. If the p-value is at most $\alpha$, reject the null. Otherwise, keep it: not because you proved the coin fair, but because you could not show it is not.
+
+## What a p-value is not
+
+A p-value of 0.03 does **not** mean there is a 3% chance the coin is fair. It is the chance of data this extreme *if* the coin is fair, which is a different question, the way the chance of a wet street given rain differs from the chance of rain given a wet street. Turning one into the other needs Bayes' theorem and a prior.
+
+It is not a measure of how big the effect is either. With enough flips, a coin that lands heads 50.5% of the time gives a tiny p-value, even though no one would ever notice the bias.
+
+## Two ways to be wrong
+
+| | Coin really fair | Coin really biased |
+| --- | --- | --- |
+| Test rejects "fair" | Type I error (false alarm), happens with chance $\alpha$ | Correct: the chance of this is the test's power |
+| Test keeps "fair" | Correct | Type II error (missed it) |
+
+Lowering $\alpha$ makes false alarms rarer but misses more real biases. The only way to cut both is more data.
+
+## Reading the picture
+
+The bars are every head count a fair coin can give and how likely each one is. The coral bars at both ends are the rejection region: results so far from half that their p-value is at most $\alpha$. The black line is your result. If it lands in coral, the test rejects "fair".
+
+The histogram at the bottom collects the p-values of many experiments. When the coin really is fair, p-values are spread roughly evenly between 0 and 1, so about $\alpha$ of them land below $\alpha$ by pure chance. When the coin is biased, they pile up near zero.
+
+## Try this
+
+1. Leave the coin fair and press **Run 1,000 experiments**. Roughly 5% are rejected, every one of them a false alarm. (A little under 5%, because head counts are whole numbers and the region cannot hit 5% exactly.)
+2. Turn off **The coin is secretly fair** and set its chance of heads to 0.55. With 50 flips most experiments miss the bias. Raise **Flips (n)** to 200 and run again: the p-values crowd towards zero and power climbs.
+3. Lower **Significance level** to 0.01 with a biased coin. False alarms fall, but more real biases slip through.
+4. Flip a fair coin a dozen times by hand. Sooner or later you hit a "significant" result. If you only reported that one, you would have fooled yourself.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Null distribution">
+
+$$
+X \sim \text{Binomial}(n, 0.5) \quad \text{if the coin is fair}
+$$
+
+</Formula>
+
+<Formula label="Exact two-sided p-value">
+
+$$
+p = \sum_{j \,:\, P(X = j) \le P(X = k)} P(X = j)
+$$
+
+</Formula>
+
+<Formula label="Normal approximation">
+
+$$
+z = \frac{k - n/2}{\sqrt{n/4}}, \quad p \approx 2\big(1 - \Phi(|z|)\big)
+$$
+
+</Formula>
+
+<Formula label="Error rates">
+
+$$
+P(\text{reject} \mid H_0) \le \alpha, \quad \text{power} = P(\text{reject} \mid H_1)
+$$
+
+</Formula>
+
+</Formulas>

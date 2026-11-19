@@ -25,7 +25,7 @@ All models are written from scratch in TypeScript and run in the browser. No ML 
 
 Each has its PMF/PDF, CDF, expectation, variance, formulas, a sampler and a sample-means (CLT) mode.
 
-**Concepts (7)**
+**Concepts (19)**
 
 - Bayes' theorem: a medical-test simulator on a grid of 1,000 people, with the formula filled in live
 - Bayesian updating: flip a hidden coin and watch a Beta posterior and its credible interval sharpen
@@ -34,6 +34,11 @@ Each has its PMF/PDF, CDF, expectation, variance, formulas, a sampler and a samp
 - Monty Hall: find the ace among face-down cards, with a host who does or does not know where it is
 - Monte Carlo: estimate pi and an integral by throwing random darts, with the error funnel shrinking like 1/sqrt(n)
 - MCMC: a Metropolis-Hastings random walk over three 2-D targets, with trace plot, acceptance rate and burn-in
+- Markov chains: a weather chain and a mini PageRank, converging to the stationary distribution
+- Hypothesis testing, confidence intervals and A/B testing: p-values under the null, interval coverage, power and the cost of peeking
+- Bootstrap, maximum likelihood and the bias-variance trade-off
+- Simpson's paradox, regression to the mean and the birthday problem
+- Random walks and gambler's ruin, and queues: why waiting time explodes as a server gets busy
 
 **Hands-on scenarios**, embedded in the pages they explain:
 
@@ -94,7 +99,9 @@ $$
 </Formulas>
 ```
 
-Concept files also need `name`, `tagline` and `order` in the frontmatter, and can embed a live lab anywhere with `<Lab id="bayes-theorem" />`. `<Lab>` works in algorithm and distribution files too; the ids are listed in `src/app/components/Concepts/concept-lab.tsx`. Other components available in MDX: `<Formulas>`, `<Formula label>`, `<Callout title>`, `<ProsCons>` and `<Card>`.
+Concept files also need `name`, `tagline` and `order` in the frontmatter, and can embed a live lab anywhere with `<Lab id="bayes-theorem" />`. `<Lab>` works in algorithm and distribution files too; the ids are listed in `src/app/components/Concepts/concept-lab.tsx`. Other components available in MDX: `<Formulas>`, `<Formula label>`, `<Callout title>`, `<ProsCons>`, `<Card>` and `<Embed url caption>`.
+
+`<Embed url="…" />` embeds any page that publishes an oEmbed discovery link, such as a Topple scene. It is resolved at build time and only keeps an iframe that points back at the page's own site; anything that cannot be resolved becomes a link card, so a missing page never breaks the build.
 
 Run `yarn check:content` after editing. It compiles every file with strict KaTeX and flags maths written as plain Unicode instead of LaTeX.
 

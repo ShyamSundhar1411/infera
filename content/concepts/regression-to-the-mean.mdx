@@ -1,0 +1,76 @@
+---
+name: "Regression to the Mean"
+tagline: "Why the stars of one test do worse on the next, and nobody needs to blame anyone."
+summary: "Regression to the mean is the tendency of extreme results to be followed by less extreme ones. When a score is part skill and part luck, the people at the top got lucky as well as good, and the luck does not repeat."
+order: 12
+---
+
+
+<Lab id="regression-to-the-mean" />
+
+## The idea
+
+Give a class two tests. The students who came top in the first will, on average, do worse in the second. The students who came bottom will, on average, do better. No teaching happened in between. Nobody got lazy or tried harder.
+
+The reason is that a score is skill plus luck. To finish in the top 10% you usually need both: real skill and a good day. On the next test the skill is still there but the good day is not, so the score falls back towards the class average. The same happens in reverse at the bottom.
+
+This explains a lot of folklore. Athletes who make the cover of a magazine after a record season tend to have a worse next one: the "cover jinx". Flight instructors noticed that praising a great landing was followed by a worse one, and shouting at a terrible landing was followed by a better one, and concluded that shouting works. Patients who see a doctor when their symptoms are at their worst tend to improve whatever they are given.
+
+## How to think about it
+
+1. Each student has a fixed skill. Each test adds fresh, independent luck.
+2. Pick the students who scored highest on test 1. Their luck that day was mostly good.
+3. On test 2 their luck is new, and on average it is zero.
+4. So their average falls back towards the mean, but only part of the way: their skill really is above average.
+5. The more a score depends on luck, the stronger the pull back. If luck plays no part, there is no regression at all.
+
+## Reading the picture
+
+Each dot is a student, with their test 1 score across and their next score up. The dashed diagonal is where a student would land if they scored the same twice. The teal best-fit line is flatter than that diagonal. The hollow circles mark each group's average on test 1 and the filled circles where that group's average landed next time.
+
+## Try this
+
+1. Press **Run the next test** a few times. The dots move, but the coral group always lands below its first average and the indigo group above.
+2. Drag **How much is luck** to 0%. Every dot sits on the diagonal and nothing regresses.
+3. Drag it to 90%. Test scores are now mostly noise, the best-fit line is almost flat, and both groups fall nearly all the way back to the class average.
+4. Shrink **Group size** to 2%. The most extreme students regress the most, because they needed the most luck to get there.
+
+## The maths
+
+<Formulas>
+
+<Formula label="A score">
+
+$$
+X_t = \mu + S + \varepsilon_t, \quad S \sim \mathcal{N}(0, \sigma_S^2), \quad \varepsilon_t \sim \mathcal{N}(0, \sigma_\varepsilon^2)
+$$
+
+</Formula>
+
+<Formula label="Correlation between two tests">
+
+$$
+\rho = \frac{\sigma_S^2}{\sigma_S^2 + \sigma_\varepsilon^2}
+$$
+
+</Formula>
+
+<Formula label="Expected next score">
+
+$$
+\mathbb{E}[X_2 \mid X_1 = x] = \mu + \rho\,(x - \mu)
+$$
+
+</Formula>
+
+<Formula label="In standard units">
+
+$$
+\mathbb{E}[Z_2 \mid Z_1 = z] = \rho\, z
+$$
+
+</Formula>
+
+</Formulas>
+
+The best-fit slope in standard units is the correlation $\rho$. Unless the two tests agree perfectly ($\rho = 1$), a student $z$ standard deviations above average is predicted to land only $\rho z$ above next time.

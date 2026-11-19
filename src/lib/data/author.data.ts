@@ -12,6 +12,11 @@ export const AUTHOR = {
   twitter: "@Its_me_Shyam14",
 } as const;
 
+/** Other things the author has made, listed in the footer. */
+export const AUTHOR_PROJECTS = [
+  { name: "Topple", blurb: "systems you can play with", url: "https://topple.shyamsundhar.com/" },
+];
+
 /** Profiles that are the same person, for structured data. */
 export const AUTHOR_SAME_AS = [
   "https://github.com/ShyamSundhar1411",

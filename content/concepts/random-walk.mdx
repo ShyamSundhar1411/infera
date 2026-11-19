@@ -1,0 +1,94 @@
+---
+name: "Random Walks and Gambler's Ruin"
+tagline: "Bet one chip at a time against a richer opponent and see how the story ends."
+summary: "A random walk takes a step up or down at random, again and again. Give it a floor at zero and a ceiling, and it becomes a gambler playing until they are broke or reach a target. Even a tiny house edge makes ruin almost certain."
+order: 14
+---
+
+
+<Lab id="random-walk" />
+
+## The idea
+
+A gambler sits down with 10 chips and bets one chip a round on a coin. Heads, they win a chip; tails, they lose one. They will stop when they have 20 chips or none. Each round is trivial, but the whole game has a surprisingly exact answer: with a fair coin, the chance of going broke is simply the share of the money that is not theirs, $1 - k/N$.
+
+Take away the floor and the ceiling and you have a free random walk. Its position after $t$ steps has an average of zero (for a fair coin), but it does not stay near zero. It wanders, and the typical distance from the start grows like $\sqrt{t}$: four times as many steps only doubles how far you tend to drift.
+
+## The house edge
+
+Now make the coin slightly unfair, say $p = 0.49$, which is roughly what a casino offers. Per round the difference is invisible. Over a long game it is decisive. Against an opponent with much more money than you (a large target $N$), the probability of ruin approaches 1. You cannot win by playing longer: the longer you play, the surer the outcome.
+
+## How to think about it
+
+1. Every round moves the chip count up by 1 with probability $p$ and down by 1 otherwise.
+2. The rounds are independent, so the path is a sum of random $\pm 1$ steps.
+3. The average step is $2p - 1$, so an unfair coin adds a steady drift on top of the noise.
+4. The noise grows like $\sqrt{t}$ but the drift grows like $t$, so in the long run the drift always wins.
+5. With barriers at 0 and $N$, the walk must hit one of them eventually; the formulas below say which one, and how long it takes on average.
+
+## Reading the picture
+
+In **Gambler's ruin** mode the chart shows the chip count over time, with the red line at zero (broke) and the green line at the target. The bold path is the most recent gambler; faint paths are earlier ones. The stack of chips beside it rises and falls with the current game, and the histogram below shows how long each game lasted, split by how it ended.
+
+In **Free walk** mode there are no barriers. The dashed curves mark one and two standard deviations around the expected position, and they open up like $\sqrt{t}$. The histogram of where the walks end is compared with a normal curve: a long random walk is a sum of many small independent steps, so the central limit theorem applies.
+
+## Try this
+
+1. Leave the coin fair, with **Starting chips (k)** at 10 and **Target (N)** at 20. Press **Run 1,000** and compare **Went broke (simulated)** with the exact 50%.
+2. Lower **Starting chips (k)** to 2. Ruin is now 90% likely, even though every bet is fair. Being poorer than your opponent is a disadvantage on its own.
+3. Set **Chance of winning a round (p)** to 0.49, **Starting chips (k)** to 10 and **Target (N)** to 100. Almost every gambler goes broke, and the exact figure is above 99%.
+4. Switch to **Free walk** and press **Run 1,000**. Most walks end far from zero, and the spread of the end points matches the outer curves. Then move **p** to 0.55 and watch the whole fan tilt upwards.
+
+## The maths
+
+<Formulas>
+
+<Formula label="One step">
+
+$$
+X_{t+1} = X_t + \begin{cases} +1 & \text{with probability } p \\ -1 & \text{with probability } q = 1 - p \end{cases}
+$$
+
+</Formula>
+
+<Formula label="Free walk after t steps">
+
+$$
+\mathbb{E}[X_t] = t(p - q), \qquad \operatorname{Var}(X_t) = 4tpq
+$$
+
+</Formula>
+
+<Formula label="Ruin, fair coin">
+
+$$
+P(\text{ruin} \mid k) = 1 - \frac{k}{N}
+$$
+
+</Formula>
+
+<Formula label="Ruin, unfair coin">
+
+$$
+P(\text{ruin} \mid k) = \frac{r^k - r^N}{1 - r^N}, \qquad r = \frac{q}{p}
+$$
+
+</Formula>
+
+<Formula label="Expected game length, fair coin">
+
+$$
+\mathbb{E}[T] = k(N - k)
+$$
+
+</Formula>
+
+<Formula label="Against an infinitely rich house">
+
+$$
+\lim_{N \to \infty} P(\text{ruin}) = \begin{cases} 1 & p \le \tfrac{1}{2} \\ (q/p)^k & p > \tfrac{1}{2} \end{cases}
+$$
+
+</Formula>
+
+</Formulas>

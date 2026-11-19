@@ -1,0 +1,96 @@
+---
+name: "Queues"
+tagline: "Why a server at 90% busy is not 10% away from trouble."
+summary: "Queueing theory explains why waiting times explode as a system gets busy. Random arrivals and random service times mean lines form even when, on average, there is enough capacity, and the wait grows like one over the spare capacity."
+order: 14.5
+---
+
+
+<Lab id="queues" />
+
+## The idea
+
+A desk that can serve 60 people an hour, with 54 people arriving an hour, sounds comfortable: it is only 90% busy. But people do not arrive on a timetable. Sometimes three turn up in the same minute, sometimes nobody comes for five. When a burst arrives the line grows, and the desk only has 10% of its time spare to work the line back down.
+
+That is the whole story of queueing theory. Averages tell you whether a system can keep up in the long run. Randomness tells you how long the lines get on the way.
+
+## How to think about it
+
+1. Arrivals are random and independent: the gaps between them are Exponential, so the count per minute is Poisson (see the arrivals lab on the [Poisson page](/distributions/poisson/)).
+2. Each service also takes a random time.
+3. Utilisation $\rho$ is the arrival rate divided by what the desks can handle. Below 1 the line keeps draining; at 1 or above it grows forever.
+4. With one desk, the average time in the system is $1/(\mu - \lambda)$: it depends on the spare capacity, not the busy share. Halve the spare capacity and the wait doubles.
+5. Little's law ties it together: the average number of people in the system equals the arrival rate times the average time each one spends there.
+
+## Reading the picture
+
+The coloured dots are people waiting; the rings fill as each desk serves someone. The small line underneath tracks the length of the queue. The chart shows the theory for the average time from arriving to leaving, against how busy the desks are, with your setting marked and the simulated average as a dot. The curve is flat for a long while and then turns almost straight up.
+
+## Try this
+
+1. Start at 50% busy and watch: short lines that clear quickly. Then move **How busy the desks are** to 90%. Same desk, same people, but the line now wanders off to ten or twenty and takes ages to recover.
+2. At 95%, press **Skip ahead 5,000 minutes** and compare the average time in the system with the theory. It is around 20 minutes for a 1-minute job.
+3. Keep 90% busy and set **Desks** to 3. Each desk is just as busy as before, yet waits shrink a lot, because a burst can be shared between three desks instead of piling onto one.
+4. Check Little's law in the stats: the average number in the system matches arrivals per minute times the average time spent, whatever the settings.
+
+## In real systems
+
+Every server, database connection pool and message queue is one of these desks. This is why teams keep machines well below full load, why a small traffic increase can suddenly double latency, and why retries during an incident are so dangerous: they push utilisation over 1, and the queue never drains.
+
+<Embed url="https://topple.shyamsundhar.com/scenes/autoscaling/" caption="Autoscaling is not instant: traffic triples, and the queue fills while new servers boot." />
+
+<Embed url="https://topple.shyamsundhar.com/scenes/retry-storm/" caption="The retry storm: retries push utilisation past 1, and a short spike becomes a lasting outage." />
+
+## The maths
+
+<Formulas>
+
+<Formula label="Utilisation">
+
+$$
+\rho = \frac{\lambda}{c\,\mu}
+$$
+
+</Formula>
+
+<Formula label="One desk: time in system">
+
+$$
+W = \frac{1}{\mu - \lambda} = \frac{1/\mu}{1 - \rho}
+$$
+
+</Formula>
+
+<Formula label="One desk: people waiting">
+
+$$
+L_q = \frac{\rho^2}{1 - \rho}
+$$
+
+</Formula>
+
+<Formula label="Little's law">
+
+$$
+L = \lambda W
+$$
+
+</Formula>
+
+<Formula label="Erlang C: chance of waiting with c desks">
+
+$$
+C(c, a) = \frac{\dfrac{a^c}{c!}\,\dfrac{1}{1 - \rho}}{\displaystyle\sum_{k=0}^{c-1} \frac{a^k}{k!} + \frac{a^c}{c!}\,\frac{1}{1 - \rho}}, \quad a = \frac{\lambda}{\mu}
+$$
+
+</Formula>
+
+<Formula label="c desks: time in system">
+
+$$
+W = \frac{C(c, a)}{c\,\mu - \lambda} + \frac{1}{\mu}
+$$
+
+</Formula>
+
+</Formulas>

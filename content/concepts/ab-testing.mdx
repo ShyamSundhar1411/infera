@@ -1,0 +1,80 @@
+---
+name: "A/B Testing"
+tagline: "Two buttons, real visitors, one p-value. How many people you need, and why peeking ruins it."
+summary: "An A/B test splits visitors between two versions and asks whether the difference in their click rates is real or noise. Power tells you how many visitors you need to notice a real difference, and checking the result early inflates false wins."
+order: 9
+---
+
+
+<Lab id="ab-testing" />
+
+## The idea
+
+You have a blue button and an orange one, and you want to know which gets more clicks. Show each to half your visitors and compare the click rates. Easy, except that click rates bounce around by chance. If A gets 10.0% and B gets 10.8%, is B better, or did it just have a lucky week?
+
+An A/B test is a hypothesis test for that question. The null hypothesis is that both buttons have the same real click rate. The p-value says how surprising the observed gap would be if that were true.
+
+## How it works
+
+1. Decide how many visitors each version gets, before you start.
+2. Send visitors to A or B at random, so the two groups are alike in every other way.
+3. When every visitor has been counted, compare the two click rates with a two-proportion test.
+4. If the p-value is below 0.05, call it a real difference; report the confidence interval for its size, not just the verdict.
+5. If not, you have not shown the buttons are the same, only that this test could not tell them apart.
+
+## Power and sample size
+
+Small differences need a lot of visitors. Going from a 10% to a 12% click rate takes about 3,800 visitors per button to be detected 80% of the time; going from 10% to 10.5% takes about 58,000. That 80% is the test's power: the chance it notices a difference that is really there. A test that is too small will usually come back "no clear winner" even when B is better.
+
+## Why peeking is a problem
+
+It is tempting to watch the p-value as visitors arrive and stop the moment it dips below 0.05. But the p-value wanders up and down as data comes in, and checking it 20 times gives it 20 chances to dip below the line by luck. With identical buttons, a test that is checked once has a 5% false-win rate; checked 20 times and stopped at the first win, it is closer to 25%. If you need to look early, use a method designed for it, such as a sequential test.
+
+## Reading the picture
+
+The dot grids show the first 300 visitors to each button, coloured if they clicked; the counts beside them cover every visitor. The line chart follows the p-value as the test runs, with ticks at the 20 moments a peeker would check. The bottom chart is the power curve: for each number of visitors, the chance that one test finds the difference. Dots on it are the share of 1,000 simulated tests that found one.
+
+## Try this
+
+1. Press **Run one test** with the defaults (10% against 12%, 2,000 visitors). Run it a few times: sometimes B wins clearly, sometimes not. Then press **Run 1,000 A/B tests**; the dot lands on the power curve, well below 80%.
+2. Raise **Visitors per button** to the number the hint suggests and run 1,000 tests again. Now about 80% of tests detect the difference.
+3. Set **Button B's real click rate** equal to A's. Run 1,000 tests: about 5% still declare a winner, and every one is wrong.
+4. With the buttons still equal, turn on **Stop as soon as p < 0.05** and run 1,000 tests. False wins jump to around a quarter. Run one test and watch it stop at the first lucky dip.
+
+## The maths
+
+<Formulas>
+
+<Formula label="Two-proportion z test">
+
+$$
+z = \frac{\hat{p}_B - \hat{p}_A}{\sqrt{\hat{p}(1 - \hat{p})\left(\frac{1}{n_A} + \frac{1}{n_B}\right)}}
+$$
+
+</Formula>
+
+<Formula label="Interval for the difference">
+
+$$
+(\hat{p}_B - \hat{p}_A) \pm 1.96 \sqrt{\frac{\hat{p}_A(1 - \hat{p}_A)}{n_A} + \frac{\hat{p}_B(1 - \hat{p}_B)}{n_B}}
+$$
+
+</Formula>
+
+<Formula label="Power">
+
+$$
+1 - \beta \approx \Phi\!\left(\frac{|p_B - p_A|}{\text{SE}} - z_{1-\alpha/2}\right)
+$$
+
+</Formula>
+
+<Formula label="Visitors per group for 80% power">
+
+$$
+n \approx \frac{(z_{1-\alpha/2} + z_{0.8})^2 \big(p_A(1 - p_A) + p_B(1 - p_B)\big)}{(p_B - p_A)^2}
+$$
+
+</Formula>
+
+</Formulas>

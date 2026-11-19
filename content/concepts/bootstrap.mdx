@@ -1,0 +1,80 @@
+---
+name: "Bootstrap"
+tagline: "Measure the uncertainty of almost any statistic using nothing but your one sample."
+summary: "The bootstrap estimates how much a statistic would vary from sample to sample by resampling the data you already have, with replacement. It gives standard errors and confidence intervals for medians, spreads and other statistics that have no tidy formula."
+order: 10
+---
+
+
+<Lab id="bootstrap" />
+
+## The idea
+
+You collected 20 delivery times and their median is 15 minutes. How sure is that number? The honest answer would come from collecting many more samples of 20 and watching how much the median moves. You cannot afford that.
+
+The bootstrap pretends your sample is the population. Draw 20 values from it with replacement, so some values appear twice and others not at all, and compute the median again. Do that a thousand times. The spread of those medians is a good stand-in for the spread you would have seen across real repeat samples.
+
+It works because a decent-sized sample looks like a small copy of the population. Resampling from the copy mimics sampling from the original.
+
+## How it works
+
+1. Start with one sample of $n$ values and compute your statistic: the mean, the median, anything.
+2. Draw $n$ values from the sample at random, with replacement. This is one bootstrap resample.
+3. Compute the same statistic on the resample.
+4. Repeat a thousand or more times.
+5. The standard deviation of the bootstrap statistics is the standard error. The middle 95% of them is a 95% percentile interval.
+
+## Reading the picture
+
+The top strip is your sample on a line of delivery times. The second strip is one resample: values drawn more than once stack up in amber, and the values it skipped fade in the strip above. Roughly a third of the values are skipped every time, since each one is missed with probability $(1 - 1/n)^n \approx e^{-1}$.
+
+The histogram collects one statistic per resample. The coral line is your sample's value and the grey band is the 95% interval. **Show the truth** draws the real sampling distribution from fresh samples of the population, which is exactly what the bootstrap is trying to guess.
+
+## When it fails
+
+The bootstrap can only resample values you saw. For the **Max** of a sample, no resample can ever exceed your largest value, so the bootstrap distribution piles up on it and badly underestimates how high the true maximum can go. Small samples are a problem too: with five values, the sample is a poor copy of the population and every resample inherits its quirks.
+
+## Try this
+
+1. Press **Resample once** a few times and watch which values repeat and which vanish. Then press **1,000 more** and read the 95% interval.
+2. Turn on **Show the truth**. For the **Mean** and **Median** the bootstrap histogram is a fair match for the real one, just centred on your sample instead of the population.
+3. Switch to **Max**. The histogram hits a wall at your largest value while the truth stretches far beyond it.
+4. Drop **Sample size (n)** to 5 and press **New sample** several times. Each bootstrap answer depends heavily on which five values you happened to get.
+
+## The maths
+
+<Formulas>
+
+<Formula label="A bootstrap resample">
+
+$$
+x_1^*, \ldots, x_n^* \sim \text{draws with replacement from } \{x_1, \ldots, x_n\}
+$$
+
+</Formula>
+
+<Formula label="Bootstrap standard error">
+
+$$
+\widehat{\mathrm{SE}} = \sqrt{\frac{1}{B - 1} \sum_{b=1}^{B} \left(\hat{\theta}^*_b - \bar{\theta}^*\right)^2}
+$$
+
+</Formula>
+
+<Formula label="Percentile interval">
+
+$$
+\left[\hat{\theta}^*_{(0.025)},\ \hat{\theta}^*_{(0.975)}\right]
+$$
+
+</Formula>
+
+<Formula label="Chance a value is left out">
+
+$$
+\left(1 - \tfrac{1}{n}\right)^n \to e^{-1} \approx 0.368
+$$
+
+</Formula>
+
+</Formulas>
