@@ -71,8 +71,7 @@ Build with `NEXT_PUBLIC_GA_ID=G-XXXXXXX` to turn on Google Analytics; without it
 
 The site is a fully static export (`output: "export"`), so it runs anywhere.
 
-- **Vercel:** import the repo with the default settings. Nothing else is needed.
-- **GitHub Pages:** `.github/workflows/deploy.yml` builds and deploys on every push to `main`. In the repo settings, set Pages to deploy from GitHub Actions. The workflow reads the base path from Pages, so it works both on a custom domain and on `<user>.github.io/infera`.
+It is deployed on Vercel at [infera.shyamsundhar.com](https://infera.shyamsundhar.com): import the repo with the default settings and nothing else is needed. To serve it from a sub-path instead (for example `<user>.github.io/infera`), build with `BASE_PATH=/infera`.
 
 ## Writing content
 
